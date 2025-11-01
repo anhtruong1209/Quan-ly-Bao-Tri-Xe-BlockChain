@@ -1,0 +1,8 @@
+client/node_modules
+server/node_modules
+smart_contract/node_modules
+smart_contract/deploy-addresses.txt
+smart_contract/artifacts
+smart_contract/cache
+smart_contract/deployments
+smart_contract/deployments

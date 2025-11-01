@@ -1,0 +1,31 @@
+.hero-slider{
+  width: 100%;
+  height: 78vh;
+  overflow: hidden;
+  z-index: -1000;
+  
+}
+.item1{
+  background-image:url("../../assets/slider-img/slide1.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.item2{
+  background-image:url("../../assets/slider-img/slide2.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.item3{
+  background-image:url("../../assets/slider-img/slide3.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.image_slide{
+  width: 100%;
+}
+.slider__item{
+  background-color: aqua;
+}

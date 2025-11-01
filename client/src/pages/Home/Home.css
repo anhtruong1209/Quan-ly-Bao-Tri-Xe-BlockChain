@@ -1,0 +1,97 @@
+body {
+}
+.Buy-car {
+  background-color: hsl(245, 70%, 67%);
+  border: none;
+  width: 200px;
+  height: 63%;
+  color: white;
+  padding: 15px 30px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+}
+.Buy-car:hover {
+  background-color: hsl(0, 14%, 80%);
+  color: hsl(245, 70%, 67%);
+}
+.home {
+  margin-left: 130px;
+  display: flex;
+  height: 105vh;
+  width: 100%;
+}
+.FindCar {
+  padding-left: 100px;
+  width: 100%;
+  text-align: center;
+  padding-bottom: 30px;
+}
+.information-car {
+  background-color: #f2f2f2;
+  width: 1400px;
+  display: grid;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  grid-template-columns: repeat(5, 1fr); /* 5 cột */
+  grid-template-rows: repeat(2, 1fr); /* 2 hàng */
+  gap: 10px; /* Khoảng cách giữa các div con */
+}
+.information-car-connected {
+  background-color: #f2f2f2;
+  width: 1400px;
+  height: 30vh;
+  display: grid;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+}
+.form-connected {
+  width: 1400px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+}
+.form-group-home {
+  margin-bottom: 20px;
+  font-size: large;
+}
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.logo-image {
+  width: 100px;
+}
+.login-button-home {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.login-button-home:hover {
+  background-color: #0069d9;
+}

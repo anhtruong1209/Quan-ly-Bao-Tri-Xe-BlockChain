@@ -1,0 +1,100 @@
+.main_navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+  height: 70px;
+  background: #000d6b;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+.signIn-button {
+  margin-left: 50px;
+  margin-top: 13px;
+  margin-right: 0px;
+  border: none;
+  height: 63%;
+  padding: 15px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  background-color: #FFFFFF; /* Màu trắng */
+  color: #000d6b; /* Màu xanh đậm cho chữ */
+}
+.navigation {
+  display: flex;
+  align-items: center;
+  margin-left: 10rem;
+  /* height: 100%; */
+  margin-top: 0;
+}
+.menu {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 2rem;
+  font-size: 15px;
+  height: 45px;
+  font-weight: bold;
+}
+.nav_item {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+.nav_item:hover {
+  color: #b26e00;
+}
+.logo-1 {
+  margin-left: 50px;
+  height: 100%;
+  width: 100%;
+  background-image: url(./fast.png);
+  background-size: cover;
+  background-position: center;
+}
+.nav_active {
+  color: #f9a826;
+}
+.navbar_search {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  /* position: absolute;   */
+  background-color: #020a4de9;
+  border-radius: 14rem;
+  right: 18rem;
+}
+
+.search-input {
+  border: none;
+  background-color: transparent;
+  outline: none;
+  color: #ffff;
+}
+
+.search-btn {
+  background-image: url("./../../../public/magnifying-glass.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-color: transparent;
+  border: none;
+  filter: invert(100%);
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+}

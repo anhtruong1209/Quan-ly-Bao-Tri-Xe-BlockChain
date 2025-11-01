@@ -1,0 +1,8 @@
+.button {
+  background-color: rgb(72, 102, 102);
+  padding: 12px 36px;
+  margin-top: 10px;
+  border-radius: 10px;
+  color: aliceblue;
+  font-size: 30px;
+}

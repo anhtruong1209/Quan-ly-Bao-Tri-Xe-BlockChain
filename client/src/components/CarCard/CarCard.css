@@ -1,0 +1,47 @@
+.custom-card {
+  transition: box-shadow 0.3s ease; /* Hiệu ứng transition */
+}
+
+.custom-card:hover {
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.3); /* Box shadow khi hover */
+}
+.plate-title {
+  font-size: 20px;
+
+  font-weight: 650;
+  color: rgba(2, 152, 241, 255);
+}
+.price-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(97, 81, 118);
+}
+.address-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgb(131, 131, 131);
+}
+.name-title {
+  margin-top: 15px;
+  font-size: 20px;
+  margin: 20px 0px;
+  font-weight: 700;
+}
+.more-title {
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  gap: 10px;
+  justify-content: left;
+}
+.more-tile-option {
+  background-color: rgba(241, 245, 249, 255);
+  padding: 2px 15px;
+  font-weight: 700;
+  color: rgba(149, 161, 170, 255);
+  border-radius: 10px;
+}
+.horizontal-custom {
+  border-top: 1px solid rgb(220, 220, 220);
+  margin-top: 20px;
+}

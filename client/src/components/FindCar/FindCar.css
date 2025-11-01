@@ -1,0 +1,538 @@
+.findcar-container {
+  /* height: 500vh; */
+  background-color: rgb(255, 255, 255);
+  /* display: grid; */
+  /* grid-template-rows: 6fr 9fr; */
+  gap: 15px;
+  /* padding-left: 250px;
+  padding-right: 250px; */
+  margin-top: 18px;
+}
+.filter-option {
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  /* display: grid; */
+  /* grid-template-columns: 3.5fr 7fr 3fr; */
+  gap: 15px;
+}
+.filter-plates {
+  background-color: rgb(134, 101, 101);
+  border-radius: 10px;
+}
+.ai-training-frame {
+  background-color: #eae7e7;
+  border-radius: 10px;
+}
+.ai-finally-result {
+  background-color: #e5eaed;
+  border-radius: 10px;
+}
+.result-price{
+  background-color: white;
+  padding: 10px;
+  margin-right: 70px;
+  border-radius: 18px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.price-range {
+  background-color: whitesmoke;
+  padding: 15px;
+  padding-left: 20px;
+  border-radius: 15px;
+}
+
+.price-box {
+  height: 90%;
+  display: grid;
+  grid-template-rows: 1fr 1.2fr; /* Chia thành 2 hàng bằng nhau */
+  gap: 10px;
+}
+.bttn-600-800 {
+  border-radius: 15px;
+  background-image: url("600-800.svg");
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.box2 {
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.bttn-800-1m {
+  border-radius: 15px;
+  background-image: url("800-1000.svg");
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.bttn-1m {
+  border-radius: 15px;
+  background-image: url("1000.svg");
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.option-range {
+  background-color: whitesmoke;
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+  gap: 7px;
+  border-radius: 15px;
+}
+.option-container-button {
+  background-color: whitesmoke;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: Arial;
+  border-radius: 15px;
+}
+.btnn-theo-hang {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+}
+.btnn-theo-hang.active {
+  background-color: whitesmoke;
+  color: blue;
+}
+.option-result {
+  background-color: whitesmoke;
+}
+.content-theo-hang {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.item {
+  border-radius: 15px;
+  background-color: white;
+  width: 100%; /* Chiều rộng tối đa của ô vuông */
+  aspect-ratio: 1; /* Duy trì tỷ lệ khung hình */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng dưới */
+  transition: all 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+.item.toyota {
+  background-image: url("./carLogo/toyota.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+.item.honda {
+  background-image: url("./carLogo/honda.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.huyndai {
+  background-image: url("./carLogo/huyndai.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.lamborghini {
+  background-image: url("./carLogo/lamborghini_Logo.svg.png");
+  background-size: cover;
+  background-position: center;
+}
+.item.kia {
+  background-image: url("./carLogo/kia.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.madza {
+  background-image: url("./carLogo/madza.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.ford {
+  background-image: url("./carLogo/ford.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.audi {
+  background-image: url("./carLogo/audi.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.bmw {
+  background-image: url("./carLogo/bmw.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.chervolet {
+  background-image: url("./carLogo/chervolet.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.mercedes {
+  background-image: url("./carLogo/mercedes.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.mitsubishi {
+  background-image: url("./carLogo/mitsubishi.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.suzuki {
+  background-image: url("./carLogo/suzuki.svg");
+  background-size: cover;
+  background-position: center;
+}
+.item.vin {
+  background-image: url("./carLogo/vin.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+.item:hover {
+  transform: scale(1.05); /* Tăng kích thước lên 105% khi hover qua */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Đổi màu đổ bóng khi hover qua */
+}
+
+.content-theo-nhu-cau {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  box-sizing: border-box;
+  gap: 10px;
+}
+.nhucau {
+  border-radius: 15px;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
+.nhucau.xe-gia-dinh {
+  background-image: url("./carTheoNhucau/xegd.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.nhucau.xe-luot {
+  background-image: url("./carTheoNhucau/xeluot.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nhucau.xe-flex {
+  background-image: url("./carTheoNhucau/xeflex.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.content-theo-tra-gop {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  box-sizing: border-box;
+  gap: 10px;
+}
+.tragop {
+  border-radius: 15px;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
+.tragop.truoc {
+  background-image: url("./carTheotragop/tratruoc.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.tragop.dinhky {
+  background-image: url("./carTheotragop/tradinhky.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content-theo-kieu-dang {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+.kieu {
+  border-radius: 15px;
+  background-color: white;
+  width: 95%; /* Chiều rộng tối đa của ô vuông */
+  height: 80%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng dưới */
+  transition: all 0.3s ease;
+}
+.kieu.sedan {
+  background-image: url("./carTheokieudang/sedan.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.hatchback {
+  background-image: url("./carTheokieudang/hatchback.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.suv {
+  background-image: url("./carTheokieudang/suv.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.mpv {
+  background-image: url("./carTheokieudang/mpv.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.van {
+  background-image: url("./carTheokieudang/van.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.pickup {
+  background-image: url("./carTheokieudang/pickup.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.kieu.crossover {
+  background-image: url("./carTheokieudang/crossover.svg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.2);
+}
+.support-range {
+  background-color: white;
+  display: grid;
+  /* grid-template-rows: 1.1fr 9fr; */
+  gap: 10px;
+  border-radius: 15px;
+}
+.all-car {
+  background-color: #029af2;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.all-car span {
+  margin-right: 5px;
+}
+.support-find-car {
+  background-color: whitesmoke;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 10px;
+  display: grid;
+  grid-template-rows: 4fr 6fr;
+  padding: 15px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+}
+.img-support {
+  height: 100%;
+  width: 100%;
+  background-image: url("./man.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+.filter-plates {
+  background-color: #0093e9;
+  background-image: linear-gradient(
+    160deg,
+    #0093e9 0%,
+    #1f9be9 50%,
+    #0093e9 100%
+  );
+  /* padding: 40px; */
+  /* padding-left: 60px;
+  padding-right: 60px; */
+}
+.plates {
+  width: 100%;
+  height: 100%;
+  background-color: #0093e9;
+  background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
+  position: relative; /* Đảm bảo các hiệu ứng đổ bóng được đặt trên nền */
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
+    rgba(0, 0, 0, 0.22) 0px 15px 12px;
+  display: grid;
+  grid-template-columns: 6fr 5fr;
+}
+.plates-img {
+  width: 100%;
+  /* height: 100%; */
+  background-image: url("plate.svg");
+  background-position: center;
+  background-size: cover;
+}
+.plates-find {
+  display: grid;
+  grid-template-rows: 3.5fr 5.5fr;
+  padding-top: 0px;
+  padding-bottom: 40px;
+  /* padding-right: 40px; */
+  justify-content: center;
+  text-align: start;
+  color: white;
+}
+.input-group {
+  /* background-color: #74ebd5;
+  background-image: linear-gradient(301deg, #74ebd5 0%, #9face6 100%); */
+  /* padding: 15px; */
+  position: relative;
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  /* border: 1px solid rgb(0, 0, 0); */
+  border-radius: 15px;
+  display: grid;
+  padding: 20px;
+  color: black;
+  grid-template-columns: auto 1fr auto; /* Chiều rộng tự động cho input đầu và button, còn lại cho input-option */
+  grid-gap: 10px; /* Khoảng cách giữa các phần tử */
+  border-radius: 10px;
+  padding: 5px;
+}
+.input-group2 {
+  background-color: #74ebd5;
+  background-image: linear-gradient(301deg, #74ebd5 0%, #9face6 100%);
+  padding: 15px;
+  position: relative;
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 15px;
+  /* display: grid; */
+  padding: 20px;
+  /* grid-template-columns: auto 1fr auto; 
+  grid-gap: 10px;  */
+}
+
+.input-option {
+  display: grid;
+  grid-template-columns: 1fr auto; /* Chiều rộng tự động cho input và select, còn lại cho input */
+  grid-gap: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.input {
+  color: black;
+  padding: 8px;
+  border: none;
+  outline: none; /* Loại bỏ đường viền focus */
+  background-color: transparent;
+}
+.input-group input[type="text"],
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-bottom: 1.5px solid #9e6b6b;
+  outline: none;
+}
+.input-group input[type="text"]::placeholder {
+  color: white;
+}
+
+.input-group input[type="text"]::after {
+  content: "";
+  /* position: absolute; */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+.input-group2 input[type="text"],
+.input-group2 select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-bottom: 1.5px solid #9e6b6b;
+  outline: none;
+}
+.input-group2 input[type="text"]::placeholder {
+  color: white;
+}
+
+.input-group2 input[type="text"]::after {
+  content: "";
+  /* position: absolute; */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+.bttn-search {
+  padding: 10px 20px;
+  background-color: #524fec;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bttn-search:hover {
+  background-color: #7775de;
+  transition: background-color 0.3s ease;
+}
+.bttn-search:active {
+  transition: background-color 0.1s ease;
+  background-color: #201f90;
+}
+.hoantac {
+  padding: 10px 20px;
+  background-color: #524fec;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  background-color: green;
+}
+.hoantac:hover {
+  background-color: rgb(7, 162, 7);
+  transition: background-color 0.3s ease;
+}
+.hoantac:active {
+  transition: background-color 0.1s ease;
+  background-color: rgb(11, 96, 11);
+}
+.ai-result {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+.ai-result-price {
+  width: 100%;
+  padding: 10px;
+  margin: 0;
+  border-radius: 20px;
+  background-color: white;
+  height: 100%;
+}

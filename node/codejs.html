@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hoi dan IT voi ERIC</title>
+    <!-- phong chu -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- link css -->
+    <link rel="stylesheet" href="css.css" />
+    <link rel="stylesheet" href="base.css" />
+
+    <!-- link-icon -->
+    <script
+      src="https://kit.fontawesome.com/9df6fb5e3f.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <header class="narbar display__none">
+      <ul class="narbar__list">
+        <li class="narbar__list-item narbar__icon">
+          <a href="#" class="narbar__link-control"
+            ><img
+              class="narbar__list-item-img"
+              src="https://lms.hcmut.edu.vn/pluginfile.php/3/theme_academi/logo/1710766547/logoBK.png"
+              alt=""
+          /></a>
+        </li>
+        <li class="narbar__list-item">
+          <a href="#" class="narbar__link-control narbar__link-control--home"
+            >Trang chủ</a
+          >
+        </li>
+        <li class="narbar__list-item">
+          <a href="#" class="narbar__link-control narbar__link-control--info"
+            >Trang cá nhân</a
+          >
+        </li>
+        <li class="narbar__list-item">
+          <a href="#" class="narbar__link-control">Môn học của tôi</a>
+        </li>
+      </ul>
+      <ul class="narbar__list">
+        <li class="narbar__list-item narbar__icon narbar__icon--notify">
+          <a href="#" class="narbar__link-control narbar__link-control-notify"
+            ><i class="fa-regular fa-bell"></i
+          ></a>
+          <div class="menu-notify">
+            <div class="menu-notify__arrow"></div>
+            <div class="menu-notify__header">Thông báo</div>
+            <ul class="menu-notify__body">
+              <li class="menu-notify__body-item">
+                <div class="menu-notify-content">
+                  Sinh hoạt Công dân định kỳ đợt 2 năm học 2023 - 2024
+                </div>
+                <div class="menu-notify-viewer">
+                  <div class="menu-notify-viewer-time">10 ngay truoc</div>
+                  <div class="menu-notify-viewer-see">xem full noi dung</div>
+                </div>
+              </li>
+              <li class="menu-notify__body-item"></li>
+              <li class="menu-notify__body-item"></li>
+              <li class="menu-notify__body-item"></li>
+              <li class="menu-notify__body-item"></li>
+              <li class="menu-notify__body-item"></li>
+              <li class="menu-notify__body-item"></li>
+            </ul>
+            <div class="menu-notify__footer">SEE ALL</div>
+          </div>
+        </li>
+        <li class="narbar__list-item narbar__icon narbar__icon-mess">
+          <a href="#" class="narbar__link-control narbar__link-control-mess"
+            ><i class="fa-regular fa-comment" ri></i
+          ></a>
+          <div class="message">
+            <div class="message__header">
+              <div class="message__header-search">
+                <input
+                  class="message__header-search-input"
+                  type="text"
+                  placeholder="nhap tin nhan tim kiem"
+                />
+                <div class="message__header-search-icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+              </div>
+              <div class="message__header-close">
+                <i class="message__header-close-icon fa-solid fa-xmark"></i>
+              </div>
+            </div>
+            <ul class="message__body">
+              <li class="message__body-item active"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+              <li class="message__body-item"></li>
+            </ul>
+          </div>
+        </li>
+        <li class="narbar__list-item narbar__icon">
+          <div class="navbar-user">
+            <img
+              src="https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg"
+              alt=""
+              class="navbar-user__avatar"
+            />
+          </div>
+        </li>
+      </ul>
+    </header>
+    <div class="breadcrum display__none">
+      <div class="breadcrum__item breadcrum__item--Home display__none">
+        Kết quả học tập
+      </div>
+      <div
+        class="breadcrum__item breadcrum__item--Info display__none"
+        name="breadcrum__item-at"
+      >
+        Thông tin sinh viên
+      </div>
+      <div
+        class="breadcrum__item breadcrum__item--ChangeInfo display__none"
+        name="breadcrum__item-at"
+      >
+        Thay đổi thông tin
+        <div class="icon--closer">
+          <i class="fa-solid fa-xmark breadcrum-icon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="info-item point display__none breadcrum__item-at-0">
+      <div class="point__title">Bảng Điểm Sinh Viên</div>
+      <div class="point__body">
+        <div class="block__semester">
+          <div class="semester__header">
+            <h3>Học kỳ</h3>
+            <span class="time-Upload"
+              >Ngày cập nhật điểm các môn học:20/03/2024 4:52:57 PM</span
+            >
+          </div>
+          <div class="semester__body">
+            <ul class="semester__body-list active">
+              <li class="semester__body-list--item Ma-MH">MÃ MH</li>
+              <li class="semester__body-list--item Ten-MH">TÊN MÔN HỌC</li>
+              <li class="semester__body-list--item Nhom-MH">NHÓM-TỔ</li>
+              <li class="semester__body-list--item TinChi-MH">SỐ TC</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                ĐIỂM THÀNH PHẦN
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                ĐIỂM THI
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                ĐIỂM TỔNG KẾT
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+          </div>
+          <ul class="semester__footer">
+            <li class="semester__footer--item">
+              Số tín chỉ đăng ký học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình học kỳ : <b>4.0</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy : <b>47</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình tích lũy :<b>4.0</b>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="point__body">
+        <div class="block__semester">
+          <div class="semester__header">
+            <h3>Học kỳ</h3>
+            <span class="time-Upload"
+              >Ngày cập nhật điểm các môn học:20/03/2024 4:52:57 PM</span
+            >
+          </div>
+          <div class="semester__body">
+            <ul class="semester__body-list active">
+              <li class="semester__body-list--item Ma-MH">MÃ MH</li>
+              <li class="semester__body-list--item Ten-MH">TÊN MÔN HỌC</li>
+              <li class="semester__body-list--item Nhom-MH">NHÓM-TỔ</li>
+              <li class="semester__body-list--item TinChi-MH">SỐ TC</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                ĐIỂM THÀNH PHẦN
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                ĐIỂM THI
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                ĐIỂM TỔNG KẾT
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+          </div>
+          <ul class="semester__footer">
+            <li class="semester__footer--item">
+              Số tín chỉ đăng ký học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình học kỳ : <b>4.0</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy : <b>47</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình tích lũy :<b>4.0</b>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="point__body">
+        <div class="block__semester">
+          <div class="semester__header">
+            <h3>Học kỳ</h3>
+            <span class="time-Upload"
+              >Ngày cập nhật điểm các môn học:20/03/2024 4:52:57 PM</span
+            >
+          </div>
+          <div class="semester__body">
+            <ul class="semester__body-list active">
+              <li class="semester__body-list--item Ma-MH">MÃ MH</li>
+              <li class="semester__body-list--item Ten-MH">TÊN MÔN HỌC</li>
+              <li class="semester__body-list--item Nhom-MH">NHÓM-TỔ</li>
+              <li class="semester__body-list--item TinChi-MH">SỐ TC</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                ĐIỂM THÀNH PHẦN
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                ĐIỂM THI
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                ĐIỂM TỔNG KẾT
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+          </div>
+          <ul class="semester__footer">
+            <li class="semester__footer--item">
+              Số tín chỉ đăng ký học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình học kỳ : <b>4.0</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy : <b>47</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình tích lũy :<b>4.0</b>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="point__body">
+        <div class="block__semester">
+          <div class="semester__header">
+            <h3>Học kỳ</h3>
+            <span class="time-Upload"
+              >Ngày cập nhật điểm các môn học:20/03/2024 4:52:57 PM</span
+            >
+          </div>
+          <div class="semester__body">
+            <ul class="semester__body-list active">
+              <li class="semester__body-list--item Ma-MH">MÃ MH</li>
+              <li class="semester__body-list--item Ten-MH">TÊN MÔN HỌC</li>
+              <li class="semester__body-list--item Nhom-MH">NHÓM-TỔ</li>
+              <li class="semester__body-list--item TinChi-MH">SỐ TC</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                ĐIỂM THÀNH PHẦN
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                ĐIỂM THI
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                ĐIỂM TỔNG KẾT
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+            <ul class="semester__body-list semester__body-list-child">
+              <li class="semester__body-list--item Ma-MH">SP1031</li>
+              <li class="semester__body-list--item Ten-MH">
+                Triết học Mác - Lênin
+              </li>
+              <li class="semester__body-list--item Nhom-MH">L16-A</li>
+              <li class="semester__body-list--item TinChi-MH">3</li>
+              <li class="semester__body-list--item DiemTp-parent Diem-MH">
+                BT:10 BTL:10
+              </li>
+              <li class="semester__body-list--item DiemCK-parent DiemCK-MH">
+                10
+              </li>
+              <li class="semester__body-list--item DiemTK-parent DiemTk-MH">
+                10
+              </li>
+            </ul>
+          </div>
+          <ul class="semester__footer">
+            <li class="semester__footer--item">
+              Số tín chỉ đăng ký học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy học kỳ : <b>16</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình học kỳ : <b>4.0</b>
+            </li>
+            <li class="semester__footer--item">
+              Số tín chỉ tích lũy : <b>47</b>
+            </li>
+            <li class="semester__footer--item">
+              Điểm trung bình tích lũy :<b>4.0</b>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="info-item info display__none breadcrum__item-at-1">
+      <div class="info__header">Thông tin Sinh viên</div>
+      <div class="info__body">
+        <div class="info__blockInput">
+          <span class="label-infor">MSV</span>
+          <span class="myInfor">2210986</span>
+        </div>
+        <div class="info__blockInput">
+          <span class="label-infor">Họ và Tên</span>
+          <span class="myInfor">Hoàng Minh Hiếu</span>
+        </div>
+        <div class="info__blockInput">
+          <span class="label-infor">Ngày sinh</span>
+          <span class="myInfor">08/03/2004</span>
+        </div>
+        <div class="info__blockInput">
+          <span class="label-infor">Giới tính</span>
+          <span class="myInfor">Nam</span>
+        </div>
+        <div class="info__blockInput">
+          <span class="label-infor">Nơi Sinh</span>
+          <span class="myInfor">Bình Phước</span>
+        </div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Email trường</span>
+          <span class="myInfor">hieu@hcmut.edu.vn</span>
+        </div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Số Điện Thoại</span>
+          <span class="myInfor">096127630</span>
+        </div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Địa chỉ</span>
+          <span class="myInfor">11/222/binh duong</span>
+        </div>
+        <div class="info__header">Thông tin người thân</div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Tên người thân</span>
+          <span class="myInfor">Hoang van A</span>
+        </div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Số điện thoại người thân</span>
+          <span class="myInfor">098384321</span>
+        </div>
+        <div class="info__header">Thông tin người thân</div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Tên người thân</span>
+          <span class="myInfor">Hoang van A</span>
+        </div>
+        <div class="info__blockInput info__blockInput-input">
+          <span class="label-infor">Số điện thoại người thân</span>
+          <span class="myInfor">098384321</span>
+        </div>
+        <div class="info__btn">Cập nhật</div>
+      </div>
+    </div>
+    <div class="info-item change-info display__none breadcrum__item-at-2">
+      <div class="change-info__body">
+        <div class="change-info__me">
+          <div class="change-info__me-header">Thay đổi thông tin cá nhân</div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Số Điện Thoại</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Số Điện thoại liên lạc"
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label"
+              >Nơi ở hiện tại của sinh viên
+            </span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Địa chỉ hiện tại"
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Địa chỉ Email cá nhân</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="email khác @hcmut.edu.vn"
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Trang Mạng xã hội cá nhân </span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="link facebook,insta..."
+            />
+          </div>
+        </div>
+        <div class="change-info__family">
+          <div class="change-info__me-header">
+            Thay đổi thông tin người thân
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Tên người thân(1)</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Họ và tên người thân"
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Số điện thoại người thân</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Số Điện thoại liên lạc"
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Tên người thân(2)</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Họ và tên người thân khác khi không liên hệ được người trên "
+            />
+          </div>
+          <div class="change-info__me-block">
+            <span class="change-info__label">Số điện thoại người thân</span>
+            <input
+              type="text"
+              class="change-info__input"
+              placeholder="Số Điện thoại liên lạc"
+            />
+          </div>
+        </div>
+        <div class="change-info__btn">Lưu thông tin</div>
+      </div>
+      <div class="change-info__decoration">Cập nhật thông tin liên lạc</div>
+    </div>
+
+    <!-- <div class="modul" >
+        <form class="login">
+            <div class="login__header">
+                <img class="login__header-img" src="https://lms.hcmut.edu.vn/pluginfile.php/3/theme_academi/logo/1710766547/logoBK.png" alt="">
+            </div>
+            <div class="login__body">
+                <div class="login__title">Đăng Nhập</div>
+                <ul class="login__body-list">
+                    <li class="login__body-list-item">
+                        <div class="icon__login">
+                            <i class="fa-solid fa-user" style="color: #044cc8;"></i>
+                        </div>
+                        <input type="text" class="login__input" placeholder="Email trường" required  >
+                    </li>
+                    <li class="login__body-list-item">
+                        <div class="icon__login">
+                            <i class="fa-solid fa-lock" style="color: #044cc8;"></i>
+                        </div>
+                        <input type="text" class="login__input" placeholder="Mật khẩu" required  >
+                    </li>
+                </ul>
+            </div>
+            <input type="submit" class="login__footer" value="Đăng Nhập" >
+               
+            </input>
+        </form>
+    </div> -->
+    <!-- Phần trang chủ được thêm như sau  -->
+
+    <!-- <div class="home display__none">
+        <div class="slide">
+            <div class="item" style="background-image: url(assets/img/43d4da9ee226f7526c22b3adfb7f9759.jpg);">
+            <div class="content">
+                    <div class="name">Trường Đại học Bách Khoa</div>
+                    <div class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet molestias voluptates commodi rem, quasi eius, ?</div>
+                    <button>Chương trình đào tạo</button>
+            </div>
+            </div>
+            <div class="item" style="background-image: url(assets/img/neom-xQhP7RVgA3c-unsplash.jpg);">
+                <div class="content">
+                    <div class="name">Trường Đại học Bách Khoa</div>
+                    <div class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet molestias voluptates commodi rem, quasi eius, ?</div>
+                    <button>Chương trình đào tạo</button>
+                </div>
+            </div>
+            <div class="item" style="background-image: url(assets/img/pexels-denis-linine-714256.jpg);">
+                <div class="content">
+                    <div class="name">Trường Đại học Bách Khoa</div>
+                    <div class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet molestias voluptates commodi rem, quasi eius, ?</div>
+                    <button>Chương trình đào tạo</button>
+                </div>
+            </div>
+            <div class="item" style="background-image: url(assets/img/rawkkim-GSYWOVIW_vY-unsplash.jpg);">
+                <div class="content">
+                    <div class="name">Trường Đại học Bách Khoa</div>
+                    <div class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet molestias voluptates commodi rem, quasi eius, ?</div>
+                    <button>Chương trình đào tạo</button>
+                </div>
+            </div>
+            <div class="item" style="background-image: url(assets/img/rawkkim-rr5zE4Cpvns-unsplash.jpg);">
+                <div class="content">
+                    <div class="name">Trường Đại học Bách Khoa</div>
+                    <div class="des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet molestias voluptates commodi rem, quasi eius, ?</div>
+                    <button>Chương trình đào tạo</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="homepage display__none">
+      <div class="home">
+        <img
+          src="assets/img/z5297599990681_654e49bef02b64c2244dddd88d27441f.jpg"
+          id="img"
+        />
+        <h2 id="textmain">TRƯỜNG ĐẠI HỌC BÁCH KHOA</h2>
+      </div>
+      <div class="sec">
+        <h2>TRƯỜNG ĐẠI HỌC BÁCH KHOA</h2>
+        <p>
+          <br />
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
+          voluptatem eveniet error, laborum pariatur aspernatur alias natus
+          harum veritatis quo necessitatibus dolor quisquam, at perspiciatis.
+          Temporibus incidunt tempore dolorem inventore. Lorem ipsum dolor sit
+          amet consectetur adipisicing elit. Consequatur, repudiandae. Nesciunt,
+          nemo asperiores. Temporibus saepe adipisci consequuntur sit velit
+          voluptates? Perspiciatis delectus a quas dolorem quaerat fuga non
+          sapiente nisi. Lorem ipsum dolor sit amet consectetur adipisicing
+          elit. Atque, quas cum officia eum aut est iure alias harum iste nisi
+          accusantium deserunt architecto maiores dicta nesciunt veritatis esse
+          dolorum amet. <br /><br /><br />
+
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, quas
+          cum officia eum aut est iure alias harum iste nisi accusantium
+          deserunt architecto maiores dicta nesciunt veritatis esse dolorum
+          amet. <br /><br /><br />
+        </p>
+        <a href="#" class="button">Thông tin</a>
+      </div>
+      <div class="thir" id="thir">
+        <h2>Thông tin sự kiện</h2>
+        <div class="news-card">
+          <div class="card">
+            <img
+              class="card-img"
+              src="assets/img/v9IjcxpjVPBZi6fHJDI5UzGy.jpg"
+              alt=""
+            />
+            <div class="info">
+              <div class="maininfo">
+                <h3>
+                  Tăng tốc trên đường đua “Tư vấn tuyển sinh - Hướng nghiệp
+                </h3>
+                <span>28/03/2024</span>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur, adipisicing e vel
+                  accusantium.
+                </p>
+                <a href="" class="button">Thông tin</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <img
+              class="card-img"
+              src="assets/img/MKabVIJaYlKNShX1wCoITGcS.jpg"
+              alt=""
+            />
+            <div class="info">
+              <div class="maininfo">
+                <h3>KÝ KẾT HỢP TÁC VỚI TẬP ĐOÀN AISIN, NHẬT BẢN</h3>
+                <span>21/03/2024</span>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur, adipisicing e vel
+                  accusantium.
+                </p>
+                <a href="" class="button">Thông tin</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <img class="card-img" src="assets/img/vinif.png" alt="" />
+            <div class="info">
+              <div class="maininfo">
+                <h3>Chương trình tài trợ, hợp tác của Quỹ VINIF năm 2024</h3>
+                <span>01/03/2024</span>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur, adipisicing e vel
+                  accusantium.
+                </p>
+                <a href="" class="button">Thông tin</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <img
+              class="card-img"
+              src="assets/img/5tt-mVyZCB1zPxbPcbxMvsm-.jpg"
+              alt=""
+            />
+            <div class="info">
+              <div class="maininfo">
+                <h3>
+                  HƯỞNG ỨNG THÁNG THANH NIÊN, TUỔI TRẺ BÁCH KHOA XUNG KÍCH TÌNH
+                  NGUYỆN VÌ CUỘC SỐNG CỘNG ĐỒNG
+                </h3>
+                <span>07/03/2024</span>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur, adipisicing e vel
+                  accusantium.
+                </p>
+                <a href="" class="button">Thông tin</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js.js"></script>
+  </body>
+</html>

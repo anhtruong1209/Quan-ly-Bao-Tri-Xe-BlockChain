@@ -1,0 +1,14 @@
+.button-watch-custom {
+  color: black;
+  margin: 50px 0px;
+  background-color: #8deba6;
+  display: inline-block;
+  padding: 5px;
+  border-radius: 5px;
+}
+.button-watch-custom:hover {
+  background-color: #15cf47;
+}
+.button-watch-custom:active {
+  background-color: #12792e;
+}
