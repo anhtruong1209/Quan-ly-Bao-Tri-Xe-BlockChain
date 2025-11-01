@@ -31,8 +31,8 @@ import Footer from "../../components/Footer/Footer";
 import * as RecordsService from "../../services/RecordsService";
 import { FaInfoCircle } from "react-icons/fa";
 import ServiceRecordForm from "./ServiceRecordForm";
-import { Timeline, Tag, Card, Button, Space, Statistic, Row, Col } from "antd";
-import { CheckCircleOutlined, ClockCircleOutlined, ToolOutlined } from "@ant-design/icons";
+import { Timeline, Tag, Card, Button, Space, Statistic, Row, Col, message } from "antd";
+import { CheckCircleOutlined, ClockCircleOutlined, ToolOutlined, CopyOutlined } from "@ant-design/icons";
 const Detail = () => {
   const { plate } = useParams();
   const [cars, setCars] = useState([]);
@@ -276,7 +276,7 @@ const Detail = () => {
                   </p>
                 </div>
               </div>
-              <div className="product-book">
+              <div className="product-book" style={{ width: "100%", maxWidth: "100%" }}>
                 <Card
                   title={
                     <Space>
@@ -294,9 +294,10 @@ const Detail = () => {
                       Ghi Bảo Trì Mới
                     </Button>
                   }
+                  style={{ width: "100%" }}
                 >
                   {serviceRecords?.length > 0 ? (
-                    <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                    <div style={{ maxHeight: 500, overflowY: "auto", width: "100%" }}>
                       <Timeline
                         items={serviceRecords
                           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -332,8 +333,23 @@ const Detail = () => {
                                   </div>
                                 )}
                                 {r.txHash && (
-                                  <div style={{ fontSize: 11, color: "#1890ff", marginTop: 4 }}>
-                                    TX: <code>{r.txHash.slice(0, 20)}...</code>
+                                  <div style={{ fontSize: 16, fontWeight: 600, color: "#1890ff", marginTop: 8, padding: "12px", backgroundColor: "#e6f7ff", borderRadius: 6, border: "1px solid #91d5ff", wordBreak: "break-all" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 8, color: "#666", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                      <span>Transaction Hash:</span>
+                                      <Button 
+                                        type="text" 
+                                        size="small" 
+                                        icon={<CopyOutlined />} 
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(r.txHash);
+                                          message.success("Đã sao chép transaction hash!");
+                                        }}
+                                        style={{ padding: "0 8px", height: "24px" }}
+                                      >
+                                        Copy
+                                      </Button>
+                                    </div>
+                                    <code style={{ fontSize: 14, fontFamily: "monospace", color: "#1890ff", fontWeight: 600, display: "block", wordBreak: "break-all" }}>{r.txHash}</code>
                                   </div>
                                 )}
                                 <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>

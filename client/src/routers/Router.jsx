@@ -5,6 +5,7 @@ import Detail from "../pages/Detail/Detail";
 import Vehicles from "../pages/Vehicles/Vehicles";
 import VehicleByType from "../pages/VehicleByType/VehicleByType";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
+import Documentation from "../pages/Documentation/Documentation";
 
 const Routers = () => {
   return (
@@ -14,6 +15,7 @@ const Routers = () => {
       <Route path="/vehicles" element={<Vehicles />} />
       <Route path="/detail/:plate" element={<Detail />} />
       <Route path="/vehicle-type/:name" element={<VehicleByType />} />
+      <Route path="/documentation" element={<Documentation />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

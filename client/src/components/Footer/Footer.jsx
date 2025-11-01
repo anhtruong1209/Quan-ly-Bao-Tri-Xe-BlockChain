@@ -21,7 +21,7 @@ function Footer() {
             <Space direction="vertical" size="middle" style={{ width: "100%" }}>
               <Title level={4} style={{ color: "#fff", margin: 0 }}>
                 <CarOutlined style={{ marginRight: 8 }} />
-                Hệ Thống Quản Lý Bảo Trì & Bảo Hành Xe Vận Tải
+                Hệ Thống Quản Lý Bảo Trì Xe Vận Tải
               </Title>
               <Text style={{ color: "rgba(255, 255, 255, 0.8)", lineHeight: "1.8" }}>
                 Hệ thống theo dõi, sửa chữa, bảo hành và bảo trì cho xe vận tải sử dụng công nghệ blockchain để đảm bảo tính minh bạch, không thể thay đổi và truy xuất nguồn gốc của dữ liệu bảo trì.

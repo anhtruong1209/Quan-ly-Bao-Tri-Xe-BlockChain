@@ -33,7 +33,7 @@ body {
 }
 .information-car {
   background-color: #f2f2f2;
-  width: 1400px;
+  width: 1800px;
   display: grid;
   padding: 20px;
   background-color: #f2f2f2;
@@ -45,7 +45,7 @@ body {
 }
 .information-car-connected {
   background-color: #f2f2f2;
-  width: 1400px;
+  width: 1800px;
   height: 30vh;
   display: grid;
   padding: 20px;
@@ -56,7 +56,7 @@ body {
   gap: 10px;
 }
 .form-connected {
-  width: 1400px;
+  width: 1800px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(2, 1fr);

@@ -1,0 +1,38 @@
+.documentation-container {
+  padding-top: 100px;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.documentation-container .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.documentation-container .ant-steps-item-description {
+  font-size: 14px;
+}
+
+.documentation-container pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.documentation-container code {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.documentation-container ul,
+.documentation-container ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.documentation-container li {
+  margin: 4px 0;
+}
+

@@ -3,6 +3,7 @@ import Detail from "../pages/Detail/Detail";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import VehicleByType from "../pages/VehicleByType/VehicleByType";
 import Vehicles from "../pages/Vehicles/Vehicles";
+import Documentation from "../pages/Documentation/Documentation";
 
 export const routes = [
   {
@@ -28,6 +29,11 @@ export const routes = [
   {
     path: "/vehicle-type/:name",
     page: VehicleByType,
+    isShowHeader: true,
+  },
+  {
+    path: "/documentation",
+    page: Documentation,
     isShowHeader: true,
   },
   // {

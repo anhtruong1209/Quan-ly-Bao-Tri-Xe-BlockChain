@@ -14,7 +14,8 @@ import {
   Alert,
   Badge,
   Tooltip,
-  Popover
+  Popover,
+  message
 } from "antd";
 import {
   CarOutlined,
@@ -29,6 +30,9 @@ import {
   ClockCircleOutlined,
   SyncOutlined,
   SafetyOutlined,
+  CopyOutlined,
+  LinkOutlined,
+  FundOutlined,
 } from "@ant-design/icons";
 import * as VehicleServices from "../../services/VehicleService.js";
 import * as RecordsService from "../../services/RecordsService.js";
@@ -52,6 +56,7 @@ const Home = (props) => {
   });
   const [recentVehicles, setRecentVehicles] = useState([]);
   const [recentRecords, setRecentRecords] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -62,7 +67,7 @@ const Home = (props) => {
       if (vehiclesRes?.status === "OK") {
         const vehicles = vehiclesRes.data || [];
         setStats((prev) => ({ ...prev, totalVehicles: vehiclesRes.total || vehicles.length }));
-        setRecentVehicles(vehicles.slice(0, 10));
+        setRecentVehicles(vehicles.slice(0, 100));
       }
       const allRecords = await RecordsService.listServiceRecords();
       if (allRecords?.status === "OK") {
@@ -72,7 +77,11 @@ const Home = (props) => {
           : statusFilter === "verified" 
             ? records.filter(r => r.anchored)
             : records.filter(r => !r.anchored);
-        setRecentRecords(filtered.slice(0, 10));
+        setRecentRecords(filtered.slice(0, 100));
+        
+        // Lấy tất cả records có txHash để hiển thị trong bảng Transaction
+        const transactions = records.filter(r => r.txHash).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setAllTransactions(transactions);
         
         setStats((prev) => ({
           ...prev,
@@ -150,11 +159,15 @@ const Home = (props) => {
         <Space>
           <Button
             size="small"
-            type="primary"
+            style={{ 
+              backgroundColor: "#1890ff", 
+              borderColor: "#1890ff",
+              color: "#fff"
+            }}
             icon={<EyeOutlined />}
             onClick={() => navigate(`/detail/${record.plates}`)}
           >
-            Xem chi tiết
+            Chi tiết
           </Button>
         </Space>
       ),
@@ -202,7 +215,7 @@ const Home = (props) => {
     {
       title: "Trạng thái",
       key: "status",
-      width: 200,
+      width: 120,
       render: (_, record) => {
         const statusInfo = getStatusInfo(record);
         return (
@@ -212,8 +225,23 @@ const Home = (props) => {
                 <p style={{ margin: 0, marginBottom: 8 }}><strong>{statusInfo.text}</strong></p>
                 <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>{statusInfo.description}</p>
                 {record.txHash && (
-                  <div style={{ marginTop: 8, fontSize: "11px", fontFamily: "monospace", wordBreak: "break-all" }}>
-                    TX: {record.txHash.slice(0, 20)}...
+                  <div style={{ marginTop: 12, padding: "12px", backgroundColor: "#e6f7ff", borderRadius: 6, border: "1px solid #91d5ff" }}>
+                    <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 8, color: "#666", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span>Transaction Hash:</span>
+                      <Button 
+                        type="text" 
+                        size="small" 
+                        icon={<CopyOutlined />} 
+                        onClick={() => {
+                          navigator.clipboard.writeText(record.txHash);
+                          message.success("Đã sao chép transaction hash!");
+                        }}
+                        style={{ padding: "0 8px", height: "24px" }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                    <code style={{ fontSize: 14, fontFamily: "monospace", color: "#1890ff", fontWeight: 600, wordBreak: "break-all", display: "block" }}>{record.txHash}</code>
                   </div>
                 )}
               </div>
@@ -238,6 +266,11 @@ const Home = (props) => {
       render: (_, record) => (
         <Button
           size="small"
+          style={{ 
+            backgroundColor: "#1890ff", 
+            borderColor: "#1890ff",
+            color: "#fff"
+          }}
           icon={<EyeOutlined />}
           onClick={() => navigate(`/detail/${record.vehicleKey}`)}
         >
@@ -279,7 +312,7 @@ const Home = (props) => {
   return (
     <Loading isLoading={loading}>
       <div style={{ paddingTop: "100px", minHeight: "100vh", background: "#f0f2f5" }}>
-        <div className="container" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
+        <div className="container" style={{ maxWidth: "1800px", margin: "0 auto", padding: "24px" }}>
           <Row justify="space-between" align="middle" style={{ marginBottom: "24px" }}>
             <Col>
               <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>
@@ -292,9 +325,37 @@ const Home = (props) => {
             <Col>
               <Space>
                 <Popover content={guideContent} title="Hướng dẫn" trigger="click">
-                  <Button icon={<QuestionCircleOutlined />}>Hướng dẫn</Button>
+                  <Button 
+                    style={{ 
+                      backgroundColor: "#f0f0f0", 
+                      borderColor: "#d9d9d9",
+                      color: "#595959"
+                    }}
+                    icon={<QuestionCircleOutlined />}
+                  >
+                    Hướng dẫn nhanh
+                  </Button>
                 </Popover>
-                <Button icon={<ReloadOutlined />} onClick={fetchDashboardData}>
+                <Button 
+                  style={{ 
+                    backgroundColor: "#1890ff", 
+                    borderColor: "#1890ff",
+                    color: "#fff"
+                  }}
+                  icon={<FileTextOutlined />} 
+                  onClick={() => navigate("/documentation")}
+                >
+                  Xem tài liệu đầy đủ
+                </Button>
+                <Button 
+                  style={{ 
+                    backgroundColor: "#f0f0f0", 
+                    borderColor: "#d9d9d9",
+                    color: "#595959"
+                  }}
+                  icon={<ReloadOutlined />} 
+                  onClick={fetchDashboardData}
+                >
                   Làm mới
                 </Button>
               </Space>
@@ -345,8 +406,8 @@ const Home = (props) => {
             </Col>
           </Row>
 
-          <Row gutter={[16, 16]}>
-            <Col xs={24} lg={16}>
+          <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
+            <Col xs={24} lg={12}>
               <Card
                 title={
                   <Space>
@@ -360,7 +421,7 @@ const Home = (props) => {
                     <Search
                       placeholder="Tìm xe..."
                       allowClear
-                      style={{ width: 200 }}
+                      style={{ width: 180 }}
                       onSearch={(value) => {
                         setSearchText(value);
                         if (value) {
@@ -375,7 +436,15 @@ const Home = (props) => {
                         }
                       }}
                     />
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate("/vehicles")}>
+                    <Button 
+                      style={{ 
+                        backgroundColor: "#1890ff", 
+                        borderColor: "#1890ff",
+                        color: "#fff"
+                      }}
+                      icon={<PlusOutlined />} 
+                      onClick={() => navigate("/vehicles")}
+                    >
                       Xem tất cả
                     </Button>
                   </Space>
@@ -390,7 +459,7 @@ const Home = (props) => {
                 />
               </Card>
             </Col>
-            <Col xs={24} lg={8}>
+            <Col xs={24} lg={12}>
               <Card
                 title={
                   <Space>
@@ -419,6 +488,145 @@ const Home = (props) => {
                   pagination={false}
                   size="small"
                   scroll={{ y: 400 }}
+                />
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Bảng Transaction mới */}
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Card
+                title={
+                  <Space>
+                    <FundOutlined />
+                    <span>Quản Lý Transactions</span>
+                    <Badge count={allTransactions.length} showZero style={{ backgroundColor: "#722ed1" }} />
+                  </Space>
+                }
+                extra={
+                  <Button 
+                    style={{ 
+                      backgroundColor: "#f0f0f0", 
+                      borderColor: "#d9d9d9",
+                      color: "#595959"
+                    }}
+                    icon={<ReloadOutlined />} 
+                    onClick={fetchDashboardData}
+                  >
+                    Làm mới
+                  </Button>
+                }
+              >
+                <Table
+                  columns={[
+                    {
+                      title: "Ngày",
+                      dataIndex: "createdAt",
+                      key: "createdAt",
+                      width: 120,
+                      render: (text) => (
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{new Date(text).toLocaleDateString("vi-VN")}</div>
+                          <div style={{ fontSize: "11px", color: "#999" }}>
+                            {new Date(text).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
+                          </div>
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "Biển số",
+                      dataIndex: "vehicleKey",
+                      key: "vehicleKey",
+                      width: 120,
+                    },
+                    {
+                      title: "Công việc",
+                      dataIndex: ["content", "job"],
+                      key: "job",
+                      ellipsis: true,
+                    },
+                    {
+                      title: "Transaction Hash",
+                      dataIndex: "txHash",
+                      key: "txHash",
+                      width: 500,
+                      render: (text) => (
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <code style={{ 
+                            fontSize: "12px", 
+                            fontFamily: "monospace", 
+                            color: "#1890ff",
+                            fontWeight: 600,
+                            backgroundColor: "#e6f7ff",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            maxWidth: "500px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                          }}>
+                            {text ? `${text}` : "N/A"}
+                          </code>
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "Trạng thái",
+                      key: "status",
+                      width: 120,
+                      render: (_, record) => (
+                        <Tag 
+                          color={record.anchored ? "green" : "orange"} 
+                          icon={record.anchored ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+                        >
+                          {record.anchored ? "Đã xác thực" : "Chưa xác thực"}
+                        </Tag>
+                      ),
+                    },
+                    {
+                      title: "Hành động",
+                      key: "action",
+                      width: 150,
+                      render: (_, record) => (
+                        <Space>
+                          <Button
+                            size="small"
+                            style={{ 
+                              backgroundColor: "#722ed1", 
+                              borderColor: "#722ed1",
+                              color: "#fff"
+                            }}
+                            icon={<LinkOutlined />}
+                            onClick={() => {
+                              window.open(`https://sepolia.etherscan.io/tx/${record.txHash}`, '_blank');
+                            }}
+                          >
+                            Etherscan
+                          </Button>
+                          <Button
+                            size="small"
+                            style={{ 
+                              backgroundColor: "#f0f0f0", 
+                              borderColor: "#d9d9d9",
+                              color: "#595959"
+                            }}
+                            icon={<CopyOutlined />}
+                            onClick={() => {
+                              navigator.clipboard.writeText(record.txHash);
+                              message.success("Đã sao chép transaction hash!");
+                            }}
+                          >
+                            Copy
+                          </Button>
+                        </Space>
+                      ),
+                    },
+                  ]}
+                  dataSource={allTransactions}
+                  rowKey="_id"
+                  pagination={{ pageSize: 10 }}
+                  size="small"
+                  scroll={{ x: "max-content" }}
                 />
               </Card>
             </Col>
