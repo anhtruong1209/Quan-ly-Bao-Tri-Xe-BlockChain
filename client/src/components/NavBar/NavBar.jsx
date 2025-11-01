@@ -12,7 +12,9 @@ import {
   EditOutlined,
   HistoryOutlined,
   SearchOutlined,
+  CarOutlined,
 } from "@ant-design/icons";
+import { FaTruck } from "react-icons/fa";
 import { Badge, Button, Popover } from "antd";
 import { resetUser } from "../../redux/slides/userSlide";
 import ResponsiveMenu from "./ResponsiveMenu";
@@ -102,9 +104,41 @@ const Navbar = () => {
         zIndex: "10000",
       }}
     >
-      <div className="container py-2 md:py-0">
+      <div className="container py-2 md:py-0" style={{ maxWidth: "1380px", margin: "0 auto" }}>
         <div className="flex justify-between items-center">
-          <img src={Logo} style={{ width: "70px" }} alt="" />
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center",
+              width: "50px",
+              height: "50px",
+              backgroundColor: "#f9a826",
+              borderRadius: "12px",
+              marginRight: "8px"
+            }}>
+              <FaTruck style={{ fontSize: "28px", color: "#000d6b" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <h4 style={{ 
+                margin: 0, 
+                color: "#fff", 
+                fontSize: "18px", 
+                fontWeight: "bold",
+                lineHeight: "1.2"
+              }}>
+                Hệ Thống Quản Lý Bảo Trì
+              </h4>
+              <p style={{ 
+                margin: 0, 
+                color: "rgba(255, 255, 255, 0.8)", 
+                fontSize: "12px",
+                lineHeight: "1.2"
+              }}>
+                Xe Vận Tải
+              </p>
+            </div>
+          </div>
           <div className="block md:hidden">
             {showMenu ? (
               <HiMenuAlt1

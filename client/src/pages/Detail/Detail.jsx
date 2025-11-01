@@ -286,7 +286,15 @@ const Detail = () => {
                   }
                   extra={
                     <Button
-                      type="primary"
+                      size="large"
+                      style={{ 
+                        backgroundColor: "#1890ff", 
+                        borderColor: "#1890ff",
+                        color: "#fff",
+                        fontWeight: 600,
+                        height: "40px",
+                        padding: "0 24px"
+                      }}
                       icon={<ToolOutlined />}
                       onClick={() => setFormVisible(true)}
                       disabled={!car?._id}
@@ -361,8 +369,39 @@ const Detail = () => {
                       />
                     </div>
                   ) : (
-                    <div style={{ textAlign: "center", padding: "20px", color: "#999" }}>
-                      Chưa có lịch sử bảo trì. Hãy ghi bản bảo trì đầu tiên!
+                    <div style={{ textAlign: "center", padding: "40px 20px" }}>
+                      <div style={{ marginBottom: "20px" }}>
+                        <ToolOutlined style={{ fontSize: "48px", color: "#d9d9d9", marginBottom: "16px" }} />
+                        <p style={{ fontSize: "16px", color: "#666", marginBottom: "8px", fontWeight: 500 }}>
+                          Chưa có lịch sử bảo trì
+                        </p>
+                        <p style={{ fontSize: "14px", color: "#999", marginBottom: "24px" }}>
+                          Hãy ghi bản bảo trì đầu tiên cho xe này
+                        </p>
+                      </div>
+                      <Button
+                        type="primary"
+                        size="large"
+                        style={{ 
+                          backgroundColor: "#1890ff", 
+                          borderColor: "#1890ff",
+                          color: "#fff",
+                          fontWeight: 600,
+                          height: "48px",
+                          padding: "0 32px",
+                          fontSize: "16px"
+                        }}
+                        icon={<ToolOutlined />}
+                        onClick={() => setFormVisible(true)}
+                        disabled={!car?._id}
+                      >
+                        Ghi Bảo Trì Mới
+                      </Button>
+                      {!car?._id && (
+                        <p style={{ fontSize: "12px", color: "#ff4d4f", marginTop: "12px" }}>
+                          Đang tải thông tin xe...
+                        </p>
+                      )}
                     </div>
                   )}
                 </Card>

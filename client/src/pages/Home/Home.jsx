@@ -150,7 +150,12 @@ const Home = (props) => {
       title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
-      ellipsis: true,
+      width: 180,
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+        </Tooltip>
+      ),
     },
     {
       title: "Hành động",
@@ -179,11 +184,11 @@ const Home = (props) => {
       title: "Ngày",
       dataIndex: "createdAt",
       key: "createdAt",
-      width: 100,
+      width: 60,
       render: (text) => (
         <div>
-          <div style={{ fontWeight: 600 }}>{new Date(text).toLocaleDateString("vi-VN")}</div>
-          <div style={{ fontSize: "11px", color: "#999" }}>{new Date(text).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</div>
+          <div style={{ fontWeight: 600, fontSize: "11px" }}>{new Date(text).toLocaleDateString("vi-VN")}</div>
+          <div style={{ fontSize: "10px", color: "#999" }}>{new Date(text).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</div>
         </div>
       ),
     },
@@ -197,25 +202,35 @@ const Home = (props) => {
       title: "Công việc",
       dataIndex: ["content", "job"],
       key: "job",
-      ellipsis: true,
+      width: 80,
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+        </Tooltip>
+      ),
     },
     {
       title: "Garage",
       dataIndex: ["content", "garage"],
       key: "garage",
-      width: 120,
+      width: 80,
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+        </Tooltip>
+      ),
     },
     {
       title: "Odo (km)",
       dataIndex: ["content", "odo"],
       key: "odo",
-      width: 100,
+      width: 80,
       render: (text) => text ? text.toLocaleString() : "N/A",
     },
     {
       title: "Trạng thái",
       key: "status",
-      width: 120,
+      width: 100,
       render: (_, record) => {
         const statusInfo = getStatusInfo(record);
         return (
@@ -226,7 +241,7 @@ const Home = (props) => {
                 <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>{statusInfo.description}</p>
                 {record.txHash && (
                   <div style={{ marginTop: 12, padding: "12px", backgroundColor: "#e6f7ff", borderRadius: 6, border: "1px solid #91d5ff" }}>
-                    <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 8, color: "#666", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontSize: 10, fontWeight: 500, marginBottom: 8, color: "#666", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span>Transaction Hash:</span>
                       <Button 
                         type="text" 
@@ -251,7 +266,7 @@ const Home = (props) => {
             <Tag 
               color={statusInfo.color === "success" ? "green" : "orange"} 
               icon={statusInfo.icon}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", fontSize: "10px" }}
             >
               {statusInfo.color === "success" ? "Đã xác thực" : "Chưa xác thực"}
             </Tag>
@@ -262,14 +277,15 @@ const Home = (props) => {
     {
       title: "Hành động",
       key: "action",
-      width: 100,
+      width: 80,
       render: (_, record) => (
         <Button
           size="small"
           style={{ 
             backgroundColor: "#1890ff", 
             borderColor: "#1890ff",
-            color: "#fff"
+            color: "#fff",
+            fontSize: "10px"
           }}
           icon={<EyeOutlined />}
           onClick={() => navigate(`/detail/${record.vehicleKey}`)}
@@ -312,7 +328,7 @@ const Home = (props) => {
   return (
     <Loading isLoading={loading}>
       <div style={{ paddingTop: "100px", minHeight: "100vh", background: "#f0f2f5" }}>
-        <div className="container" style={{ maxWidth: "1800px", margin: "0 auto", padding: "24px" }}>
+        <div className="container" style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
           <Row justify="space-between" align="middle" style={{ marginBottom: "24px" }}>
             <Col>
               <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>
@@ -456,6 +472,7 @@ const Home = (props) => {
                   rowKey="_id"
                   pagination={{ pageSize: 5 }}
                   size="small"
+                  scroll={{ x: "max-content" }}
                 />
               </Card>
             </Col>
@@ -487,7 +504,7 @@ const Home = (props) => {
                   rowKey="_id"
                   pagination={false}
                   size="small"
-                  scroll={{ y: 400 }}
+                  scroll={{ x: "max-content", y: 400 }}
                 />
               </Card>
             </Col>
@@ -544,7 +561,12 @@ const Home = (props) => {
                       title: "Công việc",
                       dataIndex: ["content", "job"],
                       key: "job",
-                      ellipsis: true,
+                      width: 180,
+                      render: (text) => (
+                        <Tooltip title={text} placement="topLeft">
+                          <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+                        </Tooltip>
+                      ),
                     },
                     {
                       title: "Transaction Hash",
