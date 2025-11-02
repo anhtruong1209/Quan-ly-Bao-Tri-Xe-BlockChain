@@ -113,7 +113,27 @@ async function rejectTransaction(transactionId) {
 async function anchorTransaction(propertyCode, contentHashHex) {
   const c = getContract();
   const propertyId = toBytes32Hex(propertyCode);
-  const contentHash = contentHashHex || ethers.ZeroHash;
+  
+  // Format contentHash đúng bytes32 với prefix "0x"
+  let contentHash;
+  if (!contentHashHex) {
+    contentHash = ethers.ZeroHash;
+  } else if (typeof contentHashHex === 'string') {
+    // Nếu không có prefix "0x", thêm vào và đảm bảo đúng độ dài bytes32 (66 ký tự với 0x)
+    if (!contentHashHex.startsWith('0x')) {
+      contentHashHex = '0x' + contentHashHex;
+    }
+    // Đảm bảo đúng độ dài bytes32 (66 ký tự: 0x + 64 hex chars)
+    if (contentHashHex.length !== 66) {
+      // Nếu ngắn hơn, pad với 0 ở đầu
+      const hexPart = contentHashHex.slice(2);
+      contentHashHex = '0x' + hexPart.padStart(64, '0').slice(-64);
+    }
+    contentHash = contentHashHex;
+  } else {
+    contentHash = ethers.ZeroHash;
+  }
+  
   const tx = await c.anchorTransaction(propertyId, contentHash);
   const receipt = await tx.wait();
   return { txHash: receipt.hash, blockNumber: receipt.blockNumber };

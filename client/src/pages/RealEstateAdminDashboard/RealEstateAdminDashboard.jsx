@@ -24,6 +24,7 @@ import {
   DashboardOutlined,
   HomeOutlined,
   FileTextOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import * as TransactionService from "../../services/TransactionService";
 import * as RealEstateService from "../../services/RealEstateService";
@@ -418,7 +419,7 @@ const RealEstateAdminDashboard = () => {
       {/* Modal chi tiết giao dịch */}
       <Modal
         title="Chi tiết giao dịch"
-        visible={detailModalVisible}
+        open={detailModalVisible}
         onCancel={() => {
           setDetailModalVisible(false);
           setSelectedTransaction(null);
@@ -475,7 +476,7 @@ const RealEstateAdminDashboard = () => {
       {/* Modal duyệt giao dịch */}
       <Modal
         title="Duyệt giao dịch"
-        visible={approveModalVisible}
+        open={approveModalVisible}
         onCancel={() => {
           setApproveModalVisible(false);
           approveForm.resetFields();

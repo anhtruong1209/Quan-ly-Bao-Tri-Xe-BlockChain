@@ -233,7 +233,7 @@ function App() {
                   const isAdmin = getIsAdmin();
                   if (!isAdmin) {
                     // Nếu yêu cầu admin nhưng không phải admin -> redirect về dashboard của user
-                    element = <Navigate to="/user/dashboard" replace />;
+                    element = <Navigate to="/realestate/dashboard" replace />;
                   }
                 }
               }

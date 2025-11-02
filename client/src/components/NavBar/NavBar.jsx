@@ -14,7 +14,7 @@ import {
   SearchOutlined,
   CarOutlined,
 } from "@ant-design/icons";
-import { FaTruck } from "react-icons/fa";
+import { FaTruck, FaBuilding } from "react-icons/fa";
 import { Badge, Button, Popover } from "antd";
 import { resetUser } from "../../redux/slides/userSlide";
 import ResponsiveMenu from "./ResponsiveMenu";
@@ -35,15 +35,15 @@ import { BsTelephoneInbound } from "react-icons/bs";
 import "./NavBar.css";
 // Nav links chỉ hiển thị cho admin
 const getNavLinks = (isAdmin) => {
-  if (!isAdmin) return []; // User không thấy "Trang chủ" và "Danh sách xe"
+  if (!isAdmin) return []; // User không thấy "Trang chủ" và "Danh sách bất động sản"
   return [
     {
-      path: "/home",
+      path: "/realestate/dashboard",
       display: "Trang chủ",
     },
     {
-      path: "/vehicles",
-      display: "Danh sách xe",
+      path: "/realestate/admin/dashboard",
+      display: "Quản lý giao dịch",
     },
   ];
 };
@@ -92,7 +92,7 @@ const Navbar = () => {
     <div>
       {user?.isAdmin && (
         <WrapperContentPopup onClick={() => {
-          navigate("/home");
+          navigate("/realestate/admin/dashboard");
           setIsOpenPopup(false);
         }}>
           Trang quản trị
@@ -100,9 +100,10 @@ const Navbar = () => {
       )}
       {!user?.isAdmin && (
         <WrapperContentPopup onClick={() => {
-          navigate("/user/dashboard");
+          navigate("/realestate/dashboard");
           setIsOpenPopup(false);
         }}>
+          Trang của tôi
         </WrapperContentPopup>
       )}
       <WrapperContentPopup onClick={handleLogout}>
@@ -142,7 +143,7 @@ const Navbar = () => {
               borderRadius: "12px",
               marginRight: "8px"
             }}>
-              <FaTruck style={{ fontSize: "28px", color: "#000d6b" }} />
+              <FaBuilding style={{ fontSize: "28px", color: "#000d6b" }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <h4 style={{ 
@@ -152,7 +153,7 @@ const Navbar = () => {
                 fontWeight: "bold",
                 lineHeight: "1.2"
               }}>
-                Hệ Thống Quản Lý Bảo Trì
+                Hệ Thống Quản Lý Giao Dịch
               </h4>
               <p style={{ 
                 margin: 0, 
@@ -160,7 +161,7 @@ const Navbar = () => {
                 fontSize: "12px",
                 lineHeight: "1.2"
               }}>
-                Xe Vận Tải
+                Bất Động Sản
               </p>
             </div>
           </div>
