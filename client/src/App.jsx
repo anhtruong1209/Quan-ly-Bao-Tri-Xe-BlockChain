@@ -46,19 +46,121 @@ function App() {
     return { decoded, storageData };
   };
 
-  // Bỏ refresh token interceptor - chỉ giữ interceptor đơn giản
+  // Interceptor để tự động refresh token khi hết hạn
+  let isRefreshing = false;
+  let failedQueue = [];
+
+  const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+      if (error) {
+        prom.reject(error);
+      } else {
+        prom.resolve(token);
+      }
+    });
+    failedQueue = [];
+  };
+
   UserService.axiosJWT.interceptors.request.use(
     async (config) => {
-      // Chỉ thêm token vào header, không refresh
       const token = localStorage.getItem("access_token");
       if (token && isJsonString(token)) {
         const parsedToken = JSON.parse(token);
-        config.headers["Authorization"] = `Bearer ${parsedToken}`;
+        
+        // Kiểm tra xem token có sắp hết hạn không (còn < 1 ngày)
+        try {
+          const decoded = jwtDecode(parsedToken);
+          const currentTime = Date.now() / 1000;
+          const timeUntilExpiry = decoded.exp - currentTime;
+          const oneDay = 24 * 60 * 60; // 1 ngày tính bằng giây
+          
+          // Nếu token còn hơn 1 ngày thì không cần refresh
+          // Chỉ refresh khi còn < 1 ngày để tránh refresh liên tục
+          if (timeUntilExpiry < oneDay && timeUntilExpiry > 0) {
+            // Token vẫn còn hiệu lực nhưng sắp hết, có thể refresh (tùy chọn)
+            // Hiện tại chỉ dùng token hiện tại
+          }
+          
+          config.headers["Authorization"] = `Bearer ${parsedToken}`;
+        } catch (e) {
+          console.error("Error decoding token:", e);
+          config.headers["Authorization"] = `Bearer ${parsedToken}`;
+        }
       }
       return config;
     },
     (err) => {
       return Promise.reject(err);
+    }
+  );
+
+  // Interceptor để xử lý lỗi 401 và tự động refresh token
+  UserService.axiosJWT.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      // Nếu lỗi 401 và chưa retry
+      if (error?.response?.status === 401 && !originalRequest._retry) {
+        if (isRefreshing) {
+          // Nếu đang refresh, đợi
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          }).then(token => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return UserService.axiosJWT(originalRequest);
+          }).catch(err => {
+            return Promise.reject(err);
+          });
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          let refresh_token = localStorage.getItem("refresh_token");
+          if (!refresh_token) {
+            throw new Error("No refresh token");
+          }
+
+          // Xử lý nếu refresh_token là JSON string
+          if (isJsonString(refresh_token)) {
+            refresh_token = JSON.parse(refresh_token);
+          }
+
+          const res = await UserService.refreshToken(refresh_token);
+          
+          if (res?.status === "OK" && res?.access_token) {
+            const newToken = res.access_token;
+            localStorage.setItem("access_token", JSON.stringify(newToken));
+            
+            // Update Redux store
+            const decoded = jwtDecode(newToken);
+            if (decoded?.id) {
+              await handleGetDetailsUser(decoded.id, newToken);
+            }
+            
+            processQueue(null, newToken);
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            return UserService.axiosJWT(originalRequest);
+          } else {
+            throw new Error("Failed to refresh token");
+          }
+        } catch (refreshError) {
+          processQueue(refreshError, null);
+          // Refresh token cũng hết hạn -> logout
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("isAdmin");
+          dispatch(resetUser());
+          window.location.href = "/sign-in";
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
+      }
+
+      return Promise.reject(error);
     }
   );
 

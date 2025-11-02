@@ -11,7 +11,7 @@ const genneralAccessToken = async (payload) => {
       ...payload,
     },
     ACCESS_TOKEN_SECRET,
-    { expiresIn: "30s" }
+    { expiresIn: "30d" } // Tăng lên 30 ngày thay vì 30 giây
   );
 
   return access_token;
