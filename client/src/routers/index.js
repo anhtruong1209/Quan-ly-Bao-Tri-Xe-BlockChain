@@ -1,50 +1,15 @@
-import Home from "../pages/Home/Home";
-import Detail from "../pages/Detail/Detail";
+import SignIn from "../pages/SignIn/SignInRealEstate";
+import SignUp from "../pages/SignUp/SignUpRealEstate";
+import RealEstateDashboard from "../pages/RealEstateDashboard/RealEstateDashboard";
+import RealEstateAdminDashboard from "../pages/RealEstateAdminDashboard/RealEstateAdminDashboard";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
-import VehicleByType from "../pages/VehicleByType/VehicleByType";
-import Vehicles from "../pages/Vehicles/Vehicles";
-import Documentation from "../pages/Documentation/Documentation";
-import SignIn from "../pages/SignIn/SignIn";
-import SignUp from "../pages/SignUp/SignUp";
-import UserDashboard from "../pages/UserDashboard/UserDashboard";
-import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 
 export const routes = [
   {
     path: "/",
-    page: Home,
+    page: RealEstateDashboard,
     isShowHeader: true,
     requireAuth: true,
-    requireAdmin: true, // Chỉ admin mới xem được home
-  },
-  {
-    path: "/vehicles",
-    page: Vehicles,
-    isShowHeader: true,
-    requireAuth: true,
-    requireAdmin: true, // Chỉ admin mới xem được vehicles list
-  },
-  {
-    path: "/home",
-    page: Home,
-    isShowHeader: true,
-    requireAuth: true,
-    requireAdmin: true, // Chỉ admin mới xem được home
-  },
-  {
-    path: "/detail/:plate",
-    page: Detail,
-    isShowHeader: true,
-  },
-  {
-    path: "/vehicle-type/:name",
-    page: VehicleByType,
-    isShowHeader: true,
-  },
-  {
-    path: "/documentation",
-    page: Documentation,
-    isShowHeader: true,
   },
   {
     path: "/sign-in",
@@ -57,14 +22,14 @@ export const routes = [
     isShowHeader: false,
   },
   {
-    path: "/user/dashboard",
-    page: UserDashboard,
+    path: "/realestate/dashboard",
+    page: RealEstateDashboard,
     isShowHeader: true,
     requireAuth: true,
   },
   {
-    path: "/admin/dashboard",
-    page: AdminDashboard,
+    path: "/realestate/admin/dashboard",
+    page: RealEstateAdminDashboard,
     isShowHeader: true,
     requireAuth: true,
     requireAdmin: true,

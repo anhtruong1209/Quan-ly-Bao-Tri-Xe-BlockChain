@@ -77,10 +77,11 @@ const SignInPage = (props) => {
 
   useEffect(() => {
     if (user?.id && user?.isAdmin !== undefined) {
+      // Redirect đến Real Estate Dashboard
       if (user.isAdmin) {
-        navigate("/home");
+        navigate("/realestate/admin/dashboard");
       } else {
-        navigate("/user/dashboard");
+        navigate("/realestate/dashboard");
       }
     }
   }, [user, navigate]);

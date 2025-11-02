@@ -9,17 +9,19 @@ const bodyParse = require("body-parser");
 const app = express();
 const port = 3001;
 
-// Hardcode MongoDB connection string
-const MONGO_DB = "mongodb+srv://admin:Admin%40123@warrantly-verhical.hsdx3um.mongodb.net/?appName=warrantly-verhical";
+const { VEHICLE_MONGO_URI, VEHICLE_DB_NAME } = require("./config/database");
 
 app.use(cors());
 app.use(bodyParse.json());
 routes(app);
 
+// Kết nối MongoDB cho Vehicle (cùng cluster, khác database)
 mongoose
-  .connect(MONGO_DB)
+  .connect(VEHICLE_MONGO_URI, {
+    dbName: VEHICLE_DB_NAME, // Chỉ định database name
+  })
   .then(() => {
-    console.log("✅ Connected to MongoDB successfully");
+    console.log(`✅ Connected to Vehicle MongoDB successfully (Database: ${VEHICLE_DB_NAME})`);
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);

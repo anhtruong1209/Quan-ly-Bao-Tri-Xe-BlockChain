@@ -1,0 +1,17 @@
+.realestate-admin-dashboard {
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.realestate-admin-dashboard .dashboard-header {
+  margin-bottom: 24px;
+}
+
+.realestate-admin-dashboard .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.realestate-admin-dashboard .ant-table {
+  background: #fff;
+}
+

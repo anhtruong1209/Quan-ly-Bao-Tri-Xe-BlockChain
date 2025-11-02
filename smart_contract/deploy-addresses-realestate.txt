@@ -1,0 +1,4 @@
+RealEstateRegistry address: 0x46C14891A1337732d9a4fa315fbC1615CCDeFE1f
+Deployed by: 0xbB2c9c2beaeD565aC4dB0d51C4eED1DB35FDA0d0
+Network: Sepolia Testnet
+Timestamp: 2025-11-02T08:13:27.744Z

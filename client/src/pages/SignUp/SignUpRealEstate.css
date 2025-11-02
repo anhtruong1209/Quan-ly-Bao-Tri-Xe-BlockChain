@@ -1,0 +1,393 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+.signup-realestate {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.signup-realestate::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  top: -300px;
+  left: -300px;
+  animation: float 20s infinite;
+}
+
+.signup-realestate::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  bottom: -250px;
+  right: -250px;
+  animation: float 25s infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(30px, 30px) rotate(180deg);
+  }
+}
+
+.signup-realestate-container {
+  width: 100%;
+  max-width: 1200px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Left Side */
+.signup-realestate-left {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  padding: 60px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.signup-realestate-left::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: move 20s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+.signup-realestate-left-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.signup-realestate-logo {
+  margin-bottom: 30px;
+}
+
+.signup-realestate-logo .logo-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.signup-realestate-logo h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.signup-realestate-slogan {
+  margin-bottom: 40px;
+}
+
+.signup-realestate-slogan h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 10px 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.signup-realestate-slogan p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+
+.signup-realestate-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  text-align: left;
+}
+
+.benefit-icon {
+  font-size: 32px;
+  min-width: 45px;
+}
+
+.benefit-item h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.benefit-item p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Right Side */
+.signup-realestate-right {
+  padding: 60px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.signup-realestate-form-wrapper {
+  width: 100%;
+  max-width: 450px;
+}
+
+.signup-realestate-form-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.form-header-icon {
+  font-size: 50px;
+  color: #f5576c;
+  margin-bottom: 15px;
+}
+
+.signup-realestate-form-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.signup-realestate-form-header p {
+  color: #718096;
+  font-size: 16px;
+}
+
+.signup-realestate-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.label-icon {
+  font-size: 16px;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #f7fafc;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #f5576c;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #718096;
+  font-size: 18px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+.password-toggle:hover {
+  color: #f5576c;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.signup-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+}
+
+.signup-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.signup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  font-size: 18px;
+}
+
+.error-message {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signup-divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+}
+
+.signup-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.signup-divider span {
+  background: white;
+  padding: 0 15px;
+  color: #a0aec0;
+  position: relative;
+}
+
+.signin-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.signin-link a {
+  color: #f5576c;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.signin-link a:hover {
+  color: #f093fb;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .signup-realestate-container {
+    grid-template-columns: 1fr;
+  }
+
+  .signup-realestate-left {
+    padding: 40px 30px;
+  }
+
+  .signup-realestate-logo .logo-icon {
+    font-size: 60px;
+  }
+
+  .signup-realestate-logo h1 {
+    font-size: 32px;
+  }
+
+  .signup-realestate-slogan h2 {
+    font-size: 24px;
+  }
+
+  .signup-realestate-right {
+    padding: 40px 30px;
+  }
+}
+
