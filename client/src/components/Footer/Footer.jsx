@@ -87,7 +87,7 @@ function Footer() {
                 }}>
                   <PhoneOutlined style={{ color: "#f9a826", fontSize: "18px" }} />
                 </div>
-                <Text style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "14px" }}>0832206397</Text>
+                <Text style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "14px" }}>123456789</Text>
               </div>
               <div style={{ 
                 display: "flex", 

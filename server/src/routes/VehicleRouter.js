@@ -9,6 +9,7 @@ router.put("/update/:id", authMiddleWare, VehicleController.updateVehicle);
 router.get("/get-details/:id", VehicleController.getDetailsVehicle);
 router.get("/get-details-plate/:plate", VehicleController.getDetailsVehiclePlate);
 router.get("/get-all", VehicleController.getAllVehicle);
+router.get("/user/vehicles", authMiddleWare, VehicleController.getUserVehicles); // Route mới cho user
 router.delete("/delete/:id", authMiddleWare, VehicleController.deleteVehicle);
 router.post("/delete-many", authMiddleWare, VehicleController.deleteMany);
 router.get("/get/:id", VehicleController.getDetailsVehicle);

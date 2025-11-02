@@ -18,13 +18,14 @@ export const getDetailsUser = async (id, access_token) => {
       `http://localhost:3001/api/user/get-details/${id}`,
       {
         headers: {
-          token: `Bearer ${access_token}`,
+          Authorization: `Bearer ${access_token}`,
         },
       }
     );
     return res.data;
   } catch (error) {
-    // console.log("Error get detail user: ", error);
+    console.error("Error get detail user: ", error);
+    throw error;
   }
 };
 
@@ -34,7 +35,7 @@ export const deleteUser = async (id, access_token, data) => {
     data,
     {
       headers: {
-        token: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     }
   );
@@ -44,7 +45,7 @@ export const deleteUser = async (id, access_token, data) => {
 export const getAllUser = async (access_token) => {
   const res = await axiosJWT.get(`http://localhost:3001/api/user/getAll`, {
     headers: {
-      token: `Bearer ${access_token}`,
+      Authorization: `Bearer ${access_token}`,
     },
   });
   return res.data;
@@ -64,7 +65,7 @@ export const refreshToken = async (refreshToken) => {
     {},
     {
       headers: {
-        token: `Bearer ${refreshToken}`,
+        Authorization: `Bearer ${refreshToken}`,
       },
     }
   );
@@ -82,7 +83,7 @@ export const updateUser = async (id, data, access_token) => {
     data,
     {
       headers: {
-        token: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     }
   );
@@ -95,7 +96,7 @@ export const deleteManyUser = async (data, access_token) => {
     data,
     {
       headers: {
-        token: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     }
   );

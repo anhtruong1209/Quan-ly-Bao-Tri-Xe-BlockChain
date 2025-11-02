@@ -7,24 +7,23 @@ const ResponsiveMenu = ({ showMenu }) => {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
-  const navLinks = [
-    {
-      path: "/home",
-      display: "Trang chủ",
-    },
-    {
-      path: "/findcar",
-      display: "Tìm xe ngay",
-    },
-    {
-      path: "/about",
-      display: "Chứng Nhận ",
-    },
-    // {
-    //   path: "/register",
-    //   display: "Đăng kí",
-    // },
-  ];
+  
+  // Nav links chỉ hiển thị cho admin
+  const getNavLinks = (isAdmin) => {
+    if (!isAdmin) return []; // User không thấy "Trang chủ"
+    return [
+      {
+        path: "/home",
+        display: "Trang chủ",
+      },
+      {
+        path: "/vehicles",
+        display: "Danh sách xe",
+      },
+    ];
+  };
+  
+  const navLinks = getNavLinks(user?.isAdmin);
   useEffect(() => {
     setUserName(user?.name);
   }, [user?.name, user?.avatar]);

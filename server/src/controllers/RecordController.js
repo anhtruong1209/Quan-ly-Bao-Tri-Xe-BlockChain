@@ -11,6 +11,7 @@ function hashObject(obj) {
 
 const createServiceRecord = async (req, res) => {
   try {
+    const userId = req.user?.id; // Từ middleware auth
     const { vehicleId, vehicleKey, content } = req.body;
     if (!vehicleId || !vehicleKey || !content) {
       return res.status(400).json({ status: "ERR", message: "Missing fields" });
@@ -18,20 +19,24 @@ const createServiceRecord = async (req, res) => {
     const vehicle = await Vehicle.findById(vehicleId);
     if (!vehicle) return res.status(404).json({ status: "ERR", message: "Vehicle not found" });
 
+    // Kiểm tra user có quyền sở hữu vehicle không (nếu có user)
+    if (userId && vehicle.email && vehicle.email !== req.user?.email) {
+      return res.status(403).json({ status: "ERR", message: "You don't own this vehicle" });
+    }
+
     const contentHash = hashObject(content);
+    // Tạo record với status pending - chờ admin duyệt
     const record = await ServiceRecord.create({
       vehicle: vehicle._id,
       vehicleKey,
+      user: userId || vehicle.user, // User tạo lệnh
       content,
       contentHash,
+      status: "pending", // Mặc định là pending, chờ admin duyệt
+      anchored: false,
     });
 
-    const bc = await Blockchain.anchorServiceRecord(vehicleKey, contentHash);
-    record.anchored = true;
-    record.txHash = bc.txHash;
-    record.blockNumber = bc.blockNumber;
-    await record.save();
-
+    // KHÔNG gọi blockchain ở đây - chỉ khi admin approve mới đưa lên blockchain
     return res.status(200).json({ status: "OK", data: record });
   } catch (e) {
     return res.status(500).json({ status: "ERR", message: e.message });
@@ -40,10 +45,118 @@ const createServiceRecord = async (req, res) => {
 
 const listServiceRecords = async (req, res) => {
   try {
-    const { vehicleId } = req.query;
-    const filter = vehicleId ? { vehicle: vehicleId } : {};
-    const items = await ServiceRecord.find(filter).sort({ createdAt: -1 });
+    const userId = req.user?.id;
+    const isAdmin = req.user?.isAdmin;
+    const { vehicleId, status } = req.query;
+    
+    let filter = {};
+    if (vehicleId) filter.vehicle = vehicleId;
+    if (status) filter.status = status;
+    
+    // User chỉ xem được records của mình, admin xem tất cả
+    if (!isAdmin && userId) {
+      filter.user = userId;
+    }
+    
+    const items = await ServiceRecord.find(filter)
+      .populate("vehicle")
+      .populate("user", "name email phone")
+      .populate("approver", "name email")
+      .sort({ createdAt: -1 });
     return res.status(200).json({ status: "OK", data: items });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
+// Lấy danh sách service records chờ duyệt (cho admin)
+const getPendingServiceRecords = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ status: "ERR", message: "Admin access required" });
+    }
+    
+    const items = await ServiceRecord.find({ status: "pending" })
+      .populate("vehicle")
+      .populate("user", "name email phone")
+      .sort({ createdAt: -1 });
+    return res.status(200).json({ status: "OK", data: items });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
+// Admin approve service record (chỉ duyệt, không đưa lên blockchain)
+const approveServiceRecord = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ status: "ERR", message: "Admin access required" });
+    }
+    
+    const { id } = req.params;
+    const { garage } = req.body; // Nhận garage từ body
+    
+    const record = await ServiceRecord.findById(id);
+    
+    if (!record) {
+      return res.status(404).json({ status: "ERR", message: "Service record not found" });
+    }
+    
+    if (record.status !== "pending") {
+      return res.status(400).json({ status: "ERR", message: "Record already processed" });
+    }
+    
+    // Chỉ duyệt, không đưa lên blockchain (blockchain sẽ được gọi khi xác thực)
+    record.status = "approved";
+    record.approved = true;
+    record.processed = true;
+    record.approver = req.user.id;
+    
+    // Cập nhật garage nếu có
+    if (garage) {
+      if (!record.content) record.content = {};
+      record.content.garage = garage;
+      // Cập nhật lại contentHash vì content đã thay đổi
+      const crypto = require("crypto");
+      const hashObject = (obj) => {
+        const json = JSON.stringify(obj);
+        return "0x" + crypto.createHash("sha256").update(json).digest("hex");
+      };
+      record.contentHash = hashObject(record.content);
+    }
+    
+    await record.save();
+    return res.status(200).json({ status: "OK", data: record });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
+// Admin reject service record
+const rejectServiceRecord = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ status: "ERR", message: "Admin access required" });
+    }
+    
+    const { id } = req.params;
+    const record = await ServiceRecord.findById(id);
+    
+    if (!record) {
+      return res.status(404).json({ status: "ERR", message: "Service record not found" });
+    }
+    
+    if (record.status !== "pending") {
+      return res.status(400).json({ status: "ERR", message: "Record already processed" });
+    }
+    
+    record.status = "rejected";
+    record.approved = false;
+    record.processed = true;
+    record.approver = req.user.id;
+    await record.save();
+    
+    return res.status(200).json({ status: "OK", data: record });
   } catch (e) {
     return res.status(500).json({ status: "ERR", message: e.message });
   }
@@ -132,14 +245,33 @@ const acceptServiceRecord = async (req, res) => {
       return res.status(400).json({ status: "ERR", message: "Record already anchored" });
     }
 
-    // Anchor lên blockchain
-    const bc = await Blockchain.anchorServiceRecord(record.vehicleKey, record.contentHash);
-    record.anchored = true;
-    record.txHash = bc.txHash;
-    record.blockNumber = bc.blockNumber;
-    await record.save();
+    // Chỉ accept nếu record đã được approve hoặc đang ở trạng thái approved/anchored nhưng chưa anchored
+    if (record.status === "pending") {
+      return res.status(400).json({ status: "ERR", message: "Record must be approved before anchoring" });
+    }
 
-    return res.status(200).json({ status: "OK", data: record });
+    // Anchor lên blockchain
+    try {
+      const bc = await Blockchain.anchorServiceRecord(record.vehicleKey, record.contentHash);
+      record.anchored = true;
+      record.status = "anchored";
+      record.txHash = bc.txHash;
+      record.blockNumber = bc.blockNumber;
+      await record.save();
+      return res.status(200).json({ status: "OK", data: record });
+    } catch (blockchainError) {
+      console.error("Blockchain error:", blockchainError);
+      
+      // Kiểm tra nếu lỗi là "not garage"
+      if (blockchainError.reason === "not garage" || blockchainError.message?.includes("not garage")) {
+        return res.status(500).json({ 
+          status: "ERR", 
+          message: `Blockchain error: Wallet không có quyền garage. Vui lòng chạy script setGarageRole để cấp quyền cho wallet. Chi tiết: ${blockchainError.message}` 
+        });
+      }
+      
+      return res.status(500).json({ status: "ERR", message: `Blockchain error: ${blockchainError.message}` });
+    }
   } catch (e) {
     return res.status(500).json({ status: "ERR", message: e.message });
   }
@@ -148,6 +280,9 @@ const acceptServiceRecord = async (req, res) => {
 module.exports = {
   createServiceRecord,
   listServiceRecords,
+  getPendingServiceRecords,
+  approveServiceRecord,
+  rejectServiceRecord,
   createWarrantyClaim,
   resolveWarrantyClaim,
   listWarrantyClaims,

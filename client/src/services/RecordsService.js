@@ -1,24 +1,168 @@
-import axios from "axios";
+import { axiosJWT } from "./UserService";
+import { isJsonString } from "../utils";
 
-export const listServiceRecords = async (vehicleId) => {
-  const params = vehicleId ? { vehicleId } : {};
-  const res = await axios.get(`http://localhost:3001/api/records/service`, { params });
-  return res.data;
+const getToken = () => {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+  try {
+    // Kiểm tra xem token có phải là JSON string không
+    if (isJsonString(token)) {
+      return JSON.parse(token);
+    }
+    return token;
+  } catch (error) {
+    console.error("Error parsing token:", error);
+    return null;
+  }
+};
+
+export const listServiceRecords = async (vehicleId, status) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const params = {};
+    if (vehicleId) params.vehicleId = vehicleId;
+    if (status) params.status = status;
+    const res = await axiosJWT.get(`http://localhost:3001/api/records/service`, {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error listing service records:", error);
+    throw error;
+  }
 };
 
 export const createServiceRecord = async (payload) => {
-  const res = await axios.post(`http://localhost:3001/api/records/service`, payload);
-  return res.data;
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.post(`http://localhost:3001/api/records/service`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error creating service record:", error);
+    // Nếu lỗi token, có thể token đã hết hạn
+    if (error?.response?.data?.message?.includes("token") || error?.response?.status === 401) {
+      throw new Error("Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
 };
 
 export const deleteServiceRecord = async (recordId) => {
-  const res = await axios.delete(`http://localhost:3001/api/records/service/${recordId}`);
-  return res.data;
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.delete(`http://localhost:3001/api/records/service/${recordId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting service record:", error);
+    throw error;
+  }
 };
 
 export const acceptServiceRecord = async (recordId) => {
-  const res = await axios.post(`http://localhost:3001/api/records/service/${recordId}/accept`);
-  return res.data;
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.post(
+      `http://localhost:3001/api/records/service/${recordId}/accept`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error accepting service record:", error);
+    throw error;
+  }
+};
+
+// Admin: Lấy danh sách service records chờ duyệt
+export const getPendingServiceRecords = async () => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.get(`http://localhost:3001/api/records/service/pending`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error getting pending service records:", error);
+    throw error;
+  }
+};
+
+// Admin: Duyệt service record
+export const approveServiceRecord = async (id, garage) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.put(
+      `http://localhost:3001/api/records/service/${id}/approve`,
+      { garage }, // Gửi garage trong body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error approving service record:", error);
+    throw error;
+  }
+};
+
+// Admin: Từ chối service record
+export const rejectServiceRecord = async (id) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.put(
+      `http://localhost:3001/api/records/service/${id}/reject`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error rejecting service record:", error);
+    throw error;
+  }
 };
 
 

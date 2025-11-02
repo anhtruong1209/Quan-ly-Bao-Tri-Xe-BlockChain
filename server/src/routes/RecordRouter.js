@@ -4,10 +4,13 @@ const RecordController = require("../controllers/RecordController");
 const { authMiddleWare } = require("../middleware/authMiddleware");
 
 // Service records
-router.post("/service", /* authMiddleWare, */ RecordController.createServiceRecord);
-router.get("/service", RecordController.listServiceRecords);
-router.delete("/service/:id", RecordController.deleteServiceRecord);
-router.post("/service/:id/accept", RecordController.acceptServiceRecord);
+router.post("/service", authMiddleWare, RecordController.createServiceRecord);
+router.get("/service", authMiddleWare, RecordController.listServiceRecords);
+router.delete("/service/:id", authMiddleWare, RecordController.deleteServiceRecord);
+router.post("/service/:id/accept", authMiddleWare, RecordController.acceptServiceRecord);
+router.get("/service/pending", authMiddleWare, RecordController.getPendingServiceRecords); // Admin: Lấy danh sách chờ duyệt
+router.put("/service/:id/approve", authMiddleWare, RecordController.approveServiceRecord); // Admin: Duyệt
+router.put("/service/:id/reject", authMiddleWare, RecordController.rejectServiceRecord); // Admin: Từ chối
 
 // Warranty claims
 router.post("/warranty", /* authMiddleWare, */ RecordController.createWarrantyClaim);

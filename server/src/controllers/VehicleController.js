@@ -216,6 +216,29 @@ const getPrice = async (req, res) => {
     });
   }
 };
+
+// Lấy vehicles của user (user chỉ xem được xe của mình, admin xem được tất cả)
+const getUserVehicles = async (req, res) => {
+  try {
+    const userEmail = req.user?.email;
+    const isAdmin = req.user?.isAdmin;
+    
+    if (!userEmail) {
+      return res.status(401).json({
+        status: "ERR",
+        message: "User not authenticated",
+      });
+    }
+
+    const response = await VehicleService.getUserVehicles(userEmail, isAdmin);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createVehicle,
   getDetailsVehicle,
@@ -227,4 +250,5 @@ module.exports = {
   updateVehicle,
   getAllVehicle,
   getPrice,
+  getUserVehicles,
 };

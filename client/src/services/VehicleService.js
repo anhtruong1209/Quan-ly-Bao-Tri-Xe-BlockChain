@@ -106,7 +106,7 @@ export const updateVehicle = async (id, access_token, data) => {
       data,
       {
         headers: {
-          token: `Bearer ${access_token}`,
+          Authorization: `Bearer ${access_token}`,
         },
       }
     );
@@ -121,7 +121,7 @@ export const deleteVehicle = async (id, access_token) => {
     `http://localhost:3001/api/vehicle/delete/${id}`,
     {
       headers: {
-        token: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     }
   );
@@ -134,7 +134,7 @@ export const deleteManyVehicle = async (data, access_token) => {
     data,
     {
       headers: {
-        token: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     }
   );
@@ -148,5 +148,20 @@ export const getAllTypeVehicle = async () => {
 export const getAllColor = async () => {
   const res = await axios.get(`http://localhost:3001/api/vehicle/get-all-color`);
   return res.data;
+};
+
+// Lấy vehicles của user (user chỉ xem được của mình, admin xem được tất cả)
+export const getUserVehicles = async (access_token) => {
+  try {
+    const res = await axiosJWT.get(`http://localhost:3001/api/vehicle/user/vehicles`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user vehicles:", error);
+    throw error;
+  }
 };
 

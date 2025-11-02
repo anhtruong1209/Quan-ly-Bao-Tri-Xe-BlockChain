@@ -38,11 +38,15 @@ import {
   FundOutlined,
   DeleteOutlined,
   CheckCircleFilled,
+  UserOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import * as VehicleServices from "../../services/VehicleService.js";
 import * as RecordsService from "../../services/RecordsService.js";
+import * as UserService from "../../services/UserService.js";
 import Loading from "../../components/LoadingComponent/Loading.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
+import { useSelector } from "react-redux";
 import "./Home.css";
 
 const { Search } = Input;
@@ -50,6 +54,7 @@ const { Option } = Select;
 
 const Home = (props) => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
     totalVehicles: 0,
@@ -58,26 +63,39 @@ const Home = (props) => {
     inProgress: 0,
     completed: 0,
     verified: 0,
+    pendingMaintenance: 0,
+    totalUsers: 0,
   });
   const [recentVehicles, setRecentVehicles] = useState([]);
   const [recentRecords, setRecentRecords] = useState([]);
   const [allTransactions, setAllTransactions] = useState([]);
+  const [pendingMaintenanceRegs, setPendingMaintenanceRegs] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateVehicleModalOpen, setIsCreateVehicleModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedRecordId, setSelectedRecordId] = useState(null);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [selectedRecordForApprove, setSelectedRecordForApprove] = useState(null);
   const [form] = Form.useForm();
+  const [approveForm] = Form.useForm();
 
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("access_token");
+      const accessToken = token ? JSON.parse(token) : null;
+
+      // Lấy vehicles
       const vehiclesRes = await VehicleServices.getAllVehicle("", 100);
       if (vehiclesRes?.status === "OK") {
         const vehicles = vehiclesRes.data || [];
         setStats((prev) => ({ ...prev, totalVehicles: vehiclesRes.total || vehicles.length }));
         setRecentVehicles(vehicles.slice(0, 100));
       }
+
+      // Lấy service records
       const allRecords = await RecordsService.listServiceRecords();
       if (allRecords?.status === "OK") {
         const records = allRecords.data || [];
@@ -99,6 +117,30 @@ const Home = (props) => {
           completed: records.length,
           inProgress: records.filter(r => !r.anchored).length,
         }));
+      }
+
+      // Lấy pending service records (thay thế maintenance registrations)
+      if (accessToken) {
+        try {
+          const pendingRes = await RecordsService.getPendingServiceRecords();
+          if (pendingRes?.status === "OK") {
+            setPendingMaintenanceRegs(pendingRes.data || []);
+            setStats((prev) => ({ ...prev, pendingMaintenance: pendingRes.data?.length || 0 }));
+          }
+        } catch (error) {
+          console.error("Error fetching pending service records:", error);
+        }
+
+        // Lấy danh sách users
+        try {
+          const usersRes = await UserService.getAllUser(accessToken);
+          if (usersRes?.status === "OK") {
+            setAllUsers(usersRes.data || []);
+            setStats((prev) => ({ ...prev, totalUsers: usersRes.data?.length || 0 }));
+          }
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -289,7 +331,8 @@ const Home = (props) => {
       width: 200,
       render: (_, record) => (
         <Space>
-          {!record.anchored && (
+          {/* Chỉ hiển thị nút "Xác thực" khi record đã được approve nhưng chưa anchored */}
+          {!record.anchored && record.status !== "pending" && (
             <Button
               size="small"
               type="primary"
@@ -464,6 +507,30 @@ const Home = (props) => {
                 />
               </Card>
             </Col>
+            {user?.isAdmin && (
+              <>
+                <Col xs={24} sm={12} lg={6}>
+                  <Card>
+                    <Statistic
+                      title="Lệnh chờ duyệt"
+                      value={stats.pendingMaintenance}
+                      prefix={<ClockCircleOutlined />}
+                      valueStyle={{ color: "#ff4d4f" }}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                  <Card>
+                    <Statistic
+                      title="Tổng User"
+                      value={stats.totalUsers}
+                      prefix={<TeamOutlined />}
+                      valueStyle={{ color: "#1890ff" }}
+                    />
+                  </Card>
+                </Col>
+              </>
+            )}
           </Row>
 
           <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
@@ -567,6 +634,210 @@ const Home = (props) => {
             </Col>
           </Row>
 
+          {/* Admin sections: Pending Maintenance & User Management */}
+          {user?.isAdmin && (
+            <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
+              {/* Pending Maintenance Registrations */}
+              <Col xs={24} lg={12}>
+                <Card
+                  title={
+                    <Space>
+                      <ClockCircleOutlined />
+                      <span>Lệnh bảo trì chờ duyệt</span>
+                      <Badge count={pendingMaintenanceRegs.length} showZero style={{ backgroundColor: "#ff4d4f" }} />
+                    </Space>
+                  }
+                  extra={
+                    <Button
+                      icon={<ReloadOutlined />}
+                      onClick={fetchDashboardData}
+                      size="small"
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = "0.9";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = "1";
+                      }}
+                    >
+                      Làm mới
+                    </Button>
+                  }
+                >
+                  <Table
+                    columns={[
+                      {
+                        title: "Biển số",
+                        dataIndex: ["vehicle", "plates"],
+                        key: "plates",
+                      },
+                      {
+                        title: "Người yêu cầu",
+                        dataIndex: ["user", "name"],
+                        key: "userName",
+                        render: (name, record) => (
+                          <div>
+                            <div>{name || record.user?.email}</div>
+                            <div style={{ fontSize: "11px", color: "#999" }}>
+                              {record.user?.phone}
+                            </div>
+                          </div>
+                        ),
+                      },
+                      {
+                        title: "Loại bảo trì",
+                        dataIndex: ["content", "maintenanceType"],
+                        key: "maintenanceType",
+                        render: (type) => {
+                          const typeMap = {
+                            routine: "Bảo dưỡng định kỳ",
+                            repair: "Sửa chữa",
+                            inspection: "Kiểm tra",
+                            emergency: "Bảo trì khẩn cấp",
+                          };
+                          return typeMap[type] || type;
+                        },
+                      },
+                      {
+                        title: "Ngày",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
+                        render: (date) => date ? new Date(date).toLocaleDateString("vi-VN") : "",
+                      },
+                      {
+                        title: "Hành động",
+                        key: "action",
+                        render: (_, record) => (
+                          <Space>
+                            <Button
+                              size="small"
+                              type="primary"
+                              icon={<CheckCircleOutlined />}
+                              onClick={() => {
+                                setSelectedRecordForApprove(record);
+                                approveForm.setFieldsValue({
+                                  garage: record.content?.garage || "",
+                                });
+                                setIsApproveModalOpen(true);
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.opacity = "0.9";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.opacity = "1";
+                              }}
+                            >
+                              Duyệt
+                            </Button>
+                            <Button
+                              size="small"
+                              danger
+                              icon={<DeleteOutlined />}
+                              onClick={async () => {
+                                try {
+                                  setLoading(true);
+                                  await RecordsService.rejectServiceRecord(record._id);
+                                  message.success("Đã từ chối lệnh bảo trì!");
+                                  fetchDashboardData();
+                                } catch (error) {
+                                  message.error("Lỗi khi từ chối lệnh bảo trì");
+                                  console.error(error);
+                                } finally {
+                                  setLoading(false);
+                                }
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.opacity = "0.9";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.opacity = "1";
+                              }}
+                            >
+                              Từ chối
+                            </Button>
+                          </Space>
+                        ),
+                      },
+                    ]}
+                    dataSource={pendingMaintenanceRegs}
+                    rowKey="_id"
+                    pagination={{ pageSize: 5 }}
+                    size="small"
+                  />
+                </Card>
+              </Col>
+
+              {/* User Management */}
+              <Col xs={24} lg={12}>
+                <Card
+                  title={
+                    <Space>
+                      <TeamOutlined />
+                      <span>Quản lý User</span>
+                      <Badge count={allUsers.length} showZero style={{ backgroundColor: "#1890ff" }} />
+                    </Space>
+                  }
+                  extra={
+                    <Button
+                      icon={<ReloadOutlined />}
+                      onClick={fetchDashboardData}
+                      size="small"
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = "0.9";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = "1";
+                      }}
+                    >
+                      Làm mới
+                    </Button>
+                  }
+                >
+                  <Table
+                    columns={[
+                      {
+                        title: "Tên",
+                        dataIndex: "name",
+                        key: "name",
+                        render: (name, record) => name || record.email || "N/A",
+                      },
+                      {
+                        title: "Email",
+                        dataIndex: "email",
+                        key: "email",
+                      },
+                      {
+                        title: "Số điện thoại",
+                        dataIndex: "phone",
+                        key: "phone",
+                        render: (phone) => phone || "N/A",
+                      },
+                      {
+                        title: "Vai trò",
+                        dataIndex: "isAdmin",
+                        key: "isAdmin",
+                        render: (isAdmin) => (
+                          <Tag color={isAdmin ? "red" : "blue"}>
+                            {isAdmin ? "Admin" : "User"}
+                          </Tag>
+                        ),
+                      },
+                      {
+                        title: "Ngày đăng ký",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
+                        render: (date) => date ? new Date(date).toLocaleDateString("vi-VN") : "",
+                      },
+                    ]}
+                    dataSource={allUsers}
+                    rowKey="_id"
+                    pagination={{ pageSize: 5 }}
+                    size="small"
+                  />
+                </Card>
+              </Col>
+            </Row>
+          )}
+
           {/* Bảng Transaction mới */}
           <Row gutter={[16, 16]}>
             <Col xs={24}>
@@ -633,7 +904,7 @@ const Home = (props) => {
                       render: (text, record, index) => {
                         // Chỉ hiển thị đầy đủ cho 2 item đầu (index 0 và 1)
                         const showFull = index < 2;
-                        const displayText = showFull ? text : (text ? `${text.slice(0, 10)}...${text.slice(-8)}` : "N/A");
+                        const displayText = showFull ? text : (text ? `${text}` : "N/A");
                         
                         return (
                           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -756,12 +1027,41 @@ const Home = (props) => {
             onFinish={async (values) => {
               try {
                 setLoading(true);
-                // Map owner về name nếu API yêu cầu
+                
+                // Tạo các giá trị mặc định cho các trường bắt buộc
+                const timestamp = Date.now();
+                const randomSuffix = String(timestamp).slice(-6);
+                const plateClean = values.plates?.replace(/[^0-9A-Z]/g, "") || "PLATE";
+                
                 const vehicleData = {
-                  ...values,
-                  name: values.name || values.owner || "",
-                  image: [],
+                  // Trường user nhập
+                  name: values.owner || values.name || `Owner ${randomSuffix}`,
+                  plates: values.plates,
+                  brand: values.brand,
+                  type: values.type,
+                  address: values.address || "Hà Nội, Việt Nam",
+                  
+                  // Các trường bắt buộc - tự động generate (unique)
+                  image: [`https://picsum.photos/id/${200 + (timestamp % 50)}/800/600`], // Có ít nhất 1 ảnh
+                  identifynumber: `VIN-${plateClean}-${randomSuffix}`, // Unique
+                  dated: new Date(), // Date object
+                  email: `vehicle${timestamp}@transport.vn`, // Unique email
+                  phone: `09${randomSuffix.padStart(8, '0')}`, // Phone số (backend sẽ convert)
+                  bill: `HD-${new Date().getFullYear()}-${randomSuffix}`,
+                  tax: `TAX-${new Date().getFullYear()}-${randomSuffix}`,
+                  seri: `SERI-${plateClean}-${randomSuffix}`,
+                  license: `LIC-${plateClean}-${randomSuffix}`,
+                  engine: `ENG-${randomSuffix}`,
+                  frame: `FRM-${randomSuffix}`,
+                  
+                  // Các trường bắt buộc - có giá trị mặc định
+                  fuel: values.fuel || "Dầu Diesel",
+                  gear: values.gear || "Số Sàn",
+                  color: values.color || "Trắng",
+                  rolling: values.rolling || "Cầu Sau",
+                  description: values.description || "Xe vận tải mới được thêm vào hệ thống",
                 };
+                
                 const res = await VehicleServices.createVehicle(vehicleData);
                 if (res?.status === "OK") {
                   message.success("Tạo xe thành công!");
@@ -769,11 +1069,11 @@ const Home = (props) => {
                   form.resetFields();
                   fetchDashboardData();
                 } else {
-                  message.error(res?.message || "Tạo xe thất bại!");
+                  message.error(res?.message || res?.errors || "Tạo xe thất bại!");
                 }
               } catch (error) {
-                message.error("Có lỗi xảy ra!");
-                console.error(error);
+                console.error("Error creating vehicle:", error);
+                message.error(error?.response?.data?.message || error?.message || "Có lỗi xảy ra khi tạo xe!");
               } finally {
                 setLoading(false);
               }
@@ -843,7 +1143,12 @@ const Home = (props) => {
                   label="Nhiên liệu"
                   name="fuel"
                 >
-                  <Input placeholder="VD: Xăng, Dầu..." />
+                  <Select placeholder="Chọn nhiên liệu" allowClear>
+                    <Select.Option value="Dầu Diesel">Dầu Diesel</Select.Option>
+                    <Select.Option value="Xăng">Xăng</Select.Option>
+                    <Select.Option value="Gas">Gas</Select.Option>
+                    <Select.Option value="Hybrid">Hybrid</Select.Option>
+                  </Select>
                 </Form.Item>
               </Col>
               <Col span={8}>
@@ -851,7 +1156,11 @@ const Home = (props) => {
                   label="Hộp số"
                   name="gear"
                 >
-                  <Input placeholder="VD: Số sàn, Tự động" />
+                  <Select placeholder="Chọn hộp số" allowClear>
+                    <Select.Option value="Số Sàn">Số Sàn</Select.Option>
+                    <Select.Option value="Số Tự Động">Số Tự Động</Select.Option>
+                    <Select.Option value="Số Tự Động 8 Cấp">Số Tự Động 8 Cấp</Select.Option>
+                  </Select>
                 </Form.Item>
               </Col>
               <Col span={8}>
@@ -859,7 +1168,30 @@ const Home = (props) => {
                   label="Màu sắc"
                   name="color"
                 >
-                  <Input placeholder="VD: Đỏ, Trắng..." />
+                  <Select placeholder="Chọn màu" allowClear>
+                    <Select.Option value="Trắng">Trắng</Select.Option>
+                    <Select.Option value="Đỏ">Đỏ</Select.Option>
+                    <Select.Option value="Xanh Dương">Xanh Dương</Select.Option>
+                    <Select.Option value="Vàng Cam">Vàng Cam</Select.Option>
+                    <Select.Option value="Xám">Xám</Select.Option>
+                    <Select.Option value="Đen">Đen</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Dẫn động"
+                  name="rolling"
+                >
+                  <Select placeholder="Chọn loại dẫn động" allowClear>
+                    <Select.Option value="Cầu Sau">Cầu Sau</Select.Option>
+                    <Select.Option value="4 Bánh">4 Bánh</Select.Option>
+                    <Select.Option value="6 Bánh">6 Bánh</Select.Option>
+                    <Select.Option value="8 Bánh">8 Bánh</Select.Option>
+                    <Select.Option value="10 Bánh">10 Bánh</Select.Option>
+                  </Select>
                 </Form.Item>
               </Col>
             </Row>
@@ -925,6 +1257,112 @@ const Home = (props) => {
           okButtonProps={{ danger: true }}
         >
           <p>Bạn có chắc chắn muốn xóa transaction này? Hành động này không thể hoàn tác.</p>
+        </Modal>
+
+        {/* Modal chọn Garage khi duyệt */}
+        <Modal
+          title={
+            <Space>
+              <CheckCircleOutlined />
+              <span>Duyệt lệnh bảo trì</span>
+            </Space>
+          }
+          open={isApproveModalOpen}
+          onCancel={() => {
+            setIsApproveModalOpen(false);
+            setSelectedRecordForApprove(null);
+            approveForm.resetFields();
+          }}
+          footer={null}
+          width={600}
+        >
+          {selectedRecordForApprove && (
+            <div style={{ marginBottom: "16px" }}>
+              <p><strong>Biển số:</strong> {selectedRecordForApprove.vehicle?.plates || selectedRecordForApprove.vehicleKey}</p>
+              <p><strong>Người yêu cầu:</strong> {selectedRecordForApprove.user?.name || selectedRecordForApprove.user?.email}</p>
+              <p><strong>Loại bảo trì:</strong> {
+                selectedRecordForApprove.content?.maintenanceType === "routine" ? "Bảo dưỡng định kỳ" :
+                selectedRecordForApprove.content?.maintenanceType === "repair" ? "Sửa chữa" :
+                selectedRecordForApprove.content?.maintenanceType === "inspection" ? "Kiểm tra" :
+                selectedRecordForApprove.content?.maintenanceType === "emergency" ? "Bảo trì khẩn cấp" :
+                selectedRecordForApprove.content?.maintenanceType
+              }</p>
+              {selectedRecordForApprove.content?.description && (
+                <p><strong>Mô tả:</strong> {selectedRecordForApprove.content.description}</p>
+              )}
+              {selectedRecordForApprove.content?.odo && (
+                <p><strong>Odometer:</strong> {selectedRecordForApprove.content.odo.toLocaleString()} km</p>
+              )}
+            </div>
+          )}
+          <Form
+            form={approveForm}
+            layout="vertical"
+            onFinish={async (values) => {
+              try {
+                setLoading(true);
+                await RecordsService.approveServiceRecord(selectedRecordForApprove._id, values.garage);
+                message.success("Đã duyệt lệnh bảo trì!");
+                setIsApproveModalOpen(false);
+                setSelectedRecordForApprove(null);
+                approveForm.resetFields();
+                fetchDashboardData();
+              } catch (error) {
+                message.error("Lỗi khi duyệt lệnh bảo trì");
+                console.error(error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            <Form.Item
+              name="garage"
+              label="Chọn Garage"
+              rules={[{ required: true, message: "Vui lòng chọn hoặc nhập tên Garage" }]}
+            >
+              <Select
+                placeholder="Chọn Garage hoặc nhập tên mới"
+                mode="tags"
+                style={{ width: "100%" }}
+                tokenSeparators={[","]}
+                options={[
+                  { value: "Garage Container Hải An", label: "Garage Container Hải An" },
+                  { value: "Garage Trung tâm", label: "Garage Trung tâm" },
+                  { value: "Garage Miền Bắc", label: "Garage Miền Bắc" },
+                  { value: "Garage Miền Nam", label: "Garage Miền Nam" },
+                  { value: "Garage Đại lý chính hãng", label: "Garage Đại lý chính hãng" },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+                <Button onClick={() => {
+                  setIsApproveModalOpen(false);
+                  setSelectedRecordForApprove(null);
+                  approveForm.resetFields();
+                }}>
+                  Hủy
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  style={{
+                    backgroundColor: "#52c41a",
+                    borderColor: "#52c41a"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = "0.9";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  Xác nhận duyệt
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </Loading>

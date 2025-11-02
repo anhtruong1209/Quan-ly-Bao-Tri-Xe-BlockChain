@@ -43,22 +43,19 @@ const SignInPage = (props) => {
   };
 
   const handleGetDetailsUser = async (id, token) => {
-    const storage = localStorage.getItem("refresh_token");
-    const refreshToken = JSON.parse(storage);
     const res = await UserService.getDetailsUser(id, token);
     console.log("Detail user is Admin: ", res.data.isAdmin);
+    // Lưu isAdmin vào localStorage
+    if (res.data.isAdmin !== undefined) {
+      localStorage.setItem("isAdmin", JSON.stringify(res.data.isAdmin));
+    }
     if (res.data.isAdmin) setIsAdmin(true);
     else setIsAdmin(false);
-    dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }));
+    dispatch(updateUser({ ...res?.data, access_token: token }));
   };
   useEffect(() => {
     if (isSuccess) {
       console.log("Kết quả đăng nhập: ", isSuccess);
-      if (location?.state) {
-        navigate(location?.state);
-      } else {
-        navigate("/");
-      }
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
 
       localStorage.setItem(
@@ -77,6 +74,16 @@ const SignInPage = (props) => {
       message.error("Sai tên tài khoản hoặc mật khẩu");
     }
   }, [isSuccess, isError]);
+
+  useEffect(() => {
+    if (user?.id && user?.isAdmin !== undefined) {
+      if (user.isAdmin) {
+        navigate("/home");
+      } else {
+        navigate("/user/dashboard");
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div className="sin">
@@ -161,7 +168,6 @@ const SignInPage = (props) => {
           </Loading>
           <div className="sin-content-form-try">
             <a className="sin-content-form-try-pass">Quên mật khẩu ?</a>
-            <a className="sin-content-form-try-pass">Đăng nhập với SMS</a>
           </div>
           <div className="sin-content-form-sup">
             <p>Bạn mới sử dụng VehicleWarranty</p>

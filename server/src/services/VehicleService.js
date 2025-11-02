@@ -343,6 +343,35 @@ const getPrice = (inputData) => {
     }
   });
 };
+// Lấy vehicles của user (user chỉ xem được của mình, admin xem được tất cả)
+const getUserVehicles = (userEmail, isAdmin) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let filter = {};
+      
+      // Nếu không phải admin, chỉ lấy xe của user
+      if (!isAdmin) {
+        filter.email = userEmail;
+      }
+      
+      // Nếu là admin, không filter (lấy tất cả)
+      const userVehicles = await Vehicle.find(filter).sort({
+        createdAt: -1,
+        updatedAt: -1,
+      });
+      
+      resolve({
+        status: "OK",
+        message: "Success",
+        data: userVehicles,
+        total: userVehicles.length,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createVehicle,
   getDetailsVehicle,
@@ -354,4 +383,5 @@ module.exports = {
   getAllType,
   getAllVehicle,
   getPrice,
+  getUserVehicles,
 };

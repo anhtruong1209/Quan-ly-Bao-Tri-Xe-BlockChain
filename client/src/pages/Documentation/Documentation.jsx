@@ -66,13 +66,26 @@ const Documentation = () => {
               title="1. Khởi tạo Smart Contracts"
               description={
                 <div>
-                  <Paragraph>Deploy các smart contracts lên Sepolia Testnet:</Paragraph>
+                  <Paragraph>Deploy smart contract <Text code>VehicleWarrantyRegistry</Text> lên Sepolia Testnet:</Paragraph>
+                  <pre style={{ backgroundColor: "#f5f5f5", padding: "12px", borderRadius: "4px", marginTop: "8px" }}>
+{`cd smart_contract
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network sepolia`}
+                  </pre>
+                  <Alert
+                    message="Lưu ý"
+                    description="Contract address sẽ tự động được lưu vào file deploy-addresses.txt. Backend sẽ tự động đọc address này."
+                    type="info"
+                    showIcon
+                    style={{ marginTop: "12px" }}
+                  />
+                  <Paragraph style={{ marginTop: "12px" }}>
+                    <Text strong>Sau khi deploy, thiết lập roles:</Text>
+                  </Paragraph>
                   <ul>
-                    <li>CarTransactionHistory: Lưu trữ lịch sử giao dịch xe</li>
-                    <li>Carmaintenance: Lưu trữ thông tin bảo trì xe</li>
-                    <li>Caraccident: Lưu trữ thông tin tai nạn xe</li>
+                    <li>Set Admin: <Text code>npx hardhat run scripts/setAdminRole.js --network sepolia [ADMIN_ADDRESS]</Text></li>
+                    <li>Set User: <Text code>npx hardhat run scripts/setUserRole.js --network sepolia [USER_ADDRESS]</Text></li>
                   </ul>
-                  <Text code>npx hardhat run scripts/deploy.js</Text>
                 </div>
               }
             />
@@ -80,14 +93,15 @@ const Documentation = () => {
               title="2. Cấu hình Contract Address"
               description={
                 <div>
-                  <Paragraph>Copy các địa chỉ contract đã deploy và cập nhật vào:</Paragraph>
-                  <Text code>client/Constant/constant.js</Text>
-                  <Paragraph>Ví dụ:</Paragraph>
-                  <pre style={{ backgroundColor: "#f5f5f5", padding: "12px", borderRadius: "4px" }}>
-{`const carTransactionHistoryAdress = "0x8DD592A57B885E66b6bAB874751e2722285cb0AB";
-const carmaintenanceAdress = "0xf6568AF39811345ab12301d6b929D7B3cC36c704";
-const caraccidentAdress = "0xe0336F57A310C11d916e17b2868b18895766997e";`}
-                  </pre>
+                  <Paragraph>Contract address sẽ tự động được lưu vào file <Text code>smart_contract/deploy-addresses.txt</Text></Paragraph>
+                  <Paragraph>Backend tự động đọc address từ file này qua <Text code>server/src/config/blockchain.js</Text></Paragraph>
+                  <Alert
+                    message="Tự động cấu hình"
+                    description="Không cần cấu hình thủ công! Address được đọc tự động sau khi deploy."
+                    type="success"
+                    showIcon
+                    style={{ marginTop: "12px" }}
+                  />
                 </div>
               }
             />
@@ -150,7 +164,7 @@ cd Quan-ly-Bao-Tri-Xe-BlockChain`}
               }
             />
             <Step
-              title="Bước 2: Cài đặt Smart Contract"
+              title="Bước 2: Cài đặt và Deploy Smart Contract"
               description={
                 <div>
                   <Paragraph><Text strong>Folder:</Text> <Text code>smart_contract/</Text></Paragraph>
@@ -158,15 +172,28 @@ cd Quan-ly-Bao-Tri-Xe-BlockChain`}
 {`cd smart_contract
 npm install
 
-# Cấu hình hardhat.config.js:
-# - Thêm private key của MetaMask account vào accounts
-# - Đảm bảo account có đủ Sepolia ETH để deploy
+# Compile contract:
+npx hardhat compile
 
-# Deploy contracts:
-npx hardhat run scripts/deploy.js
+# Deploy lên Sepolia Testnet:
+npx hardhat run scripts/deploy.js --network sepolia
 
-# Lưu lại các contract addresses nhận được`}
+# Kết quả sẽ tự động lưu vào deploy-addresses.txt`}
                   </pre>
+                  <Alert
+                    message="Yêu cầu"
+                    description="Đảm bảo account trong hardhat.config.js có đủ Sepolia ETH để pay gas fee (ít nhất 0.01 ETH)"
+                    type="warning"
+                    showIcon
+                    style={{ marginTop: "12px" }}
+                  />
+                  <Paragraph style={{ marginTop: "12px" }}>
+                    <Text strong>Thiết lập roles sau khi deploy:</Text>
+                  </Paragraph>
+                  <ul>
+                    <li>Set Admin: <Text code>npx hardhat run scripts/setAdminRole.js --network sepolia</Text></li>
+                    <li>Set User: <Text code>npx hardhat run scripts/setUserRole.js --network sepolia [ADDRESS]</Text></li>
+                  </ul>
                 </div>
               }
             />
@@ -179,10 +206,9 @@ npx hardhat run scripts/deploy.js
 {`cd client
 npm install
 
-# Cập nhật contract addresses trong:
-# client/Constant/constant.js
-
-# Paste các addresses từ bước 2 vào file constant.js`}
+# Frontend sẽ tự động kết nối với Backend
+# Backend sẽ tự động đọc contract address từ deploy-addresses.txt
+# Không cần cấu hình thủ công!`}
                   </pre>
                 </div>
               }
@@ -222,10 +248,13 @@ npm install
             <Text strong>Terminal 1:</Text>
             <pre style={{ backgroundColor: "#fff7e6", padding: "12px", borderRadius: "4px", marginTop: "8px" }}>
 {`cd smart_contract
-npx hardhat run scripts/deploy.js`}
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network sepolia`}
             </pre>
             <Paragraph type="secondary">
               ⚠️ Chỉ cần chạy 1 lần để deploy contracts. Sau khi deploy xong, bạn có thể đóng terminal này.
+              <br />
+              ✅ Contract address tự động lưu vào <Text code>deploy-addresses.txt</Text>
             </Paragraph>
           </div>
 
@@ -309,27 +338,32 @@ npm start`}
             <Card size="small" bordered>
               <Title level={5}>📁 client/</Title>
               <ul>
-                <li><Text code>src/pages/</Text> - Các trang chính (Home, Detail, Admin...)</li>
+                <li><Text code>src/pages/</Text> - Các trang chính (Home, Detail, Admin, UserDashboard...)</li>
                 <li><Text code>src/components/</Text> - Các component tái sử dụng</li>
-                <li><Text code>src/services/</Text> - API services (VehicleService, RecordsService)</li>
-                <li><Text code>Constant/constant.js</Text> - ⚠️ Contract addresses cần cấu hình</li>
+                <li><Text code>src/services/</Text> - API services (VehicleService, RecordsService, MaintenanceService)</li>
+                <li><Text code>src/routers/</Text> - Routing và Protected Routes</li>
               </ul>
             </Card>
             <Card size="small" bordered>
               <Title level={5}>📁 server/</Title>
               <ul>
                 <li><Text code>src/index.js</Text> - ⚠️ Entry point, có MongoDB connection string</li>
-                <li><Text code>src/controllers/</Text> - Business logic</li>
-                <li><Text code>src/models/</Text> - MongoDB schemas</li>
+                <li><Text code>src/controllers/</Text> - Business logic (VehicleController, MaintenanceController...)</li>
+                <li><Text code>src/models/</Text> - MongoDB schemas (Vehicle, MaintenanceRegistration...)</li>
                 <li><Text code>src/services/BlockchainService.js</Text> - Tương tác với smart contracts</li>
+                <li><Text code>src/config/blockchain.js</Text> - ⚠️ Tự động đọc contract address từ deploy-addresses.txt</li>
+                <li><Text code>src/middleware/authMiddleware.js</Text> - JWT authentication</li>
               </ul>
             </Card>
             <Card size="small" bordered>
               <Title level={5}>📁 smart_contract/</Title>
               <ul>
-                <li><Text code>contracts/</Text> - Solidity smart contracts</li>
-                <li><Text code>scripts/deploy.js</Text> - ⚠️ Script deploy contracts</li>
+                <li><Text code>contracts/VehicleWarrantyRegistry.sol</Text> - Smart contract chính (có phân quyền admin/user)</li>
+                <li><Text code>scripts/deploy.js</Text> - ⚠️ Script deploy contract lên Sepolia</li>
+                <li><Text code>scripts/setAdminRole.js</Text> - Script thiết lập admin role</li>
+                <li><Text code>scripts/setUserRole.js</Text> - Script thiết lập user role</li>
                 <li><Text code>hardhat.config.js</Text> - ⚠️ Cấu hình network và private key</li>
+                <li><Text code>deploy-addresses.txt</Text> - ⚠️ File tự động tạo sau khi deploy, chứa contract address</li>
               </ul>
             </Card>
           </div>
@@ -359,8 +393,9 @@ npm start`}
                 <div>
                   <Paragraph>Kiểm tra:</Paragraph>
                   <ul>
-                    <li>Đã deploy contracts chưa? Chạy <Text code>npx hardhat run scripts/deploy.js</Text></li>
-                    <li>Đã cập nhật addresses trong <Text code>client/Constant/constant.js</Text> chưa?</li>
+                    <li>Đã deploy contracts chưa? Chạy <Text code>npx hardhat run scripts/deploy.js --network sepolia</Text></li>
+                    <li>File <Text code>smart_contract/deploy-addresses.txt</Text> có tồn tại không?</li>
+                    <li>Backend có đọc được address từ file deploy-addresses.txt không?</li>
                   </ul>
                 </div>
               }
@@ -413,9 +448,18 @@ npm start`}
             <div>
               <Text strong>Service Records:</Text>
               <ul>
-                <li><Text code>GET /api/record</Text> - Lấy danh sách bảo trì</li>
-                <li><Text code>POST /api/record</Text> - Tạo bản bảo trì mới</li>
-                <li><Text code>GET /api/record/:vehicleId</Text> - Lấy lịch sử bảo trì của xe</li>
+                <li><Text code>GET /api/records</Text> - Lấy danh sách bảo trì</li>
+                <li><Text code>POST /api/records</Text> - Tạo bản bảo trì mới</li>
+              </ul>
+            </div>
+            <div>
+              <Text strong>Maintenance Registration (Yêu cầu đăng nhập):</Text>
+              <ul>
+                <li><Text code>POST /api/maintenance/create</Text> - User tạo lệnh đăng ký bảo trì</li>
+                <li><Text code>GET /api/maintenance/user</Text> - User xem lệnh đăng ký của mình</li>
+                <li><Text code>GET /api/maintenance/admin/pending</Text> - Admin xem lệnh chờ duyệt</li>
+                <li><Text code>PUT /api/maintenance/admin/approve/:id</Text> - Admin duyệt lệnh</li>
+                <li><Text code>PUT /api/maintenance/admin/reject/:id</Text> - Admin từ chối lệnh</li>
               </ul>
             </div>
             <div>
@@ -429,16 +473,34 @@ npm start`}
         </Card>
 
         {/* Tài khoản test */}
-        <Card title={<><InfoCircleOutlined /> Tài khoản test</>}>
+        <Card title={<><InfoCircleOutlined /> Tài khoản mặc định</>}>
           <Alert
-            message="Thông tin đăng nhập"
+            message="Thông tin đăng nhập Admin"
             description={
               <div>
-                <Paragraph><Text strong>Email:</Text> admin@gmail.com</Paragraph>
-                <Paragraph><Text strong>Password:</Text> 123</Paragraph>
-                <Paragraph type="secondary">
+                <Paragraph><Text strong>Email:</Text> <Text code>admin@gmail.com</Text></Paragraph>
+                <Paragraph><Text strong>Password:</Text> <Text code>admin@123</Text></Paragraph>
+                <Paragraph type="secondary" style={{ marginTop: "12px" }}>
                   Tài khoản này có quyền admin để quản lý toàn bộ hệ thống.
                 </Paragraph>
+                <Alert
+                  message="Tạo tài khoản admin"
+                  description={
+                    <div>
+                      <Paragraph>Chạy script để tạo admin account mặc định:</Paragraph>
+                      <pre style={{ backgroundColor: "#f5f5f5", padding: "12px", borderRadius: "4px", marginTop: "8px" }}>
+{`cd server
+node src/scripts/seedAdmin.js`}
+                      </pre>
+                      <Paragraph type="secondary" style={{ marginTop: "8px" }}>
+                        Script sẽ tự động tạo admin nếu chưa tồn tại. Nếu đã có, sẽ bỏ qua.
+                      </Paragraph>
+                    </div>
+                  }
+                  type="warning"
+                  showIcon
+                  style={{ marginTop: "12px" }}
+                />
               </div>
             }
             type="info"

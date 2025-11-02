@@ -153,7 +153,6 @@ const SignUp = () => {
           </Loading>
           <div className="sin-content-form-try">
             <a className="sin-content-form-try-pass">Quên mật khẩu ?</a>
-            <a className="sin-content-form-try-pass">Đăng nhập với SMS</a>
           </div>
           <div className="sin-content-form-sup">
             <p>Bạn đã có tài khoản</p>

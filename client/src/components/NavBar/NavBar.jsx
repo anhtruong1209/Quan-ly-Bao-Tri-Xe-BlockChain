@@ -19,6 +19,8 @@ import { Badge, Button, Popover } from "antd";
 import { resetUser } from "../../redux/slides/userSlide";
 import ResponsiveMenu from "./ResponsiveMenu";
 import { Logo } from "../../assets";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import * as UserService from "../../services/UserService";
 import {
   WrapperContentPopup,
   WrapperHeader,
@@ -31,16 +33,20 @@ import { useDispatch } from "react-redux";
 import { BsTelephoneInbound } from "react-icons/bs";
 
 import "./NavBar.css";
-const navLinks = [
-  {
-    path: "/home",
-    display: "Trang chủ",
-  },
-  {
-    path: "/vehicles",
-    display: "Danh sách xe",
-  },
-];
+// Nav links chỉ hiển thị cho admin
+const getNavLinks = (isAdmin) => {
+  if (!isAdmin) return []; // User không thấy "Trang chủ" và "Danh sách xe"
+  return [
+    {
+      path: "/home",
+      display: "Trang chủ",
+    },
+    {
+      path: "/vehicles",
+      display: "Danh sách xe",
+    },
+  ];
+};
 
 const Navbar = () => {
   const user = useSelector((state) => state.user);
@@ -57,7 +63,24 @@ const Navbar = () => {
     setShowMenu(!showMenu);
   };
   const handleLogout = async () => {
-    navigate("/");
+    try {
+      // Xóa token và user data khỏi localStorage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("isAdmin");
+      // Reset user state
+      dispatch(resetUser());
+      // Điều hướng về trang đăng nhập
+      navigate("/sign-in");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Vẫn reset và redirect dù có lỗi
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("isAdmin");
+      dispatch(resetUser());
+      navigate("/sign-in");
+    }
   };
 
   useEffect(() => {
@@ -65,22 +88,24 @@ const Navbar = () => {
     setUserName(user?.name);
     setLoading(false);
   }, [user?.name, user?.avatar]);
-  const handleClickNavigate = (type) => {
-    if (type === "admin") {
-      navigate("/admin");
-    } else {
-      handleLogout();
-    }
-    setIsOpenPopup(false);
-  };
   const content = (
     <div>
       {user?.isAdmin && (
-        <WrapperContentPopup onClick={() => handleClickNavigate("admin")}>
-          Quản lí hệ thống
+        <WrapperContentPopup onClick={() => {
+          navigate("/home");
+          setIsOpenPopup(false);
+        }}>
+          Trang quản trị
         </WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => handleClickNavigate()}>
+      {!user?.isAdmin && (
+        <WrapperContentPopup onClick={() => {
+          navigate("/user/dashboard");
+          setIsOpenPopup(false);
+        }}>
+        </WrapperContentPopup>
+      )}
+      <WrapperContentPopup onClick={handleLogout}>
         Đăng xuất
       </WrapperContentPopup>
     </div>
@@ -162,7 +187,7 @@ const Navbar = () => {
               ref={menuRef}
               onClick={toggleMenu}
             >
-              {navLinks.map((item, index) => (
+              {getNavLinks(user?.isAdmin).map((item, index) => (
                 <li key={index} className="py-4">
                   <NavLink
                     to={item.path}
@@ -202,10 +227,6 @@ const Navbar = () => {
                 </div>
               </div>
               <div className="block lg:hidden">
-                {/* <button className="search-btn">
-                  {" "}
-                  <IoSearchSharp />
-                </button> */}
                 <div
                   style={{
                     padding: 8,
@@ -230,27 +251,64 @@ const Navbar = () => {
                       <SearchOutlined style={{ color: "white" }} />
                     </div>
                   </Popover>
-                  {/* <InputComponent
-                    style={{
-                      marginBottom: 8,
-                      display: isPopup ? "block" : "none",
-                    }}
-                  />
-                  <Space>
-                    <Button
-                      type="primary"
-                      // onClick={() =>
-                      //   handleSearch(selectedKeys, confirm, dataIndex)
-                      // }
-                      icon={<SearchOutlined />}
-                      size="large"
-                      style={{
-                        width: 90,
-                      }}
-                    ></Button>
-                  </Space> */}
                 </div>
               </div>
+
+              {/* User info and logout button */}
+              {user?.access_token || user?.email ? (
+                <Popover
+                  content={content}
+                  trigger="click"
+                  open={isOpenPopup}
+                  onOpenChange={setIsOpenPopup}
+                  placement="bottomRight"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      cursor: "pointer",
+                      padding: "4px 12px",
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      transition: "background-color 0.3s",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = "rgba(255, 255, 255, 0.2)")}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "rgba(255, 255, 255, 0.1)")}
+                    onClick={() => setIsOpenPopup(!isOpenPopup)}
+                  >
+                    <UserOutlined style={{ color: "white", fontSize: "18px" }} />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                      <span style={{ color: "white", fontSize: "12px", lineHeight: "1.2" }}>
+                        Xin chào
+                      </span>
+                      <span style={{ color: "white", fontSize: "14px", fontWeight: "600", lineHeight: "1.2" }}>
+                        {user?.name || user?.email || "User"}
+                      </span>
+                    </div>
+                  </div>
+                </Popover>
+              ) : (
+                <Button
+                  type="primary"
+                  onClick={() => navigate("/sign-in")}
+                  style={{
+                    backgroundColor: "#f9a826",
+                    borderColor: "#f9a826",
+                    color: "#000d6b",
+                    fontWeight: "600",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = "0.9";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  Đăng nhập
+                </Button>
+              )}
             </ul>
             {/* <div
             style={{

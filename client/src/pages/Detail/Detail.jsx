@@ -24,7 +24,7 @@ import { FaTachometerAlt } from "react-icons/fa";
 import { IoIosSettings } from "react-icons/io";
 import { FaChargingStation } from "react-icons/fa";
 import { IoIosColorPalette } from "react-icons/io";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Loading from "../../components/LoadingComponent/Loading";
 import { FaRobot } from "react-icons/fa";
 import Footer from "../../components/Footer/Footer";
@@ -33,8 +33,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import ServiceRecordForm from "./ServiceRecordForm";
 import { Timeline, Tag, Card, Button, Space, Statistic, Row, Col, message } from "antd";
 import { CheckCircleOutlined, ClockCircleOutlined, ToolOutlined, CopyOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 const Detail = () => {
   const { plate } = useParams();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
   const [cars, setCars] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [love, setLove] = useState(false);
@@ -72,37 +75,33 @@ const Detail = () => {
   }, [plate]);
   const fetchCar = async (plate) => {
     try {
+      setIsLoading(true);
       const res = await VehicleService.getDetailsVehicleByPlate(plate);
       if (res?.status === "OK") {
-        setIsLoading(false);
-        setCar(res?.data);
-        console.log("Data ben detail : ", res?.data);
-        // const updatedInputCar = {
-        //   origin: res?.data.origin,
-        //   condition: condition,
-        //   car_model: carModel,
-        //   log10_mileage:
-        //     mileague == 0 ? "0.0" : Math.log10(mileague).toFixed(1).toString(),
-        //   exterior_color: exteriorColor,
-        //   interior_color: interiorColor,
-        //   num_of_doors: numDoor,
-        //   seating_capacity: numSeat,
-        //   fuel_type: engine,
-        //   engine_size: capacity,
-        //   transmission: transmission,
-        //   drive_type: drivetype,
-        //   fuel_consumption: consumption,
-        //   brand_grade: brand,
-        //   year_of_manufacture: yearManufac + ".0",
-        // };
-        // setInputCar(updatedInputCar);
+        const vehicleData = res?.data;
+        
+        // Check if user is admin or owns the vehicle
+        if (!user?.isAdmin) {
+          // Regular user: check if vehicle email matches user email
+          if (vehicleData?.email && vehicleData.email !== user?.email) {
+            message.error("Bạn không có quyền xem xe này");
+            navigate("/user/dashboard");
+            return;
+          }
+        }
+        
+        setCar(vehicleData);
+        console.log("Data ben detail : ", vehicleData);
       } else {
-        setIsLoading(false);
-        // Handle error, e.g., show an error message
+        message.error("Không tìm thấy xe");
+        navigate("/user/dashboard");
       }
     } catch (error) {
+      console.error("Error fetching vehicle:", error);
+      message.error("Lỗi khi tải thông tin xe");
+      navigate("/user/dashboard");
+    } finally {
       setIsLoading(false);
-      // Handle error, e.g., show an error message
     }
   };
   useEffect(() => {
@@ -317,7 +316,8 @@ const Detail = () => {
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
                                   <strong>{r?.content?.job}</strong>
                                   <Space>
-                                    {!r.anchored && (
+                                    {/* Chỉ admin mới thấy nút "Xác thực" và chỉ khi record đã được approve nhưng chưa anchored */}
+                                    {user?.isAdmin && !r.anchored && r.status !== "pending" && (
                                       <Button
                                         size="small"
                                         type="primary"
@@ -352,8 +352,8 @@ const Detail = () => {
                                         Xác thực
                                       </Button>
                                     )}
-                                    <Tag color={r.anchored ? "success" : "warning"}>
-                                      {r.anchored ? "Đã xác thực blockchain" : "Chưa xác thực"}
+                                    <Tag color={r.anchored ? "success" : r.status === "pending" ? "orange" : "warning"}>
+                                      {r.anchored ? "Đã xác thực blockchain" : r.status === "pending" ? "Chờ duyệt" : "Chưa xác thực"}
                                     </Tag>
                                   </Space>
                                 </div>
