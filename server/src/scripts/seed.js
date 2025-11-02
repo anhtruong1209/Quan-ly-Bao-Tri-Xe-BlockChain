@@ -9,68 +9,149 @@ async function connect() {
 }
 
 async function seed() {
-  // Xóa toàn bộ dữ liệu xe cũ, chỉ seed xe
+  // Xóa toàn bộ dữ liệu xe cũ
   await Vehicle.deleteMany({});
 
-  // Tạo bộ dữ liệu xe giả lập ~100 bản ghi
-  const types = [
-    "SUV", "Sedan", "Hatchback", "Crossover", "Pickup", "Coupe", "MPV", "Van"
+  // Dữ liệu xe vận tải thực tế
+  const vehicleTypes = [
+    "Xe Tải Nhẹ", "Xe Tải Trung", "Xe Tải Nặng", 
+    "Xe Container", "Xe Đầu Kéo", "Xe Khách Liên Tỉnh",
+    "Xe Chở Hàng", "Xe Chuyên Dụng", "Xe Ben", "Xe Xitec"
   ];
-  const fuels = ["Xăng", "Dầu", "Điện", "Hybrid"];
-  const gears = ["AT", "MT", "CVT", "DCT"];
-  const rollings = ["FWD", "RWD", "AWD", "4WD"];
-  const colors = ["Trắng", "Đen", "Bạc", "Xám", "Đỏ", "Xanh", "Vàng"];
+  
+  const fuels = ["Dầu Diesel", "Xăng", "Gas", "Hybrid"];
+  const gears = ["Số Sàn", "Số Tự Động", "Số Tự Động 8 Cấp"];
+  const rollings = ["Cầu Sau", "4 Bánh", "6 Bánh", "8 Bánh", "10 Bánh"];
+  const colors = ["Trắng", "Đỏ", "Xanh Dương", "Vàng Cam", "Xám", "Đen"];
+  
+  // Hãng xe vận tải phổ biến
   const brands = [
-    "Toyota", "Honda", "Hyundai", "Kia", "Mercedes", "BMW", "Audi", "Porsche", "VinFast", "Ford", "Mazda", "Nissan", "Mitsubishi", "Lexus"
+    "Hyundai", "Hino", "Isuzu", "Fuso", "Tata", "Dongfeng",
+    "JAC", "Howo", "Thaco", "VinFast", "Ford", "Mercedes",
+    "Volvo", "Scania", "MAN"
   ];
 
-  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function pad(n, len = 3) { return String(n).padStart(len, "0"); }
+  // Tên chủ xe vận tải thực tế
+  const ownerNames = [
+    "Công Ty Vận Tải Hải Phòng",
+    "Doanh Nghiệp Logistics Sài Gòn",
+    "Tổng Công Ty Vận Tải Miền Bắc",
+    "Công Ty Xe Container Đông Nam",
+    "Doanh Nghiệp Vận Chuyển Liên Tỉnh",
+    "Công Ty Logistics Quốc Lộ",
+    "Doanh Nghiệp Vận Tải Cảng Biển",
+    "Công Ty Chở Hàng Nội Địa",
+    "Doanh Nghiệp Vận Tải Đa Phương Thức",
+    "Công Ty Logistics Toàn Quốc"
+  ];
+
+  // Địa chỉ thực tế
+  const addresses = [
+    "Hải Phòng, Việt Nam",
+    "Hà Nội, Việt Nam", 
+    "TP. Hồ Chí Minh, Việt Nam",
+    "Đà Nẵng, Việt Nam",
+    "Cần Thơ, Việt Nam",
+    "Hải Dương, Việt Nam",
+    "Quảng Ninh, Việt Nam",
+    "Bắc Ninh, Việt Nam",
+    "Bình Dương, Việt Nam",
+    "Đồng Nai, Việt Nam"
+  ];
+
+  // Mô tả xe vận tải
+  const descriptions = [
+    "Xe tải chuyên dụng vận chuyển hàng hóa nội địa",
+    "Xe container phục vụ vận chuyển hàng hóa xuất nhập khẩu",
+    "Xe đầu kéo chuyên dụng cho container 40 feet",
+    "Xe tải chở hàng nặng, tải trọng lớn",
+    "Xe khách liên tỉnh phục vụ vận chuyển hành khách",
+    "Xe chuyên dụng phục vụ ngành xây dựng",
+    "Xe ben chở vật liệu xây dựng, đất đá"
+  ];
+
+  function rand(arr) { 
+    return arr[Math.floor(Math.random() * arr.length)]; 
+  }
+  
+  function pad(n, len = 3) { 
+    return String(n).padStart(len, "0"); 
+  }
 
   const many = [];
-  const COUNT = 100; // Hardcode số lượng xe seed
+  const COUNT = 150; // Tăng số lượng xe lên 150
+
+  // Tạo các biển số theo từng khu vực
+  const provinces = [
+    { code: "30A", name: "Hải Phòng", count: 30 },
+    { code: "30G", name: "Hải Phòng", count: 25 },
+    { code: "51H", name: "Hà Nội", count: 35 },
+    { code: "43A", name: "Đà Nẵng", count: 20 },
+    { code: "75A", name: "TP.HCM", count: 25 },
+    { code: "65C", name: "Cần Thơ", count: 15 }
+  ];
+
+  let plateCounter = {};
+  provinces.forEach(p => {
+    plateCounter[p.code] = 0;
+  });
+
   for (let i = 1; i <= COUNT; i++) {
-    const province = ["30A", "30G", "51H", "43A", "75A", "65C"][i % 6];
-    const plate = `${province}-${pad(100 + (i % 900), 3)}.${pad(10 + (i % 90), 2)}`;
+    const provinceIndex = i % provinces.length;
+    const province = provinces[provinceIndex];
+    plateCounter[province.code]++;
+    
+    const plateNumber = pad(100 + (plateCounter[province.code] % 900), 3);
+    const subNumber = pad(10 + (plateCounter[province.code] % 90), 2);
+    const plate = `${province.code}-${plateNumber}.${subNumber}`;
+    
+    // Gán tên chủ xe và địa chỉ theo khu vực
+    const ownerIndex = i % ownerNames.length;
+    const ownerName = ownerNames[ownerIndex];
+    const address = addresses[provinceIndex];
+
     many.push({
-      name: `Owner ${i}`,
+      name: `${ownerName} ${plateCounter[province.code]}`,
       image: [
         `https://picsum.photos/id/${240 + (i % 50)}/800/600`
       ],
-      identifynumber: `ID-${String(100000 + i)}`,
+      identifynumber: `VIN-${province.code}-${pad(i, 6)}`,
       dated: new Date(2020 + (i % 5), (i % 12), (i % 28) + 1),
-      email: `owner${i}@example.com`,
-      phone: `09${pad(100000 + i, 7)}`,
-      address: ["Hanoi", "HCMC", "Da Nang", "Hue", "Can Tho"][i % 5] + ", Vietnam",
+      email: `vehicle${i}@transport.vn`,
+      phone: `09${pad(1000000 + i, 7)}`,
+      address: address,
       plates: plate,
-      bill: `HD-${2020 + (i % 6)}-${pad(i, 3)}`,
-      tax: `TAX-${2020 + (i % 6)}-${pad(i, 3)}`,
-      seri: `SERI-${pad(i, 3)}`,
-      license: `LIC-${pad(i, 3)}`,
-      engine: `ENG-${pad(i, 3)}`,
-      frame: `FRM-${pad(i, 3)}`,
+      bill: `HD-${2020 + (i % 6)}-${pad(i, 5)}`,
+      tax: `TAX-${2020 + (i % 6)}-${pad(i, 5)}`,
+      seri: `SERI-${province.code}-${pad(i, 4)}`,
+      license: `LIC-${province.code}-${pad(i, 4)}`,
+      engine: `ENG-${pad(i, 6)}`,
+      frame: `FRM-${pad(i, 6)}`,
       fuel: rand(fuels),
-      type: rand(types),
+      type: rand(vehicleTypes),
       color: rand(colors),
       brand: rand(brands),
       rolling: rand(rollings),
       gear: rand(gears),
-      description: "Dữ liệu demo đồng bộ FE/BE"
+      description: rand(descriptions)
     });
   }
 
   await Vehicle.insertMany(many);
+  console.log(`✅ Đã seed ${COUNT} xe vận tải thành công!`);
+  console.log(`   - Dữ liệu phù hợp với quản lý bảo trì xe vận tải`);
 }
 
 connect()
-  .then(seed)
   .then(() => {
-    console.log("Seed completed");
+    console.log("✅ Connected to MongoDB");
+    return seed();
+  })
+  .then(() => {
+    console.log("✅ Seed vehicles completed");
     process.exit(0);
   })
   .catch((err) => {
-    console.error(err);
+    console.error("❌ Error:", err);
     process.exit(1);
   });
-
-

@@ -107,12 +107,52 @@ const listWarrantyClaims = async (req, res) => {
   }
 };
 
+const deleteServiceRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const record = await ServiceRecord.findByIdAndDelete(id);
+    if (!record) {
+      return res.status(404).json({ status: "ERR", message: "Record not found" });
+    }
+    return res.status(200).json({ status: "OK", message: "Record deleted successfully" });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
+const acceptServiceRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const record = await ServiceRecord.findById(id);
+    if (!record) {
+      return res.status(404).json({ status: "ERR", message: "Record not found" });
+    }
+    
+    if (record.anchored) {
+      return res.status(400).json({ status: "ERR", message: "Record already anchored" });
+    }
+
+    // Anchor lên blockchain
+    const bc = await Blockchain.anchorServiceRecord(record.vehicleKey, record.contentHash);
+    record.anchored = true;
+    record.txHash = bc.txHash;
+    record.blockNumber = bc.blockNumber;
+    await record.save();
+
+    return res.status(200).json({ status: "OK", data: record });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
 module.exports = {
   createServiceRecord,
   listServiceRecords,
   createWarrantyClaim,
   resolveWarrantyClaim,
   listWarrantyClaims,
+  deleteServiceRecord,
+  acceptServiceRecord,
 };
 
 

@@ -11,4 +11,14 @@ export const createServiceRecord = async (payload) => {
   return res.data;
 };
 
+export const deleteServiceRecord = async (recordId) => {
+  const res = await axios.delete(`http://localhost:3001/api/records/service/${recordId}`);
+  return res.data;
+};
+
+export const acceptServiceRecord = async (recordId) => {
+  const res = await axios.post(`http://localhost:3001/api/records/service/${recordId}/accept`);
+  return res.data;
+};
+
 

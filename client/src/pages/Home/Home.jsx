@@ -15,7 +15,10 @@ import {
   Badge,
   Tooltip,
   Popover,
-  message
+  message,
+  Modal,
+  Form,
+  InputNumber,
 } from "antd";
 import {
   CarOutlined,
@@ -33,6 +36,8 @@ import {
   CopyOutlined,
   LinkOutlined,
   FundOutlined,
+  DeleteOutlined,
+  CheckCircleFilled,
 } from "@ant-design/icons";
 import * as VehicleServices from "../../services/VehicleService.js";
 import * as RecordsService from "../../services/RecordsService.js";
@@ -59,6 +64,10 @@ const Home = (props) => {
   const [allTransactions, setAllTransactions] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [isCreateVehicleModalOpen, setIsCreateVehicleModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedRecordId, setSelectedRecordId] = useState(null);
+  const [form] = Form.useForm();
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -277,21 +286,56 @@ const Home = (props) => {
     {
       title: "Hành động",
       key: "action",
-      width: 80,
+      width: 200,
       render: (_, record) => (
-        <Button
-          size="small"
-          style={{ 
-            backgroundColor: "#1890ff", 
-            borderColor: "#1890ff",
-            color: "#fff",
-            fontSize: "10px"
-          }}
-          icon={<EyeOutlined />}
-          onClick={() => navigate(`/detail/${record.vehicleKey}`)}
-        >
-          Xem
-        </Button>
+        <Space>
+          {!record.anchored && (
+            <Button
+              size="small"
+              type="primary"
+              style={{ 
+                backgroundColor: "#52c41a", 
+                borderColor: "#52c41a",
+                color: "#fff",
+                fontSize: "10px"
+              }}
+              icon={<CheckCircleFilled />}
+              onClick={async () => {
+                try {
+                  setLoading(true);
+                  const res = await RecordsService.acceptServiceRecord(record._id);
+                  if (res?.status === "OK") {
+                    message.success("Đã xác thực transaction thành công!");
+                    fetchDashboardData();
+                  } else {
+                    message.error(res?.message || "Xác thực thất bại!");
+                  }
+                } catch (error) {
+                  message.error("Có lỗi xảy ra khi xác thực!");
+                  console.error(error);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              loading={loading}
+            >
+              Xác thực
+            </Button>
+          )}
+          <Button
+            size="small"
+            style={{ 
+              backgroundColor: "#1890ff", 
+              borderColor: "#1890ff",
+              color: "#fff",
+              fontSize: "10px"
+            }}
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/detail/${record.vehicleKey}`)}
+          >
+            Xem
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -452,17 +496,30 @@ const Home = (props) => {
                         }
                       }}
                     />
-                    <Button 
-                      style={{ 
-                        backgroundColor: "#1890ff", 
-                        borderColor: "#1890ff",
-                        color: "#fff"
-                      }}
-                      icon={<PlusOutlined />} 
-                      onClick={() => navigate("/vehicles")}
-                    >
-                      Xem tất cả
-                    </Button>
+                    <Space>
+                      <Button 
+                        style={{ 
+                          backgroundColor: "#52c41a", 
+                          borderColor: "#52c41a",
+                          color: "#fff"
+                        }}
+                        icon={<PlusOutlined />} 
+                        onClick={() => setIsCreateVehicleModalOpen(true)}
+                      >
+                        Tạo xe mới
+                      </Button>
+                      <Button 
+                        style={{ 
+                          backgroundColor: "#1890ff", 
+                          borderColor: "#1890ff",
+                          color: "#fff"
+                        }}
+                        icon={<PlusOutlined />} 
+                        onClick={() => navigate("/vehicles")}
+                      >
+                        Xem tất cả
+                      </Button>
+                    </Space>
                   </Space>
                 }
               >
@@ -572,25 +629,35 @@ const Home = (props) => {
                       title: "Transaction Hash",
                       dataIndex: "txHash",
                       key: "txHash",
-                      width: 500,
-                      render: (text) => (
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <code style={{ 
-                            fontSize: "12px", 
-                            fontFamily: "monospace", 
-                            color: "#1890ff",
-                            fontWeight: 600,
-                            backgroundColor: "#e6f7ff",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            maxWidth: "500px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
-                          }}>
-                            {text ? `${text}` : "N/A"}
-                          </code>
-                        </div>
-                      ),
+                      width: 300,
+                      render: (text, record, index) => {
+                        // Chỉ hiển thị đầy đủ cho 2 item đầu (index 0 và 1)
+                        const showFull = index < 2;
+                        const displayText = showFull ? text : (text ? `${text.slice(0, 10)}...${text.slice(-8)}` : "N/A");
+                        
+                        return (
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <Tooltip title={text} placement="topLeft">
+                              <code style={{ 
+                                fontSize: showFull ? "11px" : "11px", 
+                                fontFamily: "monospace", 
+                                color: "#1890ff",
+                                fontWeight: 600,
+                                backgroundColor: "#e6f7ff",
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                                maxWidth: showFull ? "500px" : "250px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                cursor: "pointer",
+                                wordBreak: showFull ? "break-all" : "normal"
+                              }}>
+                                {displayText}
+                              </code>
+                            </Tooltip>
+                          </div>
+                        );
+                      },
                     },
                     {
                       title: "Trạng thái",
@@ -640,6 +707,17 @@ const Home = (props) => {
                           >
                             Copy
                           </Button>
+                          <Button
+                            size="small"
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                              setSelectedRecordId(record._id);
+                              setIsDeleteModalOpen(true);
+                            }}
+                          >
+                            Xóa
+                          </Button>
                         </Space>
                       ),
                     },
@@ -655,6 +733,199 @@ const Home = (props) => {
           </Row>
         </div>
         <Footer />
+
+        {/* Modal Tạo xe mới */}
+        <Modal
+          title={
+            <Space>
+              <CarOutlined />
+              <span>Tạo Xe Mới</span>
+            </Space>
+          }
+          open={isCreateVehicleModalOpen}
+          onCancel={() => {
+            setIsCreateVehicleModalOpen(false);
+            form.resetFields();
+          }}
+          footer={null}
+          width={700}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={async (values) => {
+              try {
+                setLoading(true);
+                // Map owner về name nếu API yêu cầu
+                const vehicleData = {
+                  ...values,
+                  name: values.name || values.owner || "",
+                  image: [],
+                };
+                const res = await VehicleServices.createVehicle(vehicleData);
+                if (res?.status === "OK") {
+                  message.success("Tạo xe thành công!");
+                  setIsCreateVehicleModalOpen(false);
+                  form.resetFields();
+                  fetchDashboardData();
+                } else {
+                  message.error(res?.message || "Tạo xe thất bại!");
+                }
+              } catch (error) {
+                message.error("Có lỗi xảy ra!");
+                console.error(error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Biển số xe"
+                  name="plates"
+                  rules={[{ required: true, message: "Vui lòng nhập biển số!" }]}
+                >
+                  <Input placeholder="VD: 30A-123.45" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Tên xe / Model"
+                  name="name"
+                  rules={[{ required: true, message: "Vui lòng nhập tên xe!" }]}
+                >
+                  <Input placeholder="VD: Honda Civic" />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Hãng xe"
+                  name="brand"
+                  rules={[{ required: true, message: "Vui lòng nhập hãng xe!" }]}
+                >
+                  <Input placeholder="VD: Honda, Toyota, Ford..." />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Loại xe"
+                  name="type"
+                  rules={[{ required: true, message: "Vui lòng nhập loại xe!" }]}
+                >
+                  <Input placeholder="VD: Sedan, SUV, Van..." />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Chủ xe"
+                  name="owner"
+                >
+                  <Input placeholder="Tên chủ xe" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Địa chỉ"
+                  name="address"
+                >
+                  <Input placeholder="VD: Hanoi, Vietnam" />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item
+                  label="Nhiên liệu"
+                  name="fuel"
+                >
+                  <Input placeholder="VD: Xăng, Dầu..." />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  label="Hộp số"
+                  name="gear"
+                >
+                  <Input placeholder="VD: Số sàn, Tự động" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  label="Màu sắc"
+                  name="color"
+                >
+                  <Input placeholder="VD: Đỏ, Trắng..." />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Form.Item
+              label="Mô tả"
+              name="description"
+            >
+              <Input.TextArea rows={3} placeholder="Thông tin thêm về xe..." />
+            </Form.Item>
+            <Form.Item>
+              <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+                <Button onClick={() => {
+                  setIsCreateVehicleModalOpen(false);
+                  form.resetFields();
+                }}>
+                  Hủy
+                </Button>
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  style={{ 
+                    backgroundColor: "#52c41a", 
+                    borderColor: "#52c41a"
+                  }}
+                  loading={loading}
+                >
+                  Tạo xe
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal Xóa Transaction */}
+        <Modal
+          title="Xác nhận xóa"
+          open={isDeleteModalOpen}
+          onOk={async () => {
+            try {
+              setLoading(true);
+              const res = await RecordsService.deleteServiceRecord(selectedRecordId);
+              if (res?.status === "OK") {
+                message.success("Đã xóa transaction thành công!");
+                setIsDeleteModalOpen(false);
+                setSelectedRecordId(null);
+                fetchDashboardData();
+              } else {
+                message.error(res?.message || "Xóa thất bại!");
+              }
+            } catch (error) {
+              message.error("Có lỗi xảy ra khi xóa!");
+              console.error(error);
+            } finally {
+              setLoading(false);
+            }
+          }}
+          onCancel={() => {
+            setIsDeleteModalOpen(false);
+            setSelectedRecordId(null);
+          }}
+          okText="Xóa"
+          cancelText="Hủy"
+          okButtonProps={{ danger: true }}
+        >
+          <p>Bạn có chắc chắn muốn xóa transaction này? Hành động này không thể hoàn tác.</p>
+        </Modal>
       </div>
     </Loading>
   );

@@ -314,11 +314,48 @@ const Detail = () => {
                             dot: r.anchored ? <CheckCircleOutlined /> : <ClockCircleOutlined />,
                             children: (
                               <div>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
                                   <strong>{r?.content?.job}</strong>
-                                  <Tag color={r.anchored ? "success" : "warning"}>
-                                    {r.anchored ? "Đã xác thực blockchain" : "Chưa xác thực"}
-                                  </Tag>
+                                  <Space>
+                                    {!r.anchored && (
+                                      <Button
+                                        size="small"
+                                        type="primary"
+                                        style={{ 
+                                          backgroundColor: "#52c41a", 
+                                          borderColor: "#52c41a",
+                                          color: "#fff",
+                                          fontSize: "11px",
+                                          height: "24px",
+                                          padding: "0 12px"
+                                        }}
+                                        icon={<CheckCircleOutlined />}
+                                        onClick={async () => {
+                                          try {
+                                            setCreating(true);
+                                            const res = await RecordsService.acceptServiceRecord(r._id);
+                                            if (res?.status === "OK") {
+                                              message.success("Đã xác thực transaction thành công!");
+                                              refreshServiceRecords(car._id);
+                                            } else {
+                                              message.error(res?.message || "Xác thực thất bại!");
+                                            }
+                                          } catch (error) {
+                                            message.error("Có lỗi xảy ra khi xác thực!");
+                                            console.error(error);
+                                          } finally {
+                                            setCreating(false);
+                                          }
+                                        }}
+                                        loading={creating}
+                                      >
+                                        Xác thực
+                                      </Button>
+                                    )}
+                                    <Tag color={r.anchored ? "success" : "warning"}>
+                                      {r.anchored ? "Đã xác thực blockchain" : "Chưa xác thực"}
+                                    </Tag>
+                                  </Space>
                                 </div>
                                 <div style={{ fontSize: 12, color: "#666" }}>
                                   <Space split="•">
