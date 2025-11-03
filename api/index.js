@@ -1,4 +1,3 @@
 // Vercel Serverless Function entry point
-// Wrapper để đảm bảo app được export đúng cách
+// Export Express app cho Vercel serverless
 module.exports = require('../server/src/index.js');
-
