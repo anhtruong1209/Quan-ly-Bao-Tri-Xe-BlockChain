@@ -1,6 +1,35 @@
 @import url("https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&display=swap");
 .sin {
-  padding: 5px 0px;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0b1a4a 0%, #5236b9 50%, #8a5bd1 100%);
+}
+
+.sin::before,
+.sin::after {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.sin::before {
+  top: -140px;
+  left: -140px;
+  background: radial-gradient(circle at center, #9b8cf2, transparent 60%);
+}
+
+.sin::after {
+  bottom: -160px;
+  right: -160px;
+  background: radial-gradient(circle at center, #56d0f3, transparent 60%);
 }
 .sin-header {
   display: flex;
@@ -16,13 +45,15 @@
   gap: 50px;
 }
 /* content */
-.sin-content {
-  background-repeat: no-repeat;
-  background-size: cover;
-  padding: 100px;
-  display: flex;
-  background-color: rgb(6, 18, 18);
-  background-image: url("../../assets/blackbackground.jpg");
+.sin-content { /* container card */
+  width: 420px;
+  padding: 28px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 .sin-content-image {
   display: flex;
@@ -31,17 +62,10 @@
   justify-content: center;
   gap: 20px;
 }
-.sin-content-form {
+.sin-content-form { /* inner layout kept for spacing */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(255, 255, 255);
-  width: 400px;
-  height: 500px;
-  padding: 50px;
-  border-radius: 20px;
-  margin-right: 15%;
+  gap: 14px;
 }
 .sin-content-form-title {
   font-family: "Playpen Sans", cursive;
@@ -74,8 +98,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  width: 330px;
+  margin-top: 6px;
 }
 .sin-content-form-try-pass:hover {
   color: rgb(122, 58, 122);

@@ -18,6 +18,7 @@ import {
 import * as RealEstateService from "../../services/RealEstateService";
 import * as TransactionService from "../../services/TransactionService";
 import Loading from "../../components/LoadingComponent/Loading";
+import heroImg from "../../assets/phu-long-1-162.jpg";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -34,6 +35,7 @@ const RealEstateDashboard = () => {
   const [isTransactionModalVisible, setIsTransactionModalVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [viewPropertyVisible, setViewPropertyVisible] = useState(false);
   const [propertyForm] = Form.useForm();
   const [transactionForm] = Form.useForm();
 
@@ -378,7 +380,10 @@ const RealEstateDashboard = () => {
             size="small"
             type="primary"
             icon={<EyeOutlined />}
-            onClick={() => navigate(`/realestate/detail/${record._id}`)}
+            onClick={() => {
+              setSelectedProperty(record);
+              setViewPropertyVisible(true);
+            }}
           >
             Xem
           </Button>
@@ -464,14 +469,32 @@ const RealEstateDashboard = () => {
   ];
 
   return (
-    <div className="realestate-dashboard" style={{ padding: "24px", minHeight: "100vh", background: "#f0f2f5" }}>
-      <div className="dashboard-header" style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>
-          <HomeOutlined /> Dashboard Quản Lý Bất Động Sản
-        </h1>
-      </div>
+    <div className="realestate-dashboard" style={{ padding: "24px 0", minHeight: "100vh" }}>
+      <div style={{ width: "80%", margin: "100px auto" }}>
+        <div className="dashboard-header" style={{ marginBottom: "16px", width: "80%", marginLeft: "170px", marginRight: "170px" }}>
+          <div style={{
+            padding: "22px",
+            borderRadius: 16,
+            background: "rgba(255,255,255,0.7)",
+            border: "1px solid rgba(0,0,0,0.06)",
+            backdropFilter: "blur(14px) saturate(140%)",
+            WebkitBackdropFilter: "blur(14px) saturate(140%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24
+          }}>
+            <div>
+              <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1f2937" }}>
+                <HomeOutlined /> Bảng điều khiển Bất Động Sản
+              </h1>
+              <p style={{ margin: 0, color: "#475569" }}>Quản lý tài sản, tạo giao dịch và theo dõi lịch sử nhanh chóng.</p>
+            </div>
+            <img src={heroImg} alt="dashboard-hero" style={{ height: 120, borderRadius: 12, objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }} />
+          </div>
+        </div>
 
-      <Tabs defaultActiveKey="properties" size="large">
+      <Tabs defaultActiveKey="properties" size="large" tabPosition="left" style={{ background: "transparent", width: "80%", margin: "0 auto" }}>
         <TabPane
           tab={
             <span>
@@ -498,9 +521,9 @@ const RealEstateDashboard = () => {
                   propertyForm.resetFields();
                 }}
                 size="large"
-                style={{ height: "40px", fontSize: "16px", fontWeight: "600" }}
+                style={{ height: 40, fontSize: 16, fontWeight: 700, background: "#0ea5e9", borderColor: "#0ea5e9" }}
               >
-                + Đăng ký BĐS mới
+                Đăng ký BĐS mới
               </Button>
             }
           >
@@ -509,8 +532,9 @@ const RealEstateDashboard = () => {
                 dataSource={properties}
                 columns={propertyColumns}
                 rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
+                pagination={{ pageSize: 8 }}
+                size="middle"
+                bordered
               />
             </Loading>
           </Card>
@@ -533,7 +557,7 @@ const RealEstateDashboard = () => {
             }
             extra={
               <Space>
-                <Button icon={<ReloadOutlined />} onClick={fetchTransactions}>
+                <Button icon={<ReloadOutlined />} onClick={fetchTransactions} style={{ background: "#38bdf8", borderColor: "#38bdf8", color: "#fff" }}>
                   Làm mới
                 </Button>
                 <Button
@@ -545,7 +569,7 @@ const RealEstateDashboard = () => {
                   }}
                   disabled={properties.length === 0}
                   size="large"
-                  style={{ height: "40px", fontSize: "16px", fontWeight: "600" }}
+                  style={{ height: 40, fontSize: 16, fontWeight: 700, background: "#0ea5e9", borderColor: "#0ea5e9" }}
                 >
                   Tạo giao dịch mới
                 </Button>
@@ -557,8 +581,9 @@ const RealEstateDashboard = () => {
                 dataSource={pendingTransactions}
                 columns={transactionColumns}
                 rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
+                pagination={{ pageSize: 8 }}
+                size="middle"
+                bordered
               />
             </Loading>
           </Card>
@@ -585,7 +610,7 @@ const RealEstateDashboard = () => {
               </Space>
             }
             extra={
-              <Button icon={<ReloadOutlined />} onClick={fetchTransactions}>
+              <Button icon={<ReloadOutlined />} onClick={fetchTransactions} style={{ background: "#38bdf8", borderColor: "#38bdf8", color: "#fff" }}>
                 Làm mới
               </Button>
             }
@@ -630,8 +655,9 @@ const RealEstateDashboard = () => {
                   },
                 ]}
                 rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
+                pagination={{ pageSize: 8 }}
+                size="middle"
+                bordered
               />
             </Loading>
           </Card>
@@ -982,6 +1008,46 @@ const RealEstateDashboard = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* Modal xem chi tiết BĐS */}
+      <Modal
+        title="Chi tiết bất động sản"
+        open={viewPropertyVisible}
+        onCancel={() => {
+          setViewPropertyVisible(false);
+          setSelectedProperty(null);
+        }}
+        footer={null}
+        width={800}
+      >
+        {selectedProperty && (
+          <div>
+            <Row gutter={16}>
+              <Col span={14}>
+                <Descriptions bordered size="small" column={1}>
+                  <Descriptions.Item label="Mã tài sản">{selectedProperty.propertyCode}</Descriptions.Item>
+                  <Descriptions.Item label="Địa chỉ">{selectedProperty.address}</Descriptions.Item>
+                  <Descriptions.Item label="Loại">{getPropertyTypeText(selectedProperty.type)}</Descriptions.Item>
+                  <Descriptions.Item label="Diện tích">{selectedProperty.area} m²</Descriptions.Item>
+                  <Descriptions.Item label="Giá">{selectedProperty.price?.toLocaleString()} VNĐ</Descriptions.Item>
+                  <Descriptions.Item label="Trạng thái">{selectedProperty.status}</Descriptions.Item>
+                </Descriptions>
+              </Col>
+              <Col span={10}>
+                <img
+                  src={(selectedProperty.images && selectedProperty.images[0]) || heroImg}
+                  alt="property"
+                  style={{ width: '100%', height: 220, objectFit: 'cover', borderRadius: 12 }}
+                />
+              </Col>
+            </Row>
+            {selectedProperty.description && (
+              <div style={{ marginTop: 12, color: '#475569' }}>{selectedProperty.description}</div>
+            )}
+          </div>
+        )}
+      </Modal>
+    </div>
     </div>
   );
 };

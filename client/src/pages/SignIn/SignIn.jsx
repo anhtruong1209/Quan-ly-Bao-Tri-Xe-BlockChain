@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SignIn.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import audi from "../../assets/audirs7.jpg";
-import mclaren from "../../assets/mclaren.jpg";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
@@ -87,7 +85,7 @@ const SignInPage = (props) => {
   }, [user, navigate]);
 
   return (
-    <div className="sin">
+    <div className="sin" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0b1a4a" }}>
       {/* <div className="sin-header">
         <div className="sin-header-title">
           <NavLink style={{ textDecoration: "none", color: "black" }} to="/">
@@ -97,14 +95,9 @@ const SignInPage = (props) => {
         </div>
         <p>Bạn cần giúp đỡ ?</p>
       </div> */}
-      <div className="sin-content row">
-        <div className="sin-content-image col-md-6 mt-6">
-          <img style={{ width: "70%" }} src={audi} alt="" />
-          <img style={{ width: "70%" }} src={mclaren} alt="" />
-        </div>
-        <div className="sin-content-form col-md-6 mb-6">
+      <div className="sin-content" style={{ width: 420, background: "#fff", borderRadius: 12, padding: 28, boxShadow: "0 12px 30px rgba(0,0,0,0.2)" }}>
           <div>
-            <h1 className="sin-content-form-title">Đăng nhập</h1>
+            <h1 className="sin-content-form-title" style={{ margin: 0, textAlign: "center" }}>Đăng nhập hệ thống BĐS</h1>
           </div>
           <div>
             <InputForm
@@ -167,12 +160,9 @@ const SignInPage = (props) => {
               }}
             ></ButtonComponent>
           </Loading>
-          <div className="sin-content-form-try">
+          <div className="sin-content-form-try" style={{ display: "flex", justifyContent: "space-between" }}>
             <a className="sin-content-form-try-pass">Quên mật khẩu ?</a>
-          </div>
-          <div className="sin-content-form-sup">
-            <p>Bạn mới sử dụng VehicleWarranty</p>
-            <NavLink to="/sign-up">Đăng kí</NavLink>
+            <NavLink to="/sign-up">Đăng ký</NavLink>
           </div>
         </div>
       </div>

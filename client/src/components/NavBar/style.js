@@ -27,7 +27,11 @@ export const WrapperHeaderAccout = styled.div`
   align-items: center;
   color: #fff;
   gap: 10px;
-  max-width: 200px;
+  max-width: 240px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 export const WrapperTextHeaderSmall = styled.span`
@@ -38,7 +42,11 @@ export const WrapperTextHeaderSmall = styled.span`
 
 export const WrapperContentPopup = styled.p`
   cursor: pointer;
+  padding: 8px 12px;
+  margin: 0;
+  border-radius: 8px;
+  transition: background 0.2s ease;
   &:hover {
-    color: rgb(26, 148, 255);
+    background: rgba(0, 0, 0, 0.06);
   }
 `;

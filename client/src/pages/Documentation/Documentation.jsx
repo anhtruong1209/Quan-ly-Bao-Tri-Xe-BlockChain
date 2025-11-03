@@ -1,14 +1,6 @@
 import React from "react";
-import { Card, Typography, Divider, Steps, Tag, Alert, Space, Button } from "antd";
-import {
-  FileTextOutlined,
-  RocketOutlined,
-  DatabaseOutlined,
-  ApiOutlined,
-  CodeOutlined,
-  CheckCircleOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
+import { Card, Typography, Divider, Steps, Tag, Alert, Space } from "antd";
+import { FileTextOutlined, RocketOutlined, DatabaseOutlined, ApiOutlined, CodeOutlined, InfoCircleOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import "./Documentation.css";
 
 const { Title, Paragraph, Text, Link } = Typography;
@@ -20,35 +12,48 @@ const Documentation = () => {
       <div className="container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
           <Title level={1}>
-            <FileTextOutlined /> Hướng Dẫn Cấu Hình & Vận Hành
+            <FileTextOutlined /> Tài liệu dự án: Hệ Thống Quản Lý Giao Dịch Bất Động Sản (Blockchain)
           </Title>
           <Paragraph style={{ fontSize: "18px", color: "#666" }}>
-            Hệ thống Quản Lý Bảo Trì Xe sử dụng Blockchain Technology
+            Tài liệu này mô tả đầy đủ nền tảng, kiến trúc, luồng nghiệp vụ, API, triển khai và bảo mật của hệ thống bất động sản chạy trên React + Node.js + MongoDB + Ethereum (Sepolia Testnet).
           </Paragraph>
         </div>
 
         <Alert
-          message="Thông tin quan trọng"
-          description="Dự án này sử dụng 3 thành phần chính: Frontend (React), Backend (Node.js), và Smart Contract (Hardhat). Tất cả cần được chạy đồng thời để hệ thống hoạt động."
+          message="Tổng quan nhanh"
+          description="Hệ thống gồm 3 phần: Frontend (React/Vite), Backend (Express/MongoDB), Smart Contract (Solidity/Hardhat). Blockchain dùng để 'anchor' giao dịch – lưu vết hash bất biến, đối chiếu với dữ liệu trên MongoDB."
           type="info"
           showIcon
           style={{ marginBottom: "24px" }}
         />
 
-        {/* Tổng quan kiến trúc */}
+        {/* Blockchain là gì */}
+        <Card title={<><CodeOutlined /> Blockchain là gì? Tại sao dùng?</>} style={{ marginBottom: "24px" }}>
+          <Paragraph>
+            Blockchain là sổ cái phân tán, dữ liệu được ghi thành các khối (block) liên kết bằng hàm băm (hash) và được xác thực bởi mạng lưới.
+            Điểm mạnh: tính bất biến, minh bạch, truy vết. Trong dự án này, mỗi giao dịch bất động sản sau khi được admin duyệt sẽ tạo một <Text code>contentHash</Text> (băm dữ liệu giao dịch) và ghi lên chuỗi ("anchor").
+          </Paragraph>
+          <ul>
+            <li><Text strong>Minh bạch:</Text> Ai cũng kiểm chứng được giao dịch đã được ghi (txHash trên Etherscan).</li>
+            <li><Text strong>Không sửa được:</Text> Nếu dữ liệu ở DB bị thay đổi, băm lại sẽ khác hash trên chuỗi.</li>
+            <li><Text strong>Chi phí thấp:</Text> Chỉ lưu hash (bytes32) nên gas fee rẻ, không cần đưa toàn bộ nội dung lên chain.</li>
+          </ul>
+        </Card>
+
+        {/* Kiến trúc */}
         <Card title={<><CodeOutlined /> Kiến trúc hệ thống</>} style={{ marginBottom: "24px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
             <Card size="small" bordered style={{ backgroundColor: "#e6f7ff" }}>
-              <Title level={4}>🎨 Frontend (React)</Title>
+              <Title level={4}>🎨 Frontend (React/Vite)</Title>
               <Text>Port: 5173</Text>
               <br />
-              <Text>Framework: React + Vite</Text>
+              <Text>UI: Ant Design + Glassmorphism</Text>
             </Card>
             <Card size="small" bordered style={{ backgroundColor: "#f6ffed" }}>
               <Title level={4}>⚙️ Backend (Node.js)</Title>
               <Text>Port: 3001</Text>
               <br />
-              <Text>Database: MongoDB</Text>
+              <Text>Database: MongoDB (Atlas)</Text>
             </Card>
             <Card size="small" bordered style={{ backgroundColor: "#fff7e6" }}>
               <Title level={4}>⛓️ Smart Contract</Title>
@@ -57,97 +62,20 @@ const Documentation = () => {
               <Text>Framework: Hardhat</Text>
             </Card>
           </div>
+          <Divider />
+          <Paragraph>
+            Mô hình phân lớp: Client → REST API → MongoDB. Giao dịch khi được duyệt sẽ được <Text strong>anchor</Text> lên blockchain bằng contract (emit event & lưu mapping). Hệ thống chỉ lưu <Text code>bytes32 contentHash</Text> để tiết kiệm phí.
+          </Paragraph>
         </Card>
 
-        {/* Luồng hoạt động */}
-        <Card title={<><RocketOutlined /> Luồng hoạt động của hệ thống</>} style={{ marginBottom: "24px" }}>
+        {/* Luồng nghiệp vụ */}
+        <Card title={<><RocketOutlined /> Luồng nghiệp vụ (User và Admin)</>} style={{ marginBottom: "24px" }}>
           <Steps direction="vertical" size="small" current={-1}>
-            <Step
-              title="1. Khởi tạo Smart Contracts"
-              description={
-                <div>
-                  <Paragraph>Deploy smart contract <Text code>VehicleWarrantyRegistry</Text> lên Sepolia Testnet:</Paragraph>
-                  <pre style={{ backgroundColor: "#f5f5f5", padding: "12px", borderRadius: "4px", marginTop: "8px" }}>
-{`cd smart_contract
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network sepolia`}
-                  </pre>
-                  <Alert
-                    message="Lưu ý"
-                    description="Contract address sẽ tự động được lưu vào file deploy-addresses.txt. Backend sẽ tự động đọc address này."
-                    type="info"
-                    showIcon
-                    style={{ marginTop: "12px" }}
-                  />
-                  <Paragraph style={{ marginTop: "12px" }}>
-                    <Text strong>Sau khi deploy, thiết lập roles:</Text>
-                  </Paragraph>
-                  <ul>
-                    <li>Set Admin: <Text code>npx hardhat run scripts/setAdminRole.js --network sepolia [ADMIN_ADDRESS]</Text></li>
-                    <li>Set User: <Text code>npx hardhat run scripts/setUserRole.js --network sepolia [USER_ADDRESS]</Text></li>
-                  </ul>
-                </div>
-              }
-            />
-            <Step
-              title="2. Cấu hình Contract Address"
-              description={
-                <div>
-                  <Paragraph>Contract address sẽ tự động được lưu vào file <Text code>smart_contract/deploy-addresses.txt</Text></Paragraph>
-                  <Paragraph>Backend tự động đọc address từ file này qua <Text code>server/src/config/blockchain.js</Text></Paragraph>
-                  <Alert
-                    message="Tự động cấu hình"
-                    description="Không cần cấu hình thủ công! Address được đọc tự động sau khi deploy."
-                    type="success"
-                    showIcon
-                    style={{ marginTop: "12px" }}
-                  />
-                </div>
-              }
-            />
-            <Step
-              title="3. Kết nối MongoDB"
-              description={
-                <div>
-                  <Paragraph>Backend tự động kết nối MongoDB khi khởi động:</Paragraph>
-                  <Text code>mongodb+srv://admin:Admin%40123@warrantly-verhical.hsdx3um.mongodb.net/</Text>
-                  <Alert
-                    message="Lưu ý"
-                    description="Connection string được hardcode trong server/src/index.js. Nếu muốn thay đổi, cần cập nhật biến MONGO_DB."
-                    type="warning"
-                    showIcon
-                    style={{ marginTop: "12px" }}
-                  />
-                </div>
-              }
-            />
-            <Step
-              title="4. Kết nối Frontend với Backend"
-              description={
-                <div>
-                  <Paragraph>Frontend gọi API từ Backend qua các service:</Paragraph>
-                  <ul>
-                    <li><Text code>VehicleService.js</Text> - Quản lý xe</li>
-                    <li><Text code>RecordsService.js</Text> - Quản lý bảo trì</li>
-                    <li><Text code>UserService.js</Text> - Quản lý người dùng</li>
-                  </ul>
-                </div>
-              }
-            />
-            <Step
-              title="5. Tương tác với Blockchain"
-              description={
-                <div>
-                  <Paragraph>Khi người dùng thực hiện bảo trì:</Paragraph>
-                  <ol>
-                    <li>Frontend gửi request tới Backend để lưu vào MongoDB</li>
-                    <li>Backend tạo transaction trên blockchain thông qua ethers.js</li>
-                    <li>Người dùng xác nhận transaction trên MetaMask</li>
-                    <li>Sau khi transaction thành công, Backend cập nhật <Text code>txHash</Text> và <Text code>anchored: true</Text></li>
-                  </ol>
-                </div>
-              }
-            />
+            <Step title="1. User đăng nhập" description={<div><Paragraph>Đăng nhập qua API <Text code>POST /api/user/sign-in</Text>. Hệ thống trả về <Text code>access_token</Text> (JWT) lưu trong localStorage. Interceptor tự refresh khi gần hết hạn.</Paragraph></div>} />
+            <Step title="2. User tạo Bất động sản / Giao dịch" description={<div><Paragraph>User đăng ký tài sản (mã, địa chỉ, diện tích, giá...) hoặc tạo lệnh giao dịch (mua bán/cho thuê/chuyển nhượng...). Dữ liệu lưu MongoDB.</Paragraph></div>} />
+            <Step title="3. Admin duyệt giao dịch" description={<div><Paragraph>Admin xem danh sách giao dịch "Chờ duyệt" → đồng ý hoặc từ chối. Nếu duyệt, trạng thái chuyển <Text code>approved</Text>.</Paragraph></div>} />
+            <Step title="4. Anchor lên Blockchain" description={<div><Paragraph>Admin bấm "Anchor" → Backend băm nội dung giao dịch thành <Text code>contentHash</Text> và gọi contract <Text code>anchorTransaction(bytes32)</Text>. Kết quả trả về <Text code>txHash</Text> được lưu vào MongoDB.</Paragraph></div>} />
+            <Step title="5. Xác thực & tra cứu" description={<div><Paragraph>Ở mọi thời điểm có thể kiểm tra giao dịch trên <Text strong>Etherscan</Text> bằng <Text code>txHash</Text>. So sánh băm dữ liệu hiện tại với <Text code>contentHash</Text> trên chuỗi để phát hiện thay đổi.</Paragraph></div>} />
           </Steps>
         </Card>
 
@@ -435,31 +363,26 @@ npm start`}
         </Card>
 
         {/* API Endpoints */}
-        <Card title={<><ApiOutlined /> API Endpoints quan trọng</>} style={{ marginBottom: "24px" }}>
+        <Card title={<><ApiOutlined /> API Endpoints (chính)</>} style={{ marginBottom: "24px" }}>
           <div style={{ display: "grid", gap: "12px" }}>
             <div>
-              <Text strong>Vehicles:</Text>
+              <Text strong>Real Estate:</Text>
               <ul>
-                <li><Text code>GET /api/vehicle</Text> - Lấy danh sách xe</li>
-                <li><Text code>GET /api/vehicle/:plate</Text> - Lấy chi tiết xe</li>
-                <li><Text code>POST /api/vehicle</Text> - Tạo xe mới</li>
+                <li><Text code>GET /api/realestate</Text> - Danh sách BĐS</li>
+                <li><Text code>POST /api/realestate/create</Text> - Tạo BĐS</li>
+                <li><Text code>PUT /api/realestate/:id</Text> - Cập nhật</li>
+                <li><Text code>DELETE /api/realestate/:id</Text> - Xóa</li>
               </ul>
             </div>
             <div>
-              <Text strong>Service Records:</Text>
+              <Text strong>Transactions:</Text>
               <ul>
-                <li><Text code>GET /api/records</Text> - Lấy danh sách bảo trì</li>
-                <li><Text code>POST /api/records</Text> - Tạo bản bảo trì mới</li>
-              </ul>
-            </div>
-            <div>
-              <Text strong>Maintenance Registration (Yêu cầu đăng nhập):</Text>
-              <ul>
-                <li><Text code>POST /api/maintenance/create</Text> - User tạo lệnh đăng ký bảo trì</li>
-                <li><Text code>GET /api/maintenance/user</Text> - User xem lệnh đăng ký của mình</li>
-                <li><Text code>GET /api/maintenance/admin/pending</Text> - Admin xem lệnh chờ duyệt</li>
-                <li><Text code>PUT /api/maintenance/admin/approve/:id</Text> - Admin duyệt lệnh</li>
-                <li><Text code>PUT /api/maintenance/admin/reject/:id</Text> - Admin từ chối lệnh</li>
+                <li><Text code>POST /api/transaction/create</Text> - Tạo giao dịch</li>
+                <li><Text code>GET /api/transaction/user</Text> - Giao dịch của user</li>
+                <li><Text code>GET /api/transaction/admin/pending</Text> - Admin xem chờ duyệt</li>
+                <li><Text code>PUT /api/transaction/admin/approve/:id</Text> - Duyệt</li>
+                <li><Text code>PUT /api/transaction/admin/reject/:id</Text> - Từ chối</li>
+                <li><Text code>PUT /api/transaction/admin/anchor/:id</Text> - Anchor blockchain (trả về txHash)</li>
               </ul>
             </div>
             <div>
@@ -467,6 +390,8 @@ npm start`}
               <ul>
                 <li><Text code>POST /api/user/sign-in</Text> - Đăng nhập</li>
                 <li><Text code>POST /api/user/sign-up</Text> - Đăng ký</li>
+                <li><Text code>POST /api/user/forgot-password</Text> - Quên mật khẩu (gửi email)</li>
+                <li><Text code>POST /api/user/change-password</Text> - Đổi mật khẩu</li>
               </ul>
             </div>
           </div>
@@ -509,7 +434,7 @@ node src/scripts/seedAdmin.js`}
         </Card>
 
         <div style={{ textAlign: "center", marginTop: "40px", padding: "24px", backgroundColor: "#f5f5f5", borderRadius: "8px" }}>
-          <Title level={4}>🚀 Chúc bạn code vui vẻ!</Title>
+          <Title level={4}>🚀 Chúc bạn thành công!</Title>
           <Paragraph>
             Nếu có thắc mắc, hãy kiểm tra lại các bước trên hoặc xem code comments trong source code.
           </Paragraph>

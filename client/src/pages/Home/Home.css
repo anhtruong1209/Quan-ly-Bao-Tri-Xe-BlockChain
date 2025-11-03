@@ -91,6 +91,7 @@ textarea {
   padding: 1rem 2rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100px;
 }
 .login-button-home:hover {
   background-color: #0069d9;

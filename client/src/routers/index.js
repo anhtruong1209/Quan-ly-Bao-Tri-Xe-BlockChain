@@ -3,6 +3,7 @@ import SignUp from "../pages/SignUp/SignUpRealEstate";
 import RealEstateDashboard from "../pages/RealEstateDashboard/RealEstateDashboard";
 import RealEstateAdminDashboard from "../pages/RealEstateAdminDashboard/RealEstateAdminDashboard";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
+import Documentation from "../pages/Documentation/Documentation";
 
 export const routes = [
   {
@@ -33,6 +34,11 @@ export const routes = [
     isShowHeader: true,
     requireAuth: true,
     requireAdmin: true,
+  },
+  {
+    path: "/documentation",
+    page: Documentation,
+    isShowHeader: true,
   },
   {
     path: "*",

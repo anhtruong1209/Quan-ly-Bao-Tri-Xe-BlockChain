@@ -3,8 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Home from "../pages/Home/Home";
 import Detail from "../pages/Detail/Detail";
-import Vehicles from "../pages/Vehicles/Vehicles";
-import VehicleByType from "../pages/VehicleByType/VehicleByType";
+import RealEstateDashboard from "../pages/RealEstateDashboard/RealEstateDashboard";
+import RealEstateAdminDashboard from "../pages/RealEstateAdminDashboard/RealEstateAdminDashboard";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import Documentation from "../pages/Documentation/Documentation";
 import SignIn from "../pages/SignIn/SignIn";
@@ -30,9 +30,7 @@ const Routers = () => {
     <Routes>
       <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/vehicles" element={<Vehicles />} />
       <Route path="/detail/:plate" element={<Detail />} />
-      <Route path="/vehicle-type/:name" element={<VehicleByType />} />
       <Route path="/documentation" element={<Documentation />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up" element={<SignUp />} />
@@ -41,7 +39,7 @@ const Routers = () => {
         element={
           <RequireAuth>
             <ProtectedRoute>
-              <UserDashboard />
+              <RealEstateDashboard />
             </ProtectedRoute>
           </RequireAuth>
         }
@@ -51,7 +49,7 @@ const Routers = () => {
         element={
           <RequireAuth>
             <ProtectedRoute requireAdmin={true}>
-              <AdminDashboard />
+              <RealEstateAdminDashboard />
             </ProtectedRoute>
           </RequireAuth>
         }

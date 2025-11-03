@@ -30,6 +30,7 @@ import * as TransactionService from "../../services/TransactionService";
 import * as RealEstateService from "../../services/RealEstateService";
 import Loading from "../../components/LoadingComponent/Loading";
 import { Tabs } from "antd";
+import heroImg from "../../assets/phu-long-1-162.jpg";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -305,14 +306,32 @@ const RealEstateAdminDashboard = () => {
   ];
 
   return (
-    <div className="realestate-admin-dashboard" style={{ padding: "24px", minHeight: "100vh", background: "#f0f2f5" }}>
-      <div className="dashboard-header" style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>
-          <DashboardOutlined /> Admin Dashboard - Quản Lý Giao Dịch BĐS
-        </h1>
-      </div>
+    <div className="realestate-admin-dashboard" style={{ padding: "24px 0", minHeight: "100vh" }}>
+      <div style={{ width: "80%", margin: "100px auto" }}>
+      <div className="dashboard-header" style={{ marginBottom: "16px", width: "80%", marginLeft: "170px", marginRight: "170px" }}>
+          <div style={{
+            padding: "22px",
+            borderRadius: 16,
+            background: "rgba(255,255,255,0.7)",
+            border: "1px solid rgba(0,0,0,0.06)",
+            backdropFilter: "blur(14px) saturate(140%)",
+            WebkitBackdropFilter: "blur(14px) saturate(140%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24
+          }}>
+            <div>
+              <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0, color: "#1f2937" }}>
+                <DashboardOutlined /> Bảng điều khiển Quản trị
+              </h1>
+              <p style={{ margin: 0, color: "#475569" }}>Quản lý giao dịch, duyệt và xác thực blockchain.</p>
+            </div>
+            <img src={heroImg} alt="admin-hero" style={{ height: 120, borderRadius: 12, objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }} />
+          </div>
+        </div>
 
-      <Tabs defaultActiveKey="pending" size="large">
+      <Tabs defaultActiveKey="pending" size="large" tabPosition="left" style={{ background: "transparent", width: "80%", margin: "0 auto" }}>
         <TabPane
           tab={
             <span>
@@ -330,7 +349,7 @@ const RealEstateAdminDashboard = () => {
               </Space>
             }
             extra={
-              <Button icon={<ReloadOutlined />} onClick={fetchPendingTransactions}>
+              <Button icon={<ReloadOutlined />} onClick={fetchPendingTransactions} style={{ background: "#38bdf8", borderColor: "#38bdf8", color: "#fff" }}>
                 Làm mới
               </Button>
             }
@@ -341,7 +360,8 @@ const RealEstateAdminDashboard = () => {
                 columns={transactionColumns}
                 rowKey="_id"
                 pagination={{ pageSize: 10 }}
-                size="small"
+                size="middle"
+                bordered
               />
             </Loading>
           </Card>
@@ -363,7 +383,7 @@ const RealEstateAdminDashboard = () => {
               </Space>
             }
             extra={
-              <Button icon={<ReloadOutlined />} onClick={fetchAllTransactions}>
+              <Button icon={<ReloadOutlined />} onClick={fetchAllTransactions} style={{ background: "#38bdf8", borderColor: "#38bdf8", color: "#fff" }}>
                 Làm mới
               </Button>
             }
@@ -409,7 +429,8 @@ const RealEstateAdminDashboard = () => {
                 ]}
                 rowKey="_id"
                 pagination={{ pageSize: 10 }}
-                size="small"
+                size="middle"
+                bordered
               />
             </Loading>
           </Card>
@@ -504,6 +525,7 @@ const RealEstateAdminDashboard = () => {
           </Form.Item>
         </Form>
       </Modal>
+    </div>
     </div>
   );
 };

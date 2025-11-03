@@ -1,6 +1,41 @@
+.realestate-admin-dashboard .ant-btn {
+  border-radius: 10px;
+  transition: none;
+}
+.realestate-admin-dashboard .ant-btn:hover,
+.realestate-admin-dashboard .ant-btn:focus {
+  filter: none;
+  opacity: 1;
+}
 .realestate-admin-dashboard {
-  background: #f0f2f5;
+  position: relative;
   min-height: 100vh;
+  background: linear-gradient(180deg, #f6f7fb 0%, #eef1f6 100%);
+  overflow: hidden;
+}
+
+.realestate-admin-dashboard::before,
+.realestate-admin-dashboard::after {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.realestate-admin-dashboard::before {
+  top: -120px;
+  left: -120px;
+  background: radial-gradient(circle at center, #9b8cf2, transparent 60%);
+}
+
+.realestate-admin-dashboard::after {
+  bottom: -140px;
+  right: -140px;
+  background: radial-gradient(circle at center, #56d0f3, transparent 60%);
 }
 
 .realestate-admin-dashboard .dashboard-header {
@@ -8,10 +43,92 @@
 }
 
 .realestate-admin-dashboard .ant-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(31, 41, 55, 0.08);
 }
 
 .realestate-admin-dashboard .ant-table {
-  background: #fff;
+  background: transparent;
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav {
+  min-width: 230px;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab {
+  color: #334155;
+  margin: 6px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #0ea5e9;
+  font-weight: 800;
+}
+.realestate-admin-dashboard .ant-tabs-content-holder {
+  padding-left: 16px;
+}
+
+.realestate-admin-dashboard .ant-table-container,
+.realestate-admin-dashboard .ant-table-content,
+.realestate-admin-dashboard .ant-table-thead > tr > th,
+.realestate-admin-dashboard .ant-table-tbody > tr > td {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+.realestate-admin-dashboard .ant-table-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+/* Vertical tabs styling */
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav {
+  min-width: 230px;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.92);
+  margin: 6px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.realestate-admin-dashboard .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffe28c;
+  font-weight: 800;
+}
+.realestate-admin-dashboard .ant-tabs-content-holder {
+  padding-left: 16px;
+}
+
+/* Table look & feel */
+.realestate-admin-dashboard .ant-table-container,
+.realestate-admin-dashboard .ant-table-content,
+.realestate-admin-dashboard .ant-table-thead > tr > th,
+.realestate-admin-dashboard .ant-table-tbody > tr > td {
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+.realestate-admin-dashboard .ant-table-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.realestate-admin-dashboard .ant-table-container,
+.realestate-admin-dashboard .ant-table-content,
+.realestate-admin-dashboard .ant-table-thead > tr > th,
+.realestate-admin-dashboard .ant-table-tbody > tr > td {
+  background: rgba(255, 255, 255, 0.8) !important;
 }
 

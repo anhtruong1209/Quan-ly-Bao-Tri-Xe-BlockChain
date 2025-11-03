@@ -33,19 +33,21 @@ import { useDispatch } from "react-redux";
 import { BsTelephoneInbound } from "react-icons/bs";
 
 import "./NavBar.css";
-// Nav links chỉ hiển thị cho admin
+// Nav links: luôn hiển thị Tài liệu; nếu là admin thêm link quản trị
 const getNavLinks = (isAdmin) => {
-  if (!isAdmin) return []; // User không thấy "Trang chủ" và "Danh sách bất động sản"
-  return [
+  const links = [
     {
-      path: "/realestate/dashboard",
-      display: "Trang chủ",
-    },
-    {
-      path: "/realestate/admin/dashboard",
-      display: "Quản lý giao dịch",
+      path: "/documentation",
+      display: "Tài liệu",
     },
   ];
+  if (isAdmin) {
+    links.unshift({
+      path: "/realestate/admin/dashboard",
+      display: "Quản lý",
+    });
+  }
+  return links;
 };
 
 const Navbar = () => {
@@ -130,9 +132,9 @@ const Navbar = () => {
         zIndex: "10000",
       }}
     >
-      <div className="container py-2 md:py-0" style={{ maxWidth: "1380px", margin: "0 auto" }}>
+      <div className="container py-2 md:py-0" style={{ width: "1400px", margin: "0 auto" }}>
         <div className="flex justify-between items-center">
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
             <div style={{ 
               display: "flex", 
               alignItems: "center", 
@@ -153,16 +155,8 @@ const Navbar = () => {
                 fontWeight: "bold",
                 lineHeight: "1.2"
               }}>
-                Hệ Thống Quản Lý Giao Dịch
+                Hệ Thống Quản Lý Giao Dịch Bất Động Sản
               </h4>
-              <p style={{ 
-                margin: 0, 
-                color: "rgba(255, 255, 255, 0.8)", 
-                fontSize: "12px",
-                lineHeight: "1.2"
-              }}>
-                Bất Động Sản
-              </p>
             </div>
           </div>
           <div className="block md:hidden">
@@ -212,48 +206,7 @@ const Navbar = () => {
                   <IoSearchSharp />
                 </button>
               </div> */}
-              {/* Login/Logout removed */}
-
-              <div className="hidden lg:block">
-                <div className="navbar_search">
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="search-input"
-                  />
-                  <button className="search-btn">
-                    {" "}
-                    <IoSearchSharp />
-                  </button>
-                </div>
-              </div>
-              <div className="block lg:hidden">
-                <div
-                  style={{
-                    padding: 8,
-                  }}
-                  onKeyDown={(e) => e.stopPropagation()}
-                >
-                  <Popover content={content2} trigger="click" open={isPopup}>
-                    <div
-                      style={{
-                        cursor: "pointer",
-                        maxWidth: 100,
-                        overflow: "hidden",
-                        color: "white",
-                        paddingLeft: "60px",
-                        paddingTop: "12px",
-                        fontSize: "20px",
-                        fontWeight: "700",
-                        textOverflow: "ellipsis",
-                      }}
-                      onClick={() => setIsPopup((prev) => !prev)}
-                    >
-                      <SearchOutlined style={{ color: "white" }} />
-                    </div>
-                  </Popover>
-                </div>
-              </div>
+              {/* Search removed for simplified real estate UI */}
 
               {/* User info and logout button */}
               {user?.access_token || user?.email ? (
@@ -281,9 +234,6 @@ const Navbar = () => {
                   >
                     <UserOutlined style={{ color: "white", fontSize: "18px" }} />
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                      <span style={{ color: "white", fontSize: "12px", lineHeight: "1.2" }}>
-                        Xin chào
-                      </span>
                       <span style={{ color: "white", fontSize: "14px", fontWeight: "600", lineHeight: "1.2" }}>
                         {user?.name || user?.email || "User"}
                       </span>
