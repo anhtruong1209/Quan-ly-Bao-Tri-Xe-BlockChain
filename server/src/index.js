@@ -45,7 +45,8 @@ connectDB();
 routes(app);
 
 // Chỉ xử lý API routes, không serve static files trong Vercel
-// Vercel sẽ tự động serve frontend build từ client/dist/
+// Vercel sẽ tự động serve frontend build từ Output Directory (public hoặc client/dist)
+// Không cần serve static files trong serverless function
 
 // Global error handler
 app.use((err, req, res, next) => {
