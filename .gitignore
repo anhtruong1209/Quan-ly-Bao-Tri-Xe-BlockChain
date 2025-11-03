@@ -1,8 +1,36 @@
-client/node_modules
-server/node_modules
-smart_contract/node_modules
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+smart_contract/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+server/client/dist/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+client/.env
+server/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Hardhat
+smart_contract/cache/
+smart_contract/artifacts/
 smart_contract/deploy-addresses.txt
-smart_contract/artifacts
-smart_contract/cache
-smart_contract/deployments
-smart_contract/deployments

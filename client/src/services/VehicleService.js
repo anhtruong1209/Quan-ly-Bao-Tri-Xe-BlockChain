@@ -1,15 +1,16 @@
 import axios from "axios";
 import { axiosJWT } from "./UserService";
+import { getApiUrl } from "../config/api";
 
 export const getAllVehicle = async (search, limit) => {
   let res = {};
   if (search?.length > 0) {
     res = await axios.get(
-      `http://localhost:3001/api/vehicle/get-all?filter=name&filter=${search}&limit=${limit}`
+      getApiUrl(`/api/vehicle/get-all?filter=name&filter=${search}&limit=${limit}`)
     );
   } else {
     res = await axios.get(
-      `http://localhost:3001/api/vehicle/get-all?limit=${limit}`
+      getApiUrl(`/api/vehicle/get-all?limit=${limit}`)
     );
   }
   return res.data;
@@ -25,7 +26,7 @@ export const getVehiclesByField = async (field, value, page, limit) => {
   if (typeof limit !== "undefined") params.append("limit", limit);
   if (typeof page !== "undefined") params.append("page", page);
   const res = await axios.get(
-    `http://localhost:3001/api/vehicle/get-all?${params.toString()}`
+    getApiUrl(`/api/vehicle/get-all?${params.toString()}`)
   );
   return res.data;
 };
@@ -33,12 +34,12 @@ export const getAllVehicleByPlates = async (search, limit) => {
   let res = {};
   if (search?.length > 0) {
     res = await axios.get(
-      //http://localhost:3001/api/vehicle/get-all?filter=plates&filter=s
-      `http://localhost:3001/api/vehicle/get-all?filter=plates&filter=${search}&limit=${limit}`
+      //${API_BASE_URL}/api/vehicle/get-all?filter=plates&filter=s
+      getApiUrl(`/api/vehicle/get-all?filter=plates&filter=${search}&limit=${limit}`)
     );
   } else {
     res = await axios.get(
-      `http://localhost:3001/api/vehicle/get-all?limit=${limit}`
+      getApiUrl(`/api/vehicle/get-all?limit=${limit}`)
     );
   }
   return res.data;
@@ -47,7 +48,7 @@ export const getAllVehicleByPlates = async (search, limit) => {
 export const getVehicleType = async (type, page, limit) => {
   if (type) {
     const res = await axios.get(
-      `http://localhost:3001/api/vehicle/get-all?filter=type&filter=${type}&limit=${limit}&page=${page}`
+      getApiUrl(`/api/vehicle/get-all?filter=type&filter=${type}&limit=${limit}&page=${page}`)
     );
     return res.data;
   }
@@ -58,7 +59,7 @@ export const createVehicle = async (data) => {
   console.log("Data: ", data);
   try {
     const res = await axios.post(
-      `http://localhost:3001/api/vehicle/create`,
+      getApiUrl('/api/vehicle/create'),
       data
     );
     return res.data;
@@ -68,7 +69,7 @@ export const createVehicle = async (data) => {
 };
 export const getPricePredict = async (data) => {
   // const res = await axiosJWT.post(
-  //   `http://localhost:3001/api/vehicle/get-price-predict`,
+  //   `${API_BASE_URL}/api/vehicle/get-price-predict`,
   //   data
   // );
   // console.log("Gia ca cua xe: ", res);
@@ -76,7 +77,7 @@ export const getPricePredict = async (data) => {
   
   try {
     const res = await axios.post(
-      `http://localhost:3001/api/vehicle/get-price-predict`,
+      getApiUrl('/api/vehicle/get-price-predict'),
       data
     );
     
@@ -87,13 +88,13 @@ export const getPricePredict = async (data) => {
 };
 export const getDetailsVehicle = async (id) => {
   const res = await axios.get(
-    `http://localhost:3001/api/vehicle/get-details/${id}`
+    getApiUrl(`/api/vehicle/get-details/${id}`)
   );
   return res.data;
 };
 export const getDetailsVehicleByPlate = async (plate) => {
   const res = await axios.get(
-    `http://localhost:3001/api/vehicle/get-details-plate/${plate}`
+    getApiUrl(`/api/vehicle/get-details-plate/${plate}`)
   );
   return res.data;
 };
@@ -102,7 +103,7 @@ export const updateVehicle = async (id, access_token, data) => {
   try {
     // console.log("Access token ben update: ", access_token);
     const res = await axiosJWT.put(
-      `http://localhost:3001/api/vehicle/update/${id}`,
+      getApiUrl(`/api/vehicle/update/${id}`),
       data,
       {
         headers: {
@@ -118,7 +119,7 @@ export const updateVehicle = async (id, access_token, data) => {
 
 export const deleteVehicle = async (id, access_token) => {
   const res = await axiosJWT.delete(
-    `http://localhost:3001/api/vehicle/delete/${id}`,
+    getApiUrl(`/api/vehicle/delete/${id}`),
     {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -130,7 +131,7 @@ export const deleteVehicle = async (id, access_token) => {
 
 export const deleteManyVehicle = async (data, access_token) => {
   const res = await axiosJWT.post(
-    `http://localhost:3001/api/vehicle/delete-many`,
+    getApiUrl('/api/vehicle/delete-many'),
     data,
     {
       headers: {
@@ -142,18 +143,18 @@ export const deleteManyVehicle = async (data, access_token) => {
 };
 
 export const getAllTypeVehicle = async () => {
-  const res = await axios.get(`http://localhost:3001/api/vehicle/get-all-type`);
+  const res = await axios.get(getApiUrl('/api/vehicle/get-all-type'));
   return res.data;
 };
 export const getAllColor = async () => {
-  const res = await axios.get(`http://localhost:3001/api/vehicle/get-all-color`);
+  const res = await axios.get(getApiUrl('/api/vehicle/get-all-color'));
   return res.data;
 };
 
 // Lấy vehicles của user (user chỉ xem được của mình, admin xem được tất cả)
 export const getUserVehicles = async (access_token) => {
   try {
-    const res = await axiosJWT.get(`http://localhost:3001/api/vehicle/user/vehicles`, {
+    const res = await axiosJWT.get(getApiUrl('/api/vehicle/user/vehicles'), {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },

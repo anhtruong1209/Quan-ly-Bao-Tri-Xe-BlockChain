@@ -1,21 +1,24 @@
 import axios from "axios";
+import { API_BASE_URL, getApiUrl } from "../config/api";
 
-export const axiosJWT = axios.create();
+export const axiosJWT = axios.create({
+  baseURL: API_BASE_URL,
+});
 
 export const loginUser = async (data) => {
-  const res = await axios.post(`http://localhost:3001/api/user/sign-in`, data);
+  const res = await axios.post(getApiUrl('/api/user/sign-in'), data);
   return res.data;
 };
 
 export const signupUser = async (data) => {
-  const res = await axios.post(`http://localhost:3001/api/user/sign-up`, data);
+  const res = await axios.post(getApiUrl('/api/user/sign-up'), data);
   return res.data;
 };
 
 export const getDetailsUser = async (id, access_token) => {
   try {
     const res = await axiosJWT.get(
-      `http://localhost:3001/api/user/get-details/${id}`,
+      getApiUrl(`/api/user/get-details/${id}`),
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -31,7 +34,7 @@ export const getDetailsUser = async (id, access_token) => {
 
 export const deleteUser = async (id, access_token, data) => {
   const res = await axiosJWT.delete(
-    `http://localhost:3001/api/user/delete-user/${id}`,
+    getApiUrl(`/api/user/delete-user/${id}`),
     data,
     {
       headers: {
@@ -43,7 +46,7 @@ export const deleteUser = async (id, access_token, data) => {
 };
 
 export const getAllUser = async (access_token) => {
-  const res = await axiosJWT.get(`http://localhost:3001/api/user/getAll`, {
+  const res = await axiosJWT.get(getApiUrl('/api/user/getAll'), {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
@@ -61,7 +64,7 @@ export const getAllUser = async (access_token) => {
 export const refreshToken = async (refreshToken) => {
   // console.log("refreshToken", refreshToken);
   const res = await axios.post(
-    `http://localhost:3001/api/user/refresh-token`,
+    getApiUrl('/api/user/refresh-token'),
     {},
     {
       headers: {
@@ -73,13 +76,13 @@ export const refreshToken = async (refreshToken) => {
 };
 
 export const logoutUser = async () => {
-  const res = await axios.post(`http://localhost:3001/api/user/log-out`);
+  const res = await axios.post(getApiUrl('/api/user/log-out'));
   return res.data;
 };
 
 export const updateUser = async (id, data, access_token) => {
   const res = await axiosJWT.put(
-    `http://localhost:3001/api/user/update-user/${id}`,
+    getApiUrl(`/api/user/update-user/${id}`),
     data,
     {
       headers: {
@@ -92,7 +95,7 @@ export const updateUser = async (id, data, access_token) => {
 
 export const deleteManyUser = async (data, access_token) => {
   const res = await axiosJWT.post(
-    `http://localhost:3001/api/user/delete-many`,
+    getApiUrl('/api/user/delete-many'),
     data,
     {
       headers: {
@@ -104,13 +107,13 @@ export const deleteManyUser = async (data, access_token) => {
 };
 
 export const forgotPassword = async (email) => {
-  const res = await axios.post(`http://localhost:3001/api/user/forgot-password`, { email });
+  const res = await axios.post(getApiUrl('/api/user/forgot-password'), { email });
   return res.data;
 };
 
 export const changePassword = async (userId, oldPassword, newPassword, access_token) => {
   const res = await axiosJWT.post(
-    `http://localhost:3001/api/user/change-password/${userId}`,
+    getApiUrl(`/api/user/change-password/${userId}`),
     { oldPassword, newPassword },
     {
       headers: {

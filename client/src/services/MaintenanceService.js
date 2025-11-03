@@ -1,6 +1,7 @@
 import axios from "axios";
+import { getApiUrl } from "../config/api";
 
-const API_BASE_URL = "http://localhost:3001/api/maintenance";
+const MAINTENANCE_API_URL = getApiUrl('/api/maintenance');
 
 const getToken = () => {
   const token = localStorage.getItem("access_token");
@@ -11,7 +12,7 @@ export const createMaintenanceRegistration = async (data) => {
   try {
     const token = getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/create`,
+      `${MAINTENANCE_API_URL}/create`,
       data,
       {
         headers: {
@@ -29,7 +30,7 @@ export const createMaintenanceRegistration = async (data) => {
 export const getUserMaintenanceRegistrations = async () => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/user`, {
+    const response = await axios.get(`${MAINTENANCE_API_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -43,7 +44,7 @@ export const getUserMaintenanceRegistrations = async () => {
 export const getPendingMaintenanceRegistrations = async () => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/admin/pending`, {
+    const response = await axios.get(`${MAINTENANCE_API_URL}/admin/pending`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -58,7 +59,7 @@ export const approveMaintenanceRegistration = async (id) => {
   try {
     const token = getToken();
     const response = await axios.put(
-      `${API_BASE_URL}/admin/approve/${id}`,
+      `${MAINTENANCE_API_URL}/admin/approve/${id}`,
       {},
       {
         headers: {
@@ -76,7 +77,7 @@ export const rejectMaintenanceRegistration = async (id) => {
   try {
     const token = getToken();
     const response = await axios.put(
-      `${API_BASE_URL}/admin/reject/${id}`,
+      `${MAINTENANCE_API_URL}/admin/reject/${id}`,
       {},
       {
         headers: {
@@ -93,7 +94,7 @@ export const rejectMaintenanceRegistration = async (id) => {
 export const getMaintenanceRegistrationDetails = async (id) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/${id}`, {
+    const response = await axios.get(`${MAINTENANCE_API_URL}/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

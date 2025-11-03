@@ -1,5 +1,6 @@
 import { axiosJWT } from "./UserService";
 import { isJsonString } from "../utils";
+import { getApiUrl } from "../config/api";
 
 const getToken = () => {
   const token = localStorage.getItem("access_token");
@@ -25,7 +26,7 @@ export const listServiceRecords = async (vehicleId, status) => {
     const params = {};
     if (vehicleId) params.vehicleId = vehicleId;
     if (status) params.status = status;
-    const res = await axiosJWT.get(`http://localhost:3001/api/records/service`, {
+    const res = await axiosJWT.get(getApiUrl('/api/records/service'), {
       params,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -44,7 +45,7 @@ export const createServiceRecord = async (payload) => {
     if (!token) {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
-    const res = await axiosJWT.post(`http://localhost:3001/api/records/service`, payload, {
+    const res = await axiosJWT.post(getApiUrl('/api/records/service'), payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -66,7 +67,7 @@ export const deleteServiceRecord = async (recordId) => {
     if (!token) {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
-    const res = await axiosJWT.delete(`http://localhost:3001/api/records/service/${recordId}`, {
+    const res = await axiosJWT.delete(getApiUrl(`/api/records/service/${recordId}`), {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -85,7 +86,7 @@ export const acceptServiceRecord = async (recordId) => {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
     const res = await axiosJWT.post(
-      `http://localhost:3001/api/records/service/${recordId}/accept`,
+      getApiUrl(`/api/records/service/${recordId}/accept`),
       {},
       {
         headers: {
@@ -107,7 +108,7 @@ export const getPendingServiceRecords = async () => {
     if (!token) {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
-    const res = await axiosJWT.get(`http://localhost:3001/api/records/service/pending`, {
+    const res = await axiosJWT.get(getApiUrl('/api/records/service/pending'), {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -127,7 +128,7 @@ export const approveServiceRecord = async (id, garage) => {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
     const res = await axiosJWT.put(
-      `http://localhost:3001/api/records/service/${id}/approve`,
+      getApiUrl(`/api/records/service/${id}/approve`),
       { garage }, // Gửi garage trong body
       {
         headers: {
@@ -150,7 +151,7 @@ export const rejectServiceRecord = async (id) => {
       throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
     }
     const res = await axiosJWT.put(
-      `http://localhost:3001/api/records/service/${id}/reject`,
+      getApiUrl(`/api/records/service/${id}/reject`),
       {},
       {
         headers: {
