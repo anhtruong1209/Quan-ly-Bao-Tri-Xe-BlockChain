@@ -344,11 +344,18 @@ const UserDashboard = () => {
             type="primary"
             icon={<EyeOutlined />}
             onClick={() => navigate(`/detail/${record.plates}`)}
+            style={{
+              backgroundColor: "#2563eb",
+              borderColor: "#2563eb",
+              color: "#fff"
+            }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
+              e.currentTarget.style.backgroundColor = "#1e40af";
+              e.currentTarget.style.borderColor = "#1e40af";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.backgroundColor = "#2563eb";
+              e.currentTarget.style.borderColor = "#2563eb";
             }}
           >
             Xem chi tiết
@@ -478,18 +485,22 @@ const UserDashboard = () => {
                 onClick={() => setIsVehicleModalVisible(true)}
                 size="large"
                 style={{ 
-                  height: "40px",
-                  fontSize: "16px",
-                  fontWeight: "600"
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    backgroundColor: "#2563eb",
+                    borderColor: "#2563eb",
+                    color: "#fff"
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.9";
+                  e.currentTarget.style.backgroundColor = "#1e40af";
+                  e.currentTarget.style.borderColor = "#1e40af";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.backgroundColor = "#2563eb";
+                  e.currentTarget.style.borderColor = "#2563eb";
                 }}
               >
-                + Đăng ký xe mới
+                Đăng ký xe mới
               </Button>
             }
           >
@@ -539,17 +550,24 @@ const UserDashboard = () => {
                   icon={<PlusOutlined />}
                   onClick={() => setIsMaintenanceModalVisible(true)}
                   disabled={vehicles.length === 0}
-                  size="large"
                   style={{ 
-                    height: "40px",
                     fontSize: "16px",
-                    fontWeight: "600"
+                    fontWeight: "600",
+                    backgroundColor: "#2563eb",
+                    borderColor: "#2563eb",
+                    color: "#fff"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = "0.9";
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.backgroundColor = "#1e40af";
+                      e.currentTarget.style.borderColor = "#1e40af";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = "1";
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.backgroundColor = "#2563eb";
+                      e.currentTarget.style.borderColor = "#2563eb";
+                    }
                   }}
                 >
                   Tạo lệnh đăng ký bảo trì
@@ -924,7 +942,7 @@ const UserDashboard = () => {
                     e.currentTarget.style.opacity = "1";
                   }}
                 >
-                  {isEditMode ? "Cập nhật xe" : "Đăng ký xe"}
+                  {isEditMode ? "Cập nhật thông tin xe" : "Đăng ký xe mới"}
                 </Button>
               </Form.Item>
         </Form>

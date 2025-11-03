@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./SignIn.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import audi from "../../assets/audirs7.jpg";
-import mclaren from "../../assets/mclaren.jpg";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash, FaRegEye, FaCar, FaWrench, FaShieldAlt, FaUser, FaLock } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import InputForm from "../../components/InputForm/InputForm";
 import { jwtDecode } from "jwt-decode";
@@ -16,6 +14,7 @@ import Loading from "../../components/LoadingComponent/Loading";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { message } from "antd";
 import { updateUser } from "../../redux/slides/userSlide";
+
 const SignInPage = (props) => {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
@@ -86,92 +85,140 @@ const SignInPage = (props) => {
   }, [user, navigate]);
 
   return (
-    <div className="sin">
-      {/* <div className="sin-header">
-        <div className="sin-header-title">
-          <NavLink style={{ textDecoration: "none", color: "black" }} to="/">
-            <h1>Web site đăng kiểm</h1>
-          </NavLink>
-          <h1 style={{ color: "red" }}>Đăng Nhập</h1>
-        </div>
-        <p>Bạn cần giúp đỡ ?</p>
-      </div> */}
-      <div className="sin-content row">
-        <div className="sin-content-image col-md-6 mt-6">
-          <img style={{ width: "70%" }} src={audi} alt="" />
-          <img style={{ width: "70%" }} src={mclaren} alt="" />
-        </div>
-        <div className="sin-content-form col-md-6 mb-6">
-          <div>
-            <h1 className="sin-content-form-title">Đăng nhập</h1>
+    <div className="signin-container">
+      <div className="signin-wrapper">
+        {/* Left Side - Visual Section */}
+        <div className="signin-visual">
+          <div className="visual-overlay"></div>
+          <div className="visual-content">
+            <div className="logo-section">
+              <div className="logo-icon">
+                <FaCar className="car-icon" />
+                <FaWrench className="wrench-icon" />
+              </div>
+              <h2 className="visual-title">VehicleWarranty</h2>
+              <p className="visual-subtitle">Hệ thống quản lý bảo trì & bảo hành</p>
+            </div>
+            <div className="features-list">
+              <div className="feature-item">
+                <FaShieldAlt className="feature-icon" />
+                <span>Bảo hành minh bạch</span>
+              </div>
+              <div className="feature-item">
+                <FaCar className="feature-icon" />
+                <span>Theo dõi lịch sử bảo trì</span>
+              </div>
+              <div className="feature-item">
+                <FaWrench className="feature-icon" />
+                <span>Quản lý sửa chữa hiệu quả</span>
+              </div>
+            </div>
+            <div className="decorative-elements">
+              <div className="gear gear-1"></div>
+              <div className="gear gear-2"></div>
+              <div className="gear gear-3"></div>
+            </div>
           </div>
-          <div>
-            <InputForm
-              style={{
-                marginBottom: "10px",
-                fontSize: "15px",
-                fontWeight: "bold",
-              }}
-              placeholder="abc@gmail.com"
-              value={email}
-              onChange={handleOnchangeEmail}
-            />
-          </div>
-          <div style={{ position: "relative" }}>
-            <span
-              onClick={() => setIsShowPassword(!isShowPassword)}
-              style={{
-                zIndex: 10,
-                position: "absolute",
-                top: "30%",
+        </div>
 
-                right: "8px",
-              }}
-            >
-              {isShowPassword ? (
-                <FaRegEyeSlash size={20} />
-              ) : (
-                <FaRegEye size={20} />
+        {/* Right Side - Form Section */}
+        <div className="signin-form-section">
+          <div className="form-wrapper">
+            <div className="form-header">
+              <h1 className="form-title">
+                <span className="title-icon"><FaUser /></span>
+                Đăng nhập
+              </h1>
+              <p className="form-subtitle">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
+            </div>
+
+            <div className="form-content">
+              <div className="input-group">
+                <label className="input-label">
+                  <MdEmail className="label-icon" />
+                  Email
+                </label>
+                <InputForm
+                  className="custom-input"
+                  placeholder="Nhập email của bạn"
+                  value={email}
+                  onChange={handleOnchangeEmail}
+                />
+              </div>
+
+              <div className="input-group">
+                <label className="input-label">
+                  <FaLock className="label-icon" />
+                  Mật khẩu
+                </label>
+                <div className="password-wrapper">
+                  <InputForm
+                    className="custom-input"
+                    placeholder="Nhập mật khẩu"
+                    type={isShowPassword ? "text" : "password"}
+                    value={password}
+                    onChange={handleOnchangePassword}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setIsShowPassword(!isShowPassword)}
+                  >
+                    {isShowPassword ? (
+                      <FaRegEyeSlash size={18} />
+                    ) : (
+                      <FaRegEye size={18} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {data?.status === "ERR" && (
+                <div className="error-message">
+                  <span>{data?.message}</span>
+                </div>
               )}
-            </span>
-            <InputForm
-              placeholder="password..."
-              style={{ fontSize: "15px", fontWeight: "bold" }}
-              type={isShowPassword ? "text" : "password"}
-              value={password}
-              onChange={handleOnchangePassword}
-            />
-          </div>
-          {data?.status === "ERR" && (
-            <span style={{ color: "red" }}>{data?.message}</span>
-          )}
-          <Loading isLoading={isPending}>
-            <ButtonComponent
-              disabled={!email.length || !password.length}
-              onClick={handleSignIn}
-              size={40}
-              styleButton={{
-                background: "rgb(255, 57, 69)",
-                height: "48px",
-                width: "100%",
-                border: "none",
-                borderRadius: "4px",
-                margin: "26px 0 10px",
-              }}
-              textbutton={"Đăng nhập"}
-              styleTextButton={{
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
-          </Loading>
-          <div className="sin-content-form-try">
-            <a className="sin-content-form-try-pass">Quên mật khẩu ?</a>
-          </div>
-          <div className="sin-content-form-sup">
-            <p>Bạn mới sử dụng VehicleWarranty</p>
-            <NavLink to="/sign-up">Đăng kí</NavLink>
+
+              <div className="form-footer-top">
+                <NavLink to="/forgot-password" className="forgot-link">
+                  Quên mật khẩu?
+                </NavLink>
+              </div>
+
+              <Loading isLoading={isPending}>
+                <ButtonComponent
+                  disabled={!email.length || !password.length}
+                  onClick={handleSignIn}
+                  size={40}
+                  styleButton={{
+                    background: "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
+                    height: "52px",
+                    width: "100%",
+                    border: "none",
+                    borderRadius: "12px",
+                    margin: "24px 0 16px",
+                    boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
+                    transition: "all 0.3s ease",
+                  }}
+                  textbutton={"Đăng nhập"}
+                  styleTextButton={{
+                    color: "#fff",
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    letterSpacing: "0.5px",
+                  }}
+                />
+              </Loading>
+
+              <div className="form-footer-bottom">
+                <p className="signup-text">
+                  Bạn mới sử dụng VehicleWarranty?{" "}
+                  <NavLink to="/sign-up" className="signup-link">
+                    Đăng ký ngay
+                  </NavLink>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

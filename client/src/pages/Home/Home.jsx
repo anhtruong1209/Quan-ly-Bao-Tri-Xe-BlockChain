@@ -40,6 +40,7 @@ import {
   CheckCircleFilled,
   UserOutlined,
   TeamOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import * as VehicleServices from "../../services/VehicleService.js";
 import * as RecordsService from "../../services/RecordsService.js";
@@ -581,7 +582,7 @@ const Home = (props) => {
                           borderColor: "#1890ff",
                           color: "#fff"
                         }}
-                        icon={<PlusOutlined />} 
+                        icon={<UnorderedListOutlined />} 
                         onClick={() => navigate("/vehicles")}
                       >
                         Xem tất cả
