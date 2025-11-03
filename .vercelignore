@@ -1,17 +1,30 @@
 # Ignore node_modules
 **/node_modules/
 
-# Ignore source files (only need built files)
-client/src/
-server/src/routes/
-server/src/controllers/
-server/src/services/
-server/src/models/
-server/src/middleware/
+# Ignore build outputs (Vercel sẽ tự build)
+client/dist/
+server/client/dist/
+dist/
 
-# But include the entry point
-!server/src/index.js
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# Include built files
-!server/client/dist/
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Hardhat
+smart_contract/cache/
+smart_contract/artifacts/
+smart_contract/deploy-addresses.txt
