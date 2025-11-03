@@ -17,40 +17,44 @@ const MONGO_DB = "mongodb+srv://admin:Admin%40123@warrantly-verhical.hsdx3um.mon
 app.use(cors());
 app.use(bodyParse.json());
 
-// API Routes - phải đặt trước static files
+// Connect MongoDB với error handling tốt hơn cho serverless
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+  
+  try {
+    await mongoose.connect(MONGO_DB);
+    isConnected = true;
+    console.log("✅ Connected to MongoDB successfully");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+    // Không exit process trong serverless, chỉ log error
+    if (require.main === module) {
+      process.exit(1);
+    }
+  }
+};
+
+// Connect DB ngay khi app start (async, không block)
+connectDB();
+
+// API Routes only - Vercel sẽ serve static files riêng
 routes(app);
 
-// Serve static files from React app (build folder)
-// Ưu tiên tìm trong server/client/dist (sau khi copy), nếu không có thì dùng client/dist
-const clientBuildPath = fs.existsSync(path.join(__dirname, "../client/dist"))
-  ? path.join(__dirname, "../client/dist")
-  : path.join(__dirname, "../../client/dist");
+// Chỉ xử lý API routes, không serve static files trong Vercel
+// Vercel sẽ tự động serve frontend build từ client/dist/
 
-if (fs.existsSync(clientBuildPath)) {
-  app.use(express.static(clientBuildPath));
-  console.log(`✅ Serving static files from: ${clientBuildPath}`);
-} else {
-  console.warn(`⚠️  Static files not found at: ${clientBuildPath}`);
-}
-
-// Catch all handler: send back React's index.html file for any non-API routes
-app.get("*", (req, res) => {
-  // Don't serve index.html for API routes
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ message: "API route not found" });
-  }
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
-mongoose
-  .connect(MONGO_DB)
-  .then(() => {
-    console.log("✅ Connected to MongoDB successfully");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1);
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ 
+    error: "Internal server error",
+    message: process.env.NODE_ENV === "production" ? "Something went wrong" : err.message
   });
+});
 
 // Export app for Vercel serverless
 if (require.main === module) {
@@ -61,6 +65,6 @@ if (require.main === module) {
     console.log("🌐 Frontend: http://localhost:" + port);
   });
 } else {
-  // Export cho Vercel serverless
+  // Export cho Vercel serverless - phải export handler function
   module.exports = app;
 }

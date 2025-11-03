@@ -1,0 +1,17 @@
+# Ignore node_modules
+**/node_modules/
+
+# Ignore source files (only need built files)
+client/src/
+server/src/routes/
+server/src/controllers/
+server/src/services/
+server/src/models/
+server/src/middleware/
+
+# But include the entry point
+!server/src/index.js
+
+# Include built files
+!server/client/dist/
+
