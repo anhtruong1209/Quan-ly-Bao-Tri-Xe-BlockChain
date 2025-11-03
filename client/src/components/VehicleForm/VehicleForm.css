@@ -1,0 +1,43 @@
+.vehicle-form {
+  padding: 8px 0;
+}
+
+.image-url-list {
+  width: 100%;
+}
+
+.image-url-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.image-preview {
+  margin: 12px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.remove-image-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.submit-btn {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+

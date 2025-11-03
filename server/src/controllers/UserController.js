@@ -180,6 +180,69 @@ const logoutUser = async (req, res) => {
     });
   }
 };
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+    const isCheckEmail = reg.test(email);
+    
+    if (!email) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Email là bắt buộc",
+      });
+    } else if (!isCheckEmail) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Email không hợp lệ",
+      });
+    }
+    
+    const response = await UserService.forgotPassword(email);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { oldPassword, newPassword } = req.body;
+    
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "User ID là bắt buộc",
+      });
+    }
+    
+    if (!oldPassword || !newPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Mật khẩu cũ và mật khẩu mới là bắt buộc",
+      });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Mật khẩu mới phải có ít nhất 6 ký tự",
+      });
+    }
+    
+    const response = await UserService.changePassword(userId, oldPassword, newPassword);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -190,4 +253,6 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteMany,
+  forgotPassword,
+  changePassword,
 };

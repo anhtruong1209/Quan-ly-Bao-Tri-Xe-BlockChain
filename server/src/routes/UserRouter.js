@@ -11,6 +11,8 @@ router.post("/sign-in", userController.loginUser);
 router.post("/sign-up", userController.createUser);
 router.post("/log-out", userController.logoutUser);
 router.post("/refresh-token", userController.refreshToken);
+router.post("/forgot-password", userController.forgotPassword);
+router.post("/change-password/:id", authUserMiddleWare, userController.changePassword);
 
 // Protected routes
 router.put("/update-user/:id", authMiddleWare, userController.updateUser);

@@ -442,17 +442,6 @@ const Home = (props) => {
                 </Popover>
                 <Button 
                   style={{ 
-                    backgroundColor: "#1890ff", 
-                    borderColor: "#1890ff",
-                    color: "#fff"
-                  }}
-                  icon={<FileTextOutlined />} 
-                  onClick={() => navigate("/documentation")}
-                >
-                  Xem tài liệu đầy đủ
-                </Button>
-                <Button 
-                  style={{ 
                     backgroundColor: "#f0f0f0", 
                     borderColor: "#d9d9d9",
                     color: "#595959"

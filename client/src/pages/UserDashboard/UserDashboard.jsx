@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./UserDashboard.css";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Table, Modal, Form, Input, Select, message, Tabs, Row, Col, Badge, Space, Tag, Tooltip, Popover } from "antd";
+import { Button, Card, Table, Modal, Form, Input, Select, message, Tabs, Row, Col, Badge, Space, Tag, Tooltip, Popover, Empty } from "antd";
 import {
   PlusOutlined,
   CarOutlined,
@@ -12,13 +12,18 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   EyeOutlined,
-  EditOutlined,
-  DeleteOutlined,
+  LockOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import * as VehicleService from "../../services/VehicleService";
-import * as MaintenanceService from "../../services/MaintenanceService";
 import * as RecordsService from "../../services/RecordsService";
+import * as UserService from "../../services/UserService";
 import Loading from "../../components/LoadingComponent/Loading";
+import VehicleCard from "../../components/VehicleCard/VehicleCard";
+import StatsSection from "../../components/StatsSection/StatsSection";
+import AdvertisementSection from "../../components/AdvertisementSection/AdvertisementSection";
+import VehicleForm from "../../components/VehicleForm/VehicleForm";
+import Footer from "../../components/Footer/Footer";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -32,10 +37,12 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [isVehicleModalVisible, setIsVehicleModalVisible] = useState(false);
   const [isMaintenanceModalVisible, setIsMaintenanceModalVisible] = useState(false);
+  const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicleForm] = Form.useForm();
   const [maintenanceForm] = Form.useForm();
+  const [changePasswordForm] = Form.useForm();
 
   useEffect(() => {
     if (user?.email) {
@@ -52,7 +59,6 @@ const UserDashboard = () => {
   const fetchUserVehicles = async () => {
     setLoading(true);
     try {
-      // Lấy xe của user qua API (user chỉ xem được xe của mình)
       const token = localStorage.getItem("access_token");
       let accessToken = null;
       
@@ -99,12 +105,10 @@ const UserDashboard = () => {
   const fetchServiceRecords = async () => {
     setLoading(true);
     try {
-      // Lấy service records của user (backend sẽ filter theo user)
       const res = await RecordsService.listServiceRecords();
       if (res?.status === "OK") {
         const allRecords = res.data || [];
         setServiceRecords(allRecords);
-        // Lấy pending records để hiển thị trong tab "Đăng ký bảo trì"
         const pendingRecords = allRecords.filter(r => r.status === "pending");
         setMaintenanceRegs(pendingRecords);
       } else if (res?.message?.includes("token") || res?.status === "ERR") {
@@ -135,11 +139,10 @@ const UserDashboard = () => {
         return;
       }
 
-      // Thêm email và các trường cần thiết từ user
       const vehicleData = {
         ...values,
         email: user?.email || "",
-        image: values.image || ["https://via.placeholder.com/300"],
+        image: values.image && values.image.length > 0 ? values.image : ["https://via.placeholder.com/300"],
         bill: values.bill || "N/A",
         tax: values.tax || "N/A",
         seri: values.seri || "N/A",
@@ -153,13 +156,11 @@ const UserDashboard = () => {
 
       let res;
       if (isEditMode && selectedVehicle) {
-        // Update existing vehicle
         res = await VehicleService.updateVehicle(selectedVehicle._id, accessToken, vehicleData);
         if (res?.status === "OK") {
           message.success("Cập nhật thông tin xe thành công!");
         }
       } else {
-        // Create new vehicle
         res = await VehicleService.createVehicle(vehicleData);
         if (res?.status === "OK") {
           message.success("Đăng ký xe thành công!");
@@ -186,7 +187,6 @@ const UserDashboard = () => {
   const handleCreateMaintenance = async (values) => {
     setLoading(true);
     try {
-      // Tìm vehicle để lấy vehicleKey
       const selectedVehicle = vehicles.find(v => v._id === values.vehicleId);
       if (!selectedVehicle) {
         message.error("Không tìm thấy xe");
@@ -194,8 +194,6 @@ const UserDashboard = () => {
       }
 
       const maintenanceType = values.maintenanceType || "routine";
-      
-      // Xử lý garage: nếu là mảng (từ tags mode), lấy phần tử đầu tiên
       let garageValue = values.garage || "Chưa xác định";
       if (Array.isArray(garageValue)) {
         garageValue = garageValue.length > 0 ? garageValue[0] : "Chưa xác định";
@@ -220,7 +218,7 @@ const UserDashboard = () => {
         message.success("Tạo lệnh đăng ký bảo trì thành công! Đang chờ admin duyệt.");
         setIsMaintenanceModalVisible(false);
         maintenanceForm.resetFields();
-        fetchServiceRecords(); // Fetch lại service records
+        fetchServiceRecords();
       } else {
         message.error(res?.message || "Lỗi khi tạo lệnh đăng ký bảo trì");
       }
@@ -228,10 +226,8 @@ const UserDashboard = () => {
       console.error("Error creating maintenance registration:", error);
       const errorMessage = error?.response?.data?.message || error?.message || "Lỗi khi tạo lệnh đăng ký bảo trì";
       
-      // Nếu lỗi token, yêu cầu đăng nhập lại
       if (errorMessage.includes("token") || errorMessage.includes("Token") || error?.response?.status === 401) {
         message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-        // Đợi 2 giây rồi redirect đến trang đăng nhập
         setTimeout(() => {
           localStorage.removeItem("access_token");
           navigate("/sign-in");
@@ -307,95 +303,75 @@ const UserDashboard = () => {
     });
   };
 
-  const vehicleColumns = [
-    {
-      title: "Tên xe",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Biển số",
-      dataIndex: "plates",
-      key: "plates",
-    },
-    {
-      title: "Hãng",
-      dataIndex: "brand",
-      key: "brand",
-    },
-    {
-      title: "Loại",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Ngày đăng ký",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date) => (date ? new Date(date).toLocaleDateString("vi-VN") : ""),
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      render: (_, record) => (
-        <Space>
-          <Button
-            size="small"
-            type="primary"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/detail/${record.plates}`)}
-            style={{
-              backgroundColor: "#2563eb",
-              borderColor: "#2563eb",
-              color: "#fff"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#1e40af";
-              e.currentTarget.style.borderColor = "#1e40af";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#2563eb";
-              e.currentTarget.style.borderColor = "#2563eb";
-            }}
-          >
-            Xem chi tiết
-          </Button>
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setSelectedVehicle(record);
-              vehicleForm.setFieldsValue(record);
-              setIsVehicleModalVisible(true);
-              setIsEditMode(true);
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
-            }}
-          >
-            Sửa
-          </Button>
-          <Button
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDeleteVehicle(record._id)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
-            }}
-          >
-            Xóa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  const handleEditVehicle = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    vehicleForm.setFieldsValue({
+      ...vehicle,
+      image: vehicle.image && Array.isArray(vehicle.image) ? vehicle.image : (vehicle.image ? [vehicle.image] : []),
+    });
+    setIsVehicleModalVisible(true);
+    setIsEditMode(true);
+  };
+
+  const handleViewVehicle = (vehicle) => {
+    navigate(`/detail/${vehicle.plates}`);
+  };
+
+  const handleChangePassword = async (values) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      let accessToken = null;
+      
+      if (token) {
+        try {
+          accessToken = JSON.parse(token);
+        } catch (e) {
+          accessToken = token;
+        }
+      }
+      
+      if (!accessToken && user?.access_token) {
+        accessToken = user.access_token;
+      }
+      
+      if (!accessToken) {
+        message.error("Bạn cần đăng nhập");
+        return;
+      }
+
+      if (!user?.id) {
+        message.error("Không tìm thấy thông tin người dùng");
+        return;
+      }
+
+      const res = await UserService.changePassword(
+        user.id,
+        values.oldPassword,
+        values.newPassword,
+        accessToken
+      );
+
+      if (res?.status === "OK") {
+        message.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+        setIsChangePasswordModalVisible(false);
+        changePasswordForm.resetFields();
+        // Logout sau 2 giây
+        setTimeout(() => {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          navigate("/sign-in");
+        }, 2000);
+      } else {
+        message.error(res?.message || "Lỗi khi đổi mật khẩu");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      message.error(error?.response?.data?.message || "Lỗi khi đổi mật khẩu");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const maintenanceColumns = [
     {
@@ -454,14 +430,27 @@ const UserDashboard = () => {
   ];
 
   return (
-    <div className="user-dashboard" style={{ padding: "24px", minHeight: "100vh", background: "#f0f2f5" }}>
-      <div className="dashboard-header" style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>
-          <CarOutlined /> Dashboard Người Dùng
-        </h1>
-      </div>
+    <div className="user-dashboard">
+      <div className="dashboard-container">
+        <div className="dashboard-header">
+          <div className="header-actions">
+            <Button
+              icon={<LockOutlined />}
+              onClick={() => setIsChangePasswordModalVisible(true)}
+              size="large"
+            >
+              Đổi mật khẩu
+            </Button>
+          </div>
+        </div>
 
-      <Tabs defaultActiveKey="vehicles" size="large">
+        <StatsSection
+          vehicles={vehicles}
+          maintenanceRegs={maintenanceRegs}
+          serviceRecords={serviceRecords}
+        />
+
+      <Tabs defaultActiveKey="vehicles" size="large" className="dashboard-tabs">
         <TabPane
           tab={
             <span>
@@ -471,6 +460,7 @@ const UserDashboard = () => {
           key="vehicles"
         >
           <Card 
+            className="vehicles-card"
             title={
               <Space>
                 <CarOutlined />
@@ -482,36 +472,39 @@ const UserDashboard = () => {
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={() => setIsVehicleModalVisible(true)}
+                onClick={() => {
+                  setIsVehicleModalVisible(true);
+                  setIsEditMode(false);
+                  setSelectedVehicle(null);
+                  vehicleForm.resetFields();
+                }}
                 size="large"
-                style={{ 
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    backgroundColor: "#2563eb",
-                    borderColor: "#2563eb",
-                    color: "#fff"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#1e40af";
-                  e.currentTarget.style.borderColor = "#1e40af";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2563eb";
-                  e.currentTarget.style.borderColor = "#2563eb";
-                }}
+                className="add-vehicle-btn"
               >
                 Đăng ký xe mới
               </Button>
             }
           >
             <Loading isLoading={loading}>
-              <Table
-                dataSource={vehicles}
-                columns={vehicleColumns}
-                rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
-              />
+              {vehicles.length === 0 ? (
+                <Empty
+                  description="Chưa có xe nào. Hãy đăng ký xe mới!"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              ) : (
+                <Row gutter={[24, 24]}>
+                  {vehicles.map((vehicle) => (
+                    <Col xs={24} sm={12} lg={8} xl={6} key={vehicle._id}>
+                      <VehicleCard
+                        vehicle={vehicle}
+                        onView={handleViewVehicle}
+                        onEdit={handleEditVehicle}
+                        onDelete={handleDeleteVehicle}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              )}
             </Loading>
           </Card>
         </TabPane>
@@ -525,6 +518,7 @@ const UserDashboard = () => {
           key="maintenance"
         >
           <Card
+            className="maintenance-card"
             title={
               <Space>
                 <ToolOutlined />
@@ -536,12 +530,6 @@ const UserDashboard = () => {
                 <Button
                   icon={<ReloadOutlined />}
                   onClick={fetchServiceRecords}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = "0.9";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = "1";
-                  }}
                 >
                   Làm mới
                 </Button>
@@ -550,25 +538,8 @@ const UserDashboard = () => {
                   icon={<PlusOutlined />}
                   onClick={() => setIsMaintenanceModalVisible(true)}
                   disabled={vehicles.length === 0}
-                  style={{ 
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    backgroundColor: "#2563eb",
-                    borderColor: "#2563eb",
-                    color: "#fff"
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!e.currentTarget.disabled) {
-                      e.currentTarget.style.backgroundColor = "#1e40af";
-                      e.currentTarget.style.borderColor = "#1e40af";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!e.currentTarget.disabled) {
-                      e.currentTarget.style.backgroundColor = "#2563eb";
-                      e.currentTarget.style.borderColor = "#2563eb";
-                    }
-                  }}
+                  size="large"
+                  className="add-maintenance-btn"
                 >
                   Tạo lệnh đăng ký bảo trì
                 </Button>
@@ -597,6 +568,7 @@ const UserDashboard = () => {
           key="history"
         >
           <Card 
+            className="history-card"
             title={
               <Space>
                 <HistoryOutlined />
@@ -607,12 +579,6 @@ const UserDashboard = () => {
               <Button
                 icon={<ReloadOutlined />}
                 onClick={fetchServiceRecords}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.9";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                }}
               >
                 Làm mới
               </Button>
@@ -701,12 +667,6 @@ const UserDashboard = () => {
                                   onClick={() => {
                                     window.open(`https://sepolia.etherscan.io/tx/${record.txHash}`, '_blank');
                                   }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.opacity = "0.9";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.opacity = "1";
-                                  }}
                                 >
                                   Xem trên Etherscan
                                 </Button>
@@ -717,12 +677,6 @@ const UserDashboard = () => {
                             <Button
                               size="small"
                               icon={<EyeOutlined />}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.opacity = "0.9";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.opacity = "1";
-                              }}
                             >
                               Xem
                             </Button>
@@ -741,10 +695,15 @@ const UserDashboard = () => {
         </TabPane>
       </Tabs>
 
+        <AdvertisementSection />
+      </div>
+      
+      <Footer />
+
       {/* Modal đăng ký/sửa xe */}
       <Modal
         title={isEditMode ? "Cập nhật thông tin xe" : "Đăng ký xe mới"}
-        visible={isVehicleModalVisible}
+        open={isVehicleModalVisible}
         onCancel={() => {
           setIsVehicleModalVisible(false);
           setIsEditMode(false);
@@ -752,211 +711,49 @@ const UserDashboard = () => {
           vehicleForm.resetFields();
         }}
         footer={null}
-        width={800}
+        width={900}
+        className="vehicle-modal"
       >
-        <Form
+        <VehicleForm
           form={vehicleForm}
-          layout="vertical"
           onFinish={handleCreateVehicle}
+          loading={loading}
+          isEditMode={isEditMode}
           initialValues={{
-            type: "sedan",
-            fuel: "gasoline",
-            gear: "manual",
-            rolling: "4",
-            color: "Trắng",
-            bill: "N/A",
-            tax: "N/A",
-            seri: "N/A",
-            license: "N/A",
-            dated: new Date().toISOString().split("T")[0],
-            phone: user?.phone || "",
-            address: user?.address || "",
+            ...(selectedVehicle ? {
+              ...selectedVehicle,
+              image: selectedVehicle.image && Array.isArray(selectedVehicle.image) 
+                ? selectedVehicle.image 
+                : (selectedVehicle.image ? [selectedVehicle.image] : []),
+            } : {
+              type: "sedan",
+              fuel: "gasoline",
+              gear: "manual",
+              rolling: "4",
+              color: "Trắng",
+              bill: "N/A",
+              tax: "N/A",
+              seri: "N/A",
+              license: "N/A",
+              dated: new Date().toISOString().split("T")[0],
+              phone: user?.phone || "",
+              address: user?.address || "",
+              image: [],
+            }),
           }}
-        >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Tên xe"
-                rules={[{ required: true, message: "Vui lòng nhập tên xe" }]}
-              >
-                <Input placeholder="VD: Xe Toyota Camry" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="plates"
-                label="Biển số"
-                rules={[{ required: true, message: "Vui lòng nhập biển số" }]}
-              >
-                <Input placeholder="VD: 30A-12345" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="brand"
-                label="Hãng"
-                rules={[{ required: true, message: "Vui lòng nhập hãng" }]}
-              >
-                <Input placeholder="VD: Toyota" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="type"
-                label="Loại xe"
-                rules={[{ required: true, message: "Vui lòng chọn loại xe" }]}
-              >
-                <Select placeholder="Chọn loại xe">
-                  <Option value="sedan">Sedan</Option>
-                  <Option value="suv">SUV</Option>
-                  <Option value="hatchback">Hatchback</Option>
-                  <Option value="coupe">Coupe</Option>
-                  <Option value="truck">Truck</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="color"
-                label="Màu sắc"
-                rules={[{ required: true, message: "Vui lòng nhập màu sắc" }]}
-              >
-                <Input placeholder="VD: Đen" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="fuel"
-                label="Nhiên liệu"
-                rules={[{ required: true, message: "Vui lòng chọn nhiên liệu" }]}
-              >
-                <Select placeholder="Chọn nhiên liệu">
-                  <Option value="gasoline">Xăng</Option>
-                  <Option value="diesel">Diesel</Option>
-                  <Option value="electric">Điện</Option>
-                  <Option value="hybrid">Hybrid</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="gear"
-                label="Hộp số"
-                rules={[{ required: true, message: "Vui lòng chọn hộp số" }]}
-              >
-                <Select placeholder="Chọn hộp số">
-                  <Option value="manual">Số sàn</Option>
-                  <Option value="automatic">Số tự động</Option>
-                  <Option value="cvt">CVT</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="rolling"
-                label="Số bánh"
-                rules={[{ required: true, message: "Vui lòng nhập số bánh" }]}
-              >
-                <Input placeholder="VD: 4" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="engine"
-                label="Số máy"
-                rules={[{ required: true, message: "Vui lòng nhập số máy" }]}
-              >
-                <Input placeholder="Số máy" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="frame"
-                label="Số khung"
-                rules={[{ required: true, message: "Vui lòng nhập số khung" }]}
-              >
-                <Input placeholder="Số khung" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="identifynumber"
-                label="Số CMT/CCCD"
-                rules={[{ required: true, message: "Vui lòng nhập số CMT/CCCD" }]}
-              >
-                <Input placeholder="Số CMT/CCCD" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="phone"
-                label="Số điện thoại"
-                rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
-              >
-                <Input placeholder="Số điện thoại" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="address"
-                label="Địa chỉ"
-                rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
-              >
-                <Input.TextArea rows={2} placeholder="Địa chỉ" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  block
-                  size="large"
-                  style={{
-                    height: "45px",
-                    fontSize: "16px",
-                    fontWeight: "600"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = "0.9";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = "1";
-                  }}
-                >
-                  {isEditMode ? "Cập nhật thông tin xe" : "Đăng ký xe mới"}
-                </Button>
-              </Form.Item>
-        </Form>
+        />
       </Modal>
 
       {/* Modal tạo lệnh đăng ký bảo trì */}
       <Modal
         title="Tạo lệnh đăng ký bảo trì"
-        visible={isMaintenanceModalVisible}
+        open={isMaintenanceModalVisible}
         onCancel={() => {
           setIsMaintenanceModalVisible(false);
           maintenanceForm.resetFields();
         }}
         footer={null}
+        width={600}
       >
         <Form
           form={maintenanceForm}
@@ -971,7 +768,7 @@ const UserDashboard = () => {
             label="Chọn xe"
             rules={[{ required: true, message: "Vui lòng chọn xe" }]}
           >
-            <Select placeholder="Chọn xe">
+            <Select placeholder="Chọn xe" size="large">
               {vehicles.map((vehicle) => (
                 <Option key={vehicle._id} value={vehicle._id}>
                   {vehicle.name} - {vehicle.plates}
@@ -984,7 +781,7 @@ const UserDashboard = () => {
             label="Loại bảo trì"
             rules={[{ required: true, message: "Vui lòng chọn loại bảo trì" }]}
           >
-            <Select placeholder="Chọn loại bảo trì">
+            <Select placeholder="Chọn loại bảo trì" size="large">
               <Option value="routine">Bảo dưỡng định kỳ</Option>
               <Option value="repair">Sửa chữa</Option>
               <Option value="inspection">Kiểm tra</Option>
@@ -996,7 +793,7 @@ const UserDashboard = () => {
             label="Ngày dự kiến"
             rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
           >
-            <Input type="date" />
+            <Input type="date" size="large" />
           </Form.Item>
           <Form.Item
             name="garage"
@@ -1007,6 +804,7 @@ const UserDashboard = () => {
               mode="tags"
               style={{ width: "100%" }}
               placeholder="Chọn Garage hoặc nhập tên mới"
+              size="large"
               options={[
                 { value: "Garage Container Hải An", label: "Garage Container Hải An" },
                 { value: "Garage Trung tâm", label: "Garage Trung tâm" },
@@ -1021,7 +819,7 @@ const UserDashboard = () => {
             label="Odometer (km)"
             rules={[{ required: true, message: "Vui lòng nhập số km" }]}
           >
-            <Input type="number" placeholder="Nhập số km hiện tại" min={0} />
+            <Input type="number" placeholder="Nhập số km hiện tại" min={0} size="large" />
           </Form.Item>
           <Form.Item
             name="description"
@@ -1040,19 +838,92 @@ const UserDashboard = () => {
               loading={loading} 
               block
               size="large"
-              style={{ 
-                height: "45px",
-                fontSize: "16px",
-                fontWeight: "600"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.9";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "1";
-              }}
+              className="submit-btn"
             >
               Tạo lệnh đăng ký
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal đổi mật khẩu */}
+      <Modal
+        title={
+          <Space>
+            <LockOutlined />
+            <span>Đổi mật khẩu</span>
+          </Space>
+        }
+        open={isChangePasswordModalVisible}
+        onCancel={() => {
+          setIsChangePasswordModalVisible(false);
+          changePasswordForm.resetFields();
+        }}
+        footer={null}
+        width={500}
+      >
+        <Form
+          form={changePasswordForm}
+          layout="vertical"
+          onFinish={handleChangePassword}
+        >
+          <Form.Item
+            name="oldPassword"
+            label="Mật khẩu cũ"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ" }]}
+          >
+            <Input.Password
+              placeholder="Nhập mật khẩu cũ"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="newPassword"
+            label="Mật khẩu mới"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu mới" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+            ]}
+          >
+            <Input.Password
+              placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu mới"
+            dependencies={["newPassword"]}
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu mới" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Mật khẩu xác nhận không khớp"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              placeholder="Nhập lại mật khẩu mới"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              size="large"
+              className="submit-btn"
+            >
+              Đổi mật khẩu
             </Button>
           </Form.Item>
         </Form>
@@ -1062,4 +933,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-

@@ -19,8 +19,9 @@ import { Badge, Button, Popover } from "antd";
 import { resetUser } from "../../redux/slides/userSlide";
 import ResponsiveMenu from "./ResponsiveMenu";
 import { Logo } from "../../assets";
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import * as UserService from "../../services/UserService";
+import { Modal, Form, Input, message } from "antd";
 import {
   WrapperContentPopup,
   WrapperHeader,
@@ -45,6 +46,10 @@ const getNavLinks = (isAdmin) => {
       path: "/vehicles",
       display: "Danh sách xe",
     },
+    {
+      path: "/document",
+      display: "Tài liệu",
+    },
   ];
 };
 
@@ -59,6 +64,8 @@ const Navbar = () => {
   const menuRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] = useState(false);
+  const [changePasswordForm] = Form.useForm();
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
@@ -83,6 +90,64 @@ const Navbar = () => {
     }
   };
 
+  const handleChangePassword = async (values) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      let accessToken = null;
+      
+      if (token) {
+        try {
+          accessToken = JSON.parse(token);
+        } catch (e) {
+          accessToken = token;
+        }
+      }
+      
+      if (!accessToken && user?.access_token) {
+        accessToken = user.access_token;
+      }
+      
+      if (!accessToken) {
+        message.error("Bạn cần đăng nhập");
+        return;
+      }
+
+      if (!user?.id) {
+        message.error("Không tìm thấy thông tin người dùng");
+        return;
+      }
+
+      const res = await UserService.changePassword(
+        user.id,
+        values.oldPassword,
+        values.newPassword,
+        accessToken
+      );
+
+      if (res?.status === "OK") {
+        message.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+        setIsChangePasswordModalVisible(false);
+        changePasswordForm.resetFields();
+        setIsOpenPopup(false);
+        // Logout sau 2 giây
+        setTimeout(() => {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          dispatch(resetUser());
+          navigate("/sign-in");
+        }, 2000);
+      } else {
+        message.error(res?.message || "Lỗi khi đổi mật khẩu");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      message.error(error?.response?.data?.message || "Lỗi khi đổi mật khẩu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     setUserName(user?.name);
@@ -95,7 +160,6 @@ const Navbar = () => {
           navigate("/home");
           setIsOpenPopup(false);
         }}>
-          Trang quản trị
         </WrapperContentPopup>
       )}
       {!user?.isAdmin && (
@@ -105,8 +169,22 @@ const Navbar = () => {
         }}>
         </WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={handleLogout}>
-        Đăng xuất
+      <WrapperContentPopup 
+        onClick={() => {
+          setIsChangePasswordModalVisible(true);
+          setIsOpenPopup(false);
+        }}
+        style={{ display: "flex", alignItems: "center", gap: "8px" }}
+      >
+        <LockOutlined style={{ fontSize: "14px" }} />
+        <span>Đổi mật khẩu</span>
+      </WrapperContentPopup>
+      <WrapperContentPopup 
+        onClick={handleLogout}
+        style={{ display: "flex", alignItems: "center", gap: "8px" }}
+      >
+        <LogoutOutlined style={{ fontSize: "14px" }} />
+        <span>Đăng xuất</span>
       </WrapperContentPopup>
     </div>
   );
@@ -330,6 +408,94 @@ const Navbar = () => {
         </div>
       </div>
       <ResponsiveMenu showMenu={showMenu} />
+
+      {/* Modal đổi mật khẩu */}
+      <Modal
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <LockOutlined />
+            <span>Đổi mật khẩu</span>
+          </div>
+        }
+        open={isChangePasswordModalVisible}
+        onCancel={() => {
+          setIsChangePasswordModalVisible(false);
+          changePasswordForm.resetFields();
+        }}
+        footer={null}
+        width={500}
+      >
+        <Form
+          form={changePasswordForm}
+          layout="vertical"
+          onFinish={handleChangePassword}
+        >
+          <Form.Item
+            name="oldPassword"
+            label="Mật khẩu cũ"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ" }]}
+          >
+            <Input.Password
+              placeholder="Nhập mật khẩu cũ"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="newPassword"
+            label="Mật khẩu mới"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu mới" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+            ]}
+          >
+            <Input.Password
+              placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu mới"
+            dependencies={["newPassword"]}
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu mới" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Mật khẩu xác nhận không khớp"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              placeholder="Nhập lại mật khẩu mới"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              size="large"
+              style={{
+                backgroundColor: "#2563eb",
+                borderColor: "#2563eb",
+                height: "44px",
+                fontWeight: "600",
+              }}
+            >
+              Đổi mật khẩu
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

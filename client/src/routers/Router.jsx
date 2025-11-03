@@ -6,12 +6,12 @@ import Detail from "../pages/Detail/Detail";
 import Vehicles from "../pages/Vehicles/Vehicles";
 import VehicleByType from "../pages/VehicleByType/VehicleByType";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
-import Documentation from "../pages/Documentation/Documentation";
 import SignIn from "../pages/SignIn/SignIn";
 import SignUp from "../pages/SignUp/SignUp";
 import UserDashboard from "../pages/UserDashboard/UserDashboard";
 import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
+import ProjectDocumentation from "../pages/ProjectDocumentation/ProjectDocumentation";
 
 // Component để redirect nếu chưa đăng nhập
 const RequireAuth = ({ children }) => {
@@ -33,7 +33,7 @@ const Routers = () => {
       <Route path="/vehicles" element={<Vehicles />} />
       <Route path="/detail/:plate" element={<Detail />} />
       <Route path="/vehicle-type/:name" element={<VehicleByType />} />
-      <Route path="/documentation" element={<Documentation />} />
+      <Route path="/document" element={<ProjectDocumentation />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route

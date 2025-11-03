@@ -179,6 +179,71 @@ const getDetailsUser = (id) => {
   });
 };
 
+const forgotPassword = (email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({ email: email });
+      if (user === null) {
+        resolve({
+          status: "ERR",
+          message: "Email không tồn tại trong hệ thống",
+        });
+      }
+
+      // Reset password về mặc định
+      const defaultPassword = "123456789";
+      const hash = bcrypt.hashSync(defaultPassword, 10);
+      
+      await User.findByIdAndUpdate(user._id, { password: hash }, { new: true });
+
+      // Gửi email
+      const EmailService = require("./EmailService");
+      await EmailService.sendForgotPasswordEmail(email, defaultPassword);
+
+      resolve({
+        status: "OK",
+        message: "Mật khẩu đã được đặt lại thành công. Vui lòng kiểm tra email.",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const changePassword = (userId, oldPassword, newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({ _id: userId });
+      if (user === null) {
+        resolve({
+          status: "ERR",
+          message: "Người dùng không tồn tại",
+        });
+      }
+
+      // Kiểm tra mật khẩu cũ
+      const comparePassword = bcrypt.compareSync(oldPassword, user.password);
+      if (!comparePassword) {
+        resolve({
+          status: "ERR",
+          message: "Mật khẩu cũ không chính xác",
+        });
+      }
+
+      // Cập nhật mật khẩu mới
+      const hash = bcrypt.hashSync(newPassword, 10);
+      await User.findByIdAndUpdate(userId, { password: hash }, { new: true });
+
+      resolve({
+        status: "OK",
+        message: "Đổi mật khẩu thành công",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -187,4 +252,6 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   deleteManyUser,
+  forgotPassword,
+  changePassword,
 };

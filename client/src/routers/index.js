@@ -3,11 +3,12 @@ import Detail from "../pages/Detail/Detail";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import VehicleByType from "../pages/VehicleByType/VehicleByType";
 import Vehicles from "../pages/Vehicles/Vehicles";
-import Documentation from "../pages/Documentation/Documentation";
 import SignIn from "../pages/SignIn/SignIn";
 import SignUp from "../pages/SignUp/SignUp";
+import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
 import UserDashboard from "../pages/UserDashboard/UserDashboard";
 import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
+import ProjectDocumentation from "../pages/ProjectDocumentation/ProjectDocumentation";
 
 export const routes = [
   {
@@ -42,8 +43,8 @@ export const routes = [
     isShowHeader: true,
   },
   {
-    path: "/documentation",
-    page: Documentation,
+    path: "/document",
+    page: ProjectDocumentation,
     isShowHeader: true,
   },
   {
@@ -54,6 +55,11 @@ export const routes = [
   {
     path: "/sign-up",
     page: SignUp,
+    isShowHeader: false,
+  },
+  {
+    path: "/forgot-password",
+    page: ForgotPassword,
     isShowHeader: false,
   },
   {

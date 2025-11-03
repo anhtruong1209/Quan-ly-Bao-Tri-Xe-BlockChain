@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import "./SignUp.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import InputForm from "../../components/InputForm/InputForm";
-import audi from "../../assets/audirs7.jpg";
-import mclaren from "../../assets/mclaren.jpg";
 import * as message from "../../components/Message/Message";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
-import { FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEyeSlash, FaRegEye, FaUserPlus } from "react-icons/fa";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
-import { FaRegEye } from "react-icons/fa";
 import * as UserService from "../../services/UserService";
+import { MdEmail } from "react-icons/md";
+import { FaLock } from "react-icons/fa";
+import AuthLayout from "../../components/AuthLayout/AuthLayout";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -19,6 +18,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  
   const handleOnchangeEmail = (value) => {
     setEmail(value);
   };
@@ -53,114 +53,122 @@ const SignUp = () => {
   };
 
   return (
-    <div className="sin">
-      <div className="sin-header">
-        <div className="sin-header-title">
-          <NavLink style={{ textDecoration: "none", color: "black" }} to="/">
-            <h1>Website đăng kiểm</h1>
-          </NavLink>
-          <h1 style={{ color: "red" }}>Đăng Kí</h1>
-        </div>
-        <p>Bạn cần giúp đỡ ?</p>
-      </div>
-      <div className="sin-content">
-        <div className="sin-content-image">
-          <img style={{ width: "70%" }} src={audi} alt="" />
-          <img style={{ width: "70%" }} src={mclaren} alt="" />
-        </div>
-        <div className="sin-content-form" style={{ height: "500px" }}>
-          <div>
-            <h1 className="sin-content-form-title">Đăng kí</h1>
-          </div>
+    <AuthLayout
+      title="Đăng ký"
+      subtitle="Tạo tài khoản mới để bắt đầu sử dụng hệ thống."
+      icon={FaUserPlus}
+    >
+      <div className="form-content">
+        <div className="input-group">
+          <label className="input-label">
+            <MdEmail className="label-icon" />
+            Email
+          </label>
           <InputForm
-            style={{ marginBottom: "10px" }}
-            placeholder="abc@gmail.com"
+            className="custom-input"
+            placeholder="Nhập email của bạn"
             value={email}
             onChange={handleOnchangeEmail}
           />
-          <div style={{ position: "relative" }}>
-            <span
-              onClick={() => setIsShowPassword(!isShowPassword)}
-              style={{
-                zIndex: 10,
-                position: "absolute",
-                top: "25%",
-                right: "15px",
-              }}
-            >
-              {isShowPassword ? (
-                <FaRegEye size={20} />
-              ) : (
-                <FaRegEyeSlash size={20} />
-              )}
-            </span>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">
+            <FaLock className="label-icon" />
+            Mật khẩu
+          </label>
+          <div className="password-wrapper">
             <InputForm
-              placeholder="password"
-              style={{ marginBottom: "10px" }}
+              className="custom-input"
+              placeholder="Nhập mật khẩu"
               type={isShowPassword ? "text" : "password"}
               value={password}
               onChange={handleOnchangePassword}
             />
-          </div>
-          <div style={{ position: "relative" }}>
-            <span
-              onClick={() => setIsShowConfirmPassword(!isShowConfirmPassword)}
-              style={{
-                zIndex: 10,
-                position: "absolute",
-                top: "25%",
-                right: "15px",
-              }}
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setIsShowPassword(!isShowPassword)}
             >
-              {isShowConfirmPassword ? (
-                <FaRegEye size={20} />
+              {isShowPassword ? (
+                <FaRegEyeSlash size={18} />
               ) : (
-                <FaRegEyeSlash size={20} />
+                <FaRegEye size={18} />
               )}
-            </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">
+            <FaLock className="label-icon" />
+            Xác nhận mật khẩu
+          </label>
+          <div className="password-wrapper">
             <InputForm
-              placeholder="comfirm password"
+              className="custom-input"
+              placeholder="Nhập lại mật khẩu"
               type={isShowConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={handleOnchangeConfirmPassword}
             />
-          </div>
-          {data?.status === "ERR" && (
-            <span style={{ color: "red" }}>{data?.message}</span>
-          )}
-          <Loading isLoading={isPending}>
-            <ButtonComponent
-              disabled={
-                !email.length || !password.length || !confirmPassword.length
-              }
-              onClick={handleSignUp}
-              size={40}
-              styleButton={{
-                background: "rgb(255, 57, 69)",
-                height: "48px",
-                width: "100%",
-                border: "none",
-                borderRadius: "4px",
-                margin: "26px 0 10px",
-              }}
-              textbutton={"Đăng ký"}
-              styleTextButton={{
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            ></ButtonComponent>
-          </Loading>
-          <div className="sin-content-form-try">
-            <a className="sin-content-form-try-pass">Quên mật khẩu ?</a>
-          </div>
-          <div className="sin-content-form-sup">
-            <p>Bạn đã có tài khoản</p>
-            <NavLink to="/sign-in">Đăng Nhập</NavLink>
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setIsShowConfirmPassword(!isShowConfirmPassword)}
+            >
+              {isShowConfirmPassword ? (
+                <FaRegEyeSlash size={18} />
+              ) : (
+                <FaRegEye size={18} />
+              )}
+            </button>
           </div>
         </div>
+
+        {data?.status === "ERR" && (
+          <div className="error-message">
+            <span>{data?.message}</span>
+          </div>
+        )}
+
+        <div className="form-footer-top">
+          <NavLink to="/forgot-password" className="forgot-link">
+            Quên mật khẩu?
+          </NavLink>
+          <NavLink to="/sign-in" className="signup-link">
+            Đã có tài khoản? Đăng nhập
+          </NavLink>
+        </div>
+
+        <Loading isLoading={isPending}>
+          <ButtonComponent
+            disabled={
+              !email.length || !password.length || !confirmPassword.length
+            }
+            onClick={handleSignUp}
+            size={40}
+            styleButton={{
+              background: "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
+              height: "52px",
+              width: "100%",
+              border: "none",
+              borderRadius: "12px",
+              margin: "24px 0 16px",
+              boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
+              transition: "all 0.3s ease",
+            }}
+            textbutton={"Đăng ký"}
+            styleTextButton={{
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "700",
+              letterSpacing: "0.5px",
+            }}
+          />
+        </Loading>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

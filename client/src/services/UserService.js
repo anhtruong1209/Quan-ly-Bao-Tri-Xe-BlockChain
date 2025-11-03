@@ -102,3 +102,21 @@ export const deleteManyUser = async (data, access_token) => {
   );
   return res.data;
 };
+
+export const forgotPassword = async (email) => {
+  const res = await axios.post(`http://localhost:3001/api/user/forgot-password`, { email });
+  return res.data;
+};
+
+export const changePassword = async (userId, oldPassword, newPassword, access_token) => {
+  const res = await axiosJWT.post(
+    `http://localhost:3001/api/user/change-password/${userId}`,
+    { oldPassword, newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};
