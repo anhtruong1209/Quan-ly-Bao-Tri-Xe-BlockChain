@@ -19,7 +19,10 @@ import {
   Modal,
   Form,
   InputNumber,
+  Typography,
 } from "antd";
+
+const { Text } = Typography;
 import {
   CarOutlined,
   ToolOutlined,
@@ -154,6 +157,27 @@ const Home = (props) => {
     fetchDashboardData();
   }, [statusFilter]);
 
+  // Hàm tính giá dựa vào loại bảo trì (0.001 - 0.004 Sepolia ETH)
+  const getPriceByMaintenanceType = (maintenanceType) => {
+    if (!maintenanceType) {
+      // Nếu không có loại, random trong khoảng 0.001 - 0.004
+      const min = 0.001;
+      const max = 0.004;
+      const randomPrice = (Math.random() * (max - min) + min).toFixed(3);
+      return randomPrice;
+    }
+    
+    // Map loại bảo trì với giá tương ứng
+    const priceMap = {
+      routine: "0.001",    // Bảo dưỡng định kỳ
+      repair: "0.003",     // Sửa chữa
+      inspection: "0.002", // Kiểm tra
+      emergency: "0.004",  // Bảo trì khẩn cấp
+    };
+    
+    return priceMap[maintenanceType] || "0.002";
+  };
+
   const getStatusInfo = (record) => {
     if (record.anchored) {
       return {
@@ -280,6 +304,60 @@ const Home = (props) => {
       render: (text) => text ? text.toLocaleString() : "N/A",
     },
     {
+      title: "Giá tiền (Sepolia ETH)",
+      dataIndex: "price",
+      key: "price",
+      width: 120,
+      render: (price, record) => {
+        // Nếu có price trong record, dùng luôn
+        if (price) {
+          return (
+            <Text strong style={{ color: "#1890ff", fontSize: "11px" }}>
+              {price} Sepolia ETH
+            </Text>
+          );
+        }
+        
+        // Nếu không có, tính dựa vào loại bảo trì
+        const maintenanceType = record?.content?.maintenanceType || "";
+        if (maintenanceType) {
+          const calculatedPrice = getPriceByMaintenanceType(maintenanceType);
+          return (
+            <Text strong style={{ color: "#1890ff", fontSize: "11px" }}>
+              {calculatedPrice} Sepolia ETH
+            </Text>
+          );
+        }
+        
+        return (
+          <Text type="secondary" style={{ fontSize: "11px" }}>N/A</Text>
+        );
+      },
+    },
+    {
+      title: "Trạng thái thanh toán",
+      key: "paymentStatus",
+      width: 120,
+      render: (_, record) => {
+        const isPaid = record.paymentHash || record.paymentStatus === "paid";
+        console.log("Home - Payment status check:", {
+          id: record._id,
+          paymentHash: record.paymentHash,
+          paymentStatus: record.paymentStatus,
+          isPaid: isPaid
+        });
+        return (
+          <Tag 
+            color={isPaid ? "green" : "orange"} 
+            icon={isPaid ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+            style={{ fontSize: "10px" }}
+          >
+            {isPaid ? "✅ Đã thanh toán" : "⏳ Chưa thanh toán"}
+          </Tag>
+        );
+      },
+    },
+    {
       title: "Trạng thái",
       key: "status",
       width: 100,
@@ -330,57 +408,110 @@ const Home = (props) => {
       title: "Hành động",
       key: "action",
       width: 200,
-      render: (_, record) => (
-        <Space>
-          {/* Chỉ hiển thị nút "Xác thực" khi record đã được approve nhưng chưa anchored */}
-          {!record.anchored && record.status !== "pending" && (
+      render: (_, record) => {
+        const isPaid = record.paymentHash || record.paymentStatus === "paid";
+        const canAnchor = record.status === "approved" && isPaid && !record.anchored;
+        
+        return (
+          <Space>
+            {/* Hiển thị nút "Xác nhận & Anchor" khi record đã được approve và đã thanh toán nhưng chưa anchored */}
+            {canAnchor ? (
+              <Button
+                size="small"
+                type="primary"
+                style={{ 
+                  backgroundColor: "#1890ff", 
+                  borderColor: "#1890ff",
+                  color: "#fff",
+                  fontSize: "10px"
+                }}
+                icon={<CheckCircleOutlined />}
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    const res = await RecordsService.acceptServiceRecord(record._id);
+                    if (res?.status === "OK") {
+                      message.success("Đã anchor lên blockchain thành công!");
+                      fetchDashboardData();
+                    } else {
+                      message.error(res?.message || "Anchor thất bại!");
+                    }
+                  } catch (error) {
+                    message.error("Có lỗi xảy ra khi anchor!");
+                    console.error(error);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                loading={loading}
+              >
+                Xác nhận & Anchor
+              </Button>
+            ) : record.anchored ? (
+              <Tag color="green" style={{ fontSize: "10px" }}>Đã xác thực</Tag>
+            ) : !isPaid ? (
+              <Tag color="orange" style={{ fontSize: "10px" }}>Chờ thanh toán</Tag>
+            ) : null}
+            
+            {/* Hiển thị Payment Hash nếu đã thanh toán */}
+            {record.paymentHash && !record.anchored && (
+              <Popover
+                content={
+                  <div>
+                    <p><strong>Payment Hash:</strong></p>
+                    <code style={{ fontSize: "12px", wordBreak: "break-all" }}>{record.paymentHash}</code>
+                    <br />
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<LinkOutlined />}
+                      onClick={() => {
+                        window.open(`https://sepolia.etherscan.io/tx/${record.paymentHash}`, '_blank');
+                      }}
+                    >
+                      Xem trên Etherscan
+                    </Button>
+                  </div>
+                }
+                title="Payment Info"
+              >
+                <Button size="small" type="default" style={{ fontSize: "10px" }}>
+                  Payment Hash
+                </Button>
+              </Popover>
+            )}
+            
+            {/* Hiển thị Transaction Hash nếu đã anchored */}
+            {record.txHash && (
+              <Button
+                type="link"
+                size="small"
+                icon={<LinkOutlined />}
+                onClick={() => {
+                  window.open(`https://sepolia.etherscan.io/tx/${record.txHash}`, '_blank');
+                }}
+                style={{ fontSize: "10px" }}
+              >
+                Xem TX
+              </Button>
+            )}
+            
             <Button
               size="small"
-              type="primary"
               style={{ 
-                backgroundColor: "#52c41a", 
-                borderColor: "#52c41a",
+                backgroundColor: "#1890ff", 
+                borderColor: "#1890ff",
                 color: "#fff",
                 fontSize: "10px"
               }}
-              icon={<CheckCircleFilled />}
-              onClick={async () => {
-                try {
-                  setLoading(true);
-                  const res = await RecordsService.acceptServiceRecord(record._id);
-                  if (res?.status === "OK") {
-                    message.success("Đã xác thực transaction thành công!");
-                    fetchDashboardData();
-                  } else {
-                    message.error(res?.message || "Xác thực thất bại!");
-                  }
-                } catch (error) {
-                  message.error("Có lỗi xảy ra khi xác thực!");
-                  console.error(error);
-                } finally {
-                  setLoading(false);
-                }
-              }}
-              loading={loading}
+              icon={<EyeOutlined />}
+              onClick={() => navigate(`/detail/${record.vehicleKey}`)}
             >
-              Xác thực
+              Xem
             </Button>
-          )}
-          <Button
-            size="small"
-            style={{ 
-              backgroundColor: "#1890ff", 
-              borderColor: "#1890ff",
-              color: "#fff",
-              fontSize: "10px"
-            }}
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/detail/${record.vehicleKey}`)}
-          >
-            Xem
-          </Button>
-        </Space>
-      ),
+          </Space>
+        );
+      },
     },
   ];
 
@@ -685,6 +816,48 @@ const Home = (props) => {
                             emergency: "Bảo trì khẩn cấp",
                           };
                           return typeMap[type] || type;
+                        },
+                      },
+                      {
+                        title: "Giá tiền (Sepolia ETH)",
+                        dataIndex: "price",
+                        key: "price",
+                        render: (price, record) => {
+                          // Nếu có price trong record, dùng luôn
+                          if (price) {
+                            return (
+                              <Text strong style={{ color: "#1890ff", fontSize: "11px" }}>
+                                {price} Sepolia ETH
+                              </Text>
+                            );
+                          }
+                          
+                          // Nếu không có, tính dựa vào loại bảo trì
+                          const maintenanceType = record?.content?.maintenanceType || "";
+                          if (maintenanceType) {
+                            const calculatedPrice = getPriceByMaintenanceType(maintenanceType);
+                            return (
+                              <Text strong style={{ color: "#1890ff", fontSize: "11px" }}>
+                                {calculatedPrice} Sepolia ETH
+                              </Text>
+                            );
+                          }
+                          
+                          return (
+                            <Text type="secondary" style={{ fontSize: "11px" }}>N/A</Text>
+                          );
+                        },
+                      },
+                      {
+                        title: "Đã thanh toán",
+                        key: "paymentStatus",
+                        render: (_, record) => {
+                          const isPaid = record.paymentHash || record.paymentStatus === "paid";
+                          return (
+                            <Tag color={isPaid ? "green" : "orange"} icon={isPaid ? <CheckCircleOutlined /> : <ClockCircleOutlined />}>
+                              {isPaid ? "✅ Đã thanh toán" : "⏳ Chưa thanh toán"}
+                            </Tag>
+                          );
                         },
                       },
                       {

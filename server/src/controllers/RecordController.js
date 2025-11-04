@@ -12,7 +12,7 @@ function hashObject(obj) {
 const createServiceRecord = async (req, res) => {
   try {
     const userId = req.user?.id; // Từ middleware auth
-    const { vehicleId, vehicleKey, content } = req.body;
+    const { vehicleId, vehicleKey, content, price, recipientAddress } = req.body;
     if (!vehicleId || !vehicleKey || !content) {
       return res.status(400).json({ status: "ERR", message: "Missing fields" });
     }
@@ -34,6 +34,10 @@ const createServiceRecord = async (req, res) => {
       contentHash,
       status: "pending", // Mặc định là pending, chờ admin duyệt
       anchored: false,
+      // Payment fields - lưu giá dự kiến khi tạo request
+      price: price || null, // Giá dự kiến (Sepolia ETH)
+      recipientAddress: recipientAddress || null, // Địa chỉ ví admin nhận tiền
+      paymentStatus: "pending", // Chưa thanh toán
     });
 
     // KHÔNG gọi blockchain ở đây - chỉ khi admin approve mới đưa lên blockchain
@@ -277,6 +281,41 @@ const acceptServiceRecord = async (req, res) => {
   }
 };
 
+// Cập nhật payment info sau khi user thanh toán
+const updatePayment = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    const { paymentHash, blockNumber, paymentStatus } = req.body;
+
+    if (!paymentHash) {
+      return res.status(400).json({ status: "ERR", message: "Payment hash is required" });
+    }
+
+    const record = await ServiceRecord.findById(id);
+    if (!record) {
+      return res.status(404).json({ status: "ERR", message: "Service record not found" });
+    }
+
+    // Kiểm tra user có quyền cập nhật record này không
+    if (!req.user?.isAdmin && record.user?.toString() !== userId?.toString()) {
+      return res.status(403).json({ status: "ERR", message: "You don't have permission to update this record" });
+    }
+
+    // Cập nhật payment info
+    record.paymentHash = paymentHash;
+    record.paymentStatus = paymentStatus || "paid";
+    if (blockNumber) {
+      record.blockNumber = blockNumber;
+    }
+
+    await record.save();
+    return res.status(200).json({ status: "OK", data: record });
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
 module.exports = {
   createServiceRecord,
   listServiceRecords,
@@ -288,6 +327,7 @@ module.exports = {
   listWarrantyClaims,
   deleteServiceRecord,
   acceptServiceRecord,
+  updatePayment,
 };
 
 

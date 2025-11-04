@@ -14,7 +14,7 @@ import {
   SearchOutlined,
   CarOutlined,
 } from "@ant-design/icons";
-import { FaTruck } from "react-icons/fa";
+import { RiBuilding2Line } from "react-icons/ri";
 import { Badge, Button, Popover } from "antd";
 import { resetUser } from "../../redux/slides/userSlide";
 import ResponsiveMenu from "./ResponsiveMenu";
@@ -214,31 +214,37 @@ const Navbar = () => {
               display: "flex", 
               alignItems: "center", 
               justifyContent: "center",
-              width: "50px",
-              height: "50px",
-              backgroundColor: "#f9a826",
-              borderRadius: "12px",
-              marginRight: "8px"
+              width: "52px",
+              height: "52px",
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "14px",
+              marginRight: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
             }}>
-              <FaTruck style={{ fontSize: "28px", color: "#000d6b" }} />
+              <RiBuilding2Line style={{ fontSize: "28px", color: "#fff" }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <h4 style={{ 
                 margin: 0, 
                 color: "#fff", 
-                fontSize: "18px", 
-                fontWeight: "bold",
-                lineHeight: "1.2"
+                fontSize: "19px", 
+                fontWeight: "700",
+                lineHeight: "1.3",
+                fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                letterSpacing: "-0.3px"
               }}>
-                Hệ Thống Quản Lý Bảo Trì
+                Hệ Thống Quản Lý Bảo Trì Xe
               </h4>
               <p style={{ 
                 margin: 0, 
-                color: "rgba(255, 255, 255, 0.8)", 
+                color: "rgba(255, 255, 255, 0.85)", 
                 fontSize: "12px",
-                lineHeight: "1.2"
+                lineHeight: "1.3",
+                fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                fontWeight: "400"
               }}>
-                Xe Vận Tải
               </p>
             </div>
           </div>
@@ -345,23 +351,47 @@ const Navbar = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "8px",
+                      gap: "10px",
                       cursor: "pointer",
-                      padding: "4px 12px",
-                      borderRadius: "8px",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      transition: "background-color 0.3s",
+                      padding: "8px 16px",
+                      borderRadius: "14px",
+                      background: "rgba(255, 255, 255, 0.15)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid rgba(255, 255, 255, 0.25)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                     }}
-                    onMouseEnter={(e) => (e.target.style.backgroundColor = "rgba(255, 255, 255, 0.2)")}
-                    onMouseLeave={(e) => (e.target.style.backgroundColor = "rgba(255, 255, 255, 0.1)")}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
+                    }}
                     onClick={() => setIsOpenPopup(!isOpenPopup)}
                   >
-                    <UserOutlined style={{ color: "white", fontSize: "18px" }} />
+                    <UserOutlined style={{ color: "white", fontSize: "20px" }} />
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                      <span style={{ color: "white", fontSize: "12px", lineHeight: "1.2" }}>
+                      <span style={{ 
+                        color: "rgba(255, 255, 255, 0.9)", 
+                        fontSize: "11px", 
+                        lineHeight: "1.3",
+                        fontFamily: "'Inter', 'Poppins', sans-serif",
+                        fontWeight: "400"
+                      }}>
                         Xin chào
                       </span>
-                      <span style={{ color: "white", fontSize: "14px", fontWeight: "600", lineHeight: "1.2" }}>
+                      <span style={{ 
+                        color: "white", 
+                        fontSize: "15px", 
+                        fontWeight: "700", 
+                        lineHeight: "1.3",
+                        fontFamily: "'Inter', 'Poppins', sans-serif",
+                        letterSpacing: "-0.2px"
+                      }}>
                         {user?.name || user?.email || "User"}
                       </span>
                     </div>
@@ -372,16 +402,26 @@ const Navbar = () => {
                   type="primary"
                   onClick={() => navigate("/sign-in")}
                   style={{
-                    backgroundColor: "#f9a826",
-                    borderColor: "#f9a826",
-                    color: "#000d6b",
-                    fontWeight: "600",
+                    background: "rgba(255, 255, 255, 0.25)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    color: "#fff",
+                    fontWeight: "700",
+                    fontFamily: "'Inter', 'Poppins', sans-serif",
+                    borderRadius: "12px",
+                    height: "42px",
+                    padding: "0 24px",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = "0.9";
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.35)";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = "1";
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
                   }}
                 >
                   Đăng nhập

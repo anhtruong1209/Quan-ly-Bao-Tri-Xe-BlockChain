@@ -166,4 +166,31 @@ export const rejectServiceRecord = async (id) => {
   }
 };
 
+// User: Cập nhật payment hash sau khi thanh toán
+export const updatePayment = async (id, paymentData) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("Token không tồn tại. Vui lòng đăng nhập lại.");
+    }
+    const res = await axiosJWT.put(
+      getApiUrl(`/api/records/service/${id}/payment`),
+      {
+        paymentHash: paymentData.transactionHash,
+        blockNumber: paymentData.blockNumber,
+        paymentStatus: "paid",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error updating payment:", error);
+    throw error;
+  }
+};
+
 

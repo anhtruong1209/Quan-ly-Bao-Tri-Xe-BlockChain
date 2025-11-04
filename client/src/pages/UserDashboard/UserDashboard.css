@@ -1,5 +1,4 @@
 .user-dashboard {
-  padding: 40px 24px;
   min-height: 100vh;
   background: #f5f7fa;
   background-attachment: fixed;
@@ -179,13 +178,7 @@
   font-size: 14px;
 }
 
-.add-vehicle-btn:hover,
-.add-maintenance-btn:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-  color: white;
-}
+/* Bỏ hover effect - giữ màu xanh cố định */
 
 .add-vehicle-btn:active,
 .add-maintenance-btn:active {

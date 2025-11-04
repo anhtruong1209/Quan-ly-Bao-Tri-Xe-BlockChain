@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./UserDashboard.css";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Table, Modal, Form, Input, Select, message, Tabs, Row, Col, Badge, Space, Tag, Tooltip, Popover, Empty } from "antd";
+import { Button, Card, Table, Modal, Form, Input, Select, message, Tabs, Row, Col, Badge, Space, Tag, Tooltip, Popover, Empty, Alert, Typography } from "antd";
 import {
   PlusOutlined,
   CarOutlined,
@@ -24,9 +24,11 @@ import StatsSection from "../../components/StatsSection/StatsSection";
 import AdvertisementSection from "../../components/AdvertisementSection/AdvertisementSection";
 import VehicleForm from "../../components/VehicleForm/VehicleForm";
 import Footer from "../../components/Footer/Footer";
+import PaymentButton from "../../components/PaymentButton/PaymentButton";
+import PaymentService from "../../services/PaymentService";
 
-const { TabPane } = Tabs;
 const { Option } = Select;
+const { Text } = Typography;
 
 const UserDashboard = () => {
   const user = useSelector((state) => state.user);
@@ -43,6 +45,42 @@ const UserDashboard = () => {
   const [vehicleForm] = Form.useForm();
   const [maintenanceForm] = Form.useForm();
   const [changePasswordForm] = Form.useForm();
+  const [selectedMaintenancePrice, setSelectedMaintenancePrice] = useState("0.001");
+  
+  // Hàm tính giá dựa vào loại bảo trì (giống AdminDashboard)
+  const getPriceByMaintenanceType = (maintenanceType) => {
+    if (!maintenanceType) return "0.001";
+    
+    const typeMap = {
+      "routine": "0.001",
+      "bảo dưỡng định kỳ": "0.001",
+      "bảo dưỡng": "0.001",
+      "inspection": "0.002",
+      "kiểm tra": "0.002",
+      "kiểm tra định kỳ": "0.002",
+      "repair": "0.003",
+      "sửa chữa": "0.003",
+      "sửa chữa nhỏ": "0.003",
+      "engine": "0.004",
+      "động cơ": "0.004",
+      "sửa chữa động cơ": "0.004",
+      "sửa chữa lớn": "0.004",
+      "emergency": "0.004",
+      "bảo trì khẩn cấp": "0.004",
+    };
+
+    const typeLower = maintenanceType.toLowerCase().trim();
+    for (const [key, price] of Object.entries(typeMap)) {
+      if (typeLower.includes(key)) {
+        return price;
+      }
+    }
+    
+    // Random nếu không tìm thấy
+    const min = 0.001;
+    const max = 0.004;
+    return (Math.random() * (max - min) + min).toFixed(3);
+  };
 
   useEffect(() => {
     if (user?.email) {
@@ -199,6 +237,9 @@ const UserDashboard = () => {
         garageValue = garageValue.length > 0 ? garageValue[0] : "Chưa xác định";
       }
       
+      // Tính giá dựa vào loại bảo trì
+      const price = getPriceByMaintenanceType(maintenanceType);
+      
       const payload = {
         vehicleId: values.vehicleId,
         vehicleKey: selectedVehicle.plates,
@@ -210,6 +251,9 @@ const UserDashboard = () => {
           garage: garageValue,
           odo: values.odo ? parseInt(values.odo) : 0,
         },
+        // Thêm price để admin biết cần thanh toán bao nhiêu
+        price: price,
+        recipientAddress: "0xbb2c9c2beaed565ac4db0d51c4eed1db35fda0d0", // Admin wallet
       };
 
       const res = await RecordsService.createServiceRecord(payload);
@@ -218,6 +262,7 @@ const UserDashboard = () => {
         message.success("Tạo lệnh đăng ký bảo trì thành công! Đang chờ admin duyệt.");
         setIsMaintenanceModalVisible(false);
         maintenanceForm.resetFields();
+        setSelectedMaintenancePrice("0.001");
         fetchServiceRecords();
       } else {
         message.error(res?.message || "Lỗi khi tạo lệnh đăng ký bảo trì");
@@ -395,6 +440,39 @@ const UserDashboard = () => {
       },
     },
     {
+      title: "Giá tiền (Sepolia ETH)",
+      dataIndex: "price",
+      key: "price",
+      render: (price, record) => {
+        // Nếu có price trong record, dùng luôn
+        if (price) {
+          return (
+            <Text strong style={{ color: "#1890ff" }}>
+              {price} Sepolia ETH
+            </Text>
+          );
+        }
+        
+        // Nếu không có, tính dựa vào loại bảo trì
+        const maintenanceType = record?.content?.maintenanceType || record?.maintenanceType || "";
+        if (maintenanceType) {
+          const calculatedPrice = getPriceByMaintenanceType(maintenanceType);
+          return (
+            <Text strong style={{ color: "#1890ff" }}>
+              {calculatedPrice} Sepolia ETH
+            </Text>
+          );
+        }
+        
+        // Fallback
+        return (
+          <Text type="secondary">
+            N/A
+          </Text>
+        );
+      },
+    },
+    {
       title: "Mô tả",
       dataIndex: ["content", "description"],
       key: "description",
@@ -450,250 +528,333 @@ const UserDashboard = () => {
           serviceRecords={serviceRecords}
         />
 
-      <Tabs defaultActiveKey="vehicles" size="large" className="dashboard-tabs">
-        <TabPane
-          tab={
-            <span>
-              <CarOutlined /> Xe của tôi
-            </span>
-          }
-          key="vehicles"
-        >
-          <Card 
-            className="vehicles-card"
-            title={
-              <Space>
-                <CarOutlined />
-                <span>Danh sách xe</span>
-                <Badge count={vehicles.length} showZero style={{ backgroundColor: "#1890ff" }} />
-              </Space>
-            }
-            extra={
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setIsVehicleModalVisible(true);
-                  setIsEditMode(false);
-                  setSelectedVehicle(null);
-                  vehicleForm.resetFields();
-                }}
-                size="large"
-                className="add-vehicle-btn"
+      <Tabs 
+        defaultActiveKey="vehicles" 
+        size="large" 
+        className="dashboard-tabs"
+        items={[
+          {
+            key: "vehicles",
+            label: (
+              <span>
+                <CarOutlined /> Xe của tôi
+              </span>
+            ),
+            children: (
+              <Card 
+                className="vehicles-card"
+                title={
+                  <Space>
+                    <CarOutlined />
+                    <span>Danh sách xe</span>
+                    <Badge count={vehicles.length} showZero style={{ backgroundColor: "#1890ff" }} />
+                  </Space>
+                }
+                extra={
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      setIsVehicleModalVisible(true);
+                      setIsEditMode(false);
+                      setSelectedVehicle(null);
+                      vehicleForm.resetFields();
+                    }}
+                    size="large"
+                    className="add-vehicle-btn"
+                  >
+                    Đăng ký xe mới
+                  </Button>
+                }
               >
-                Đăng ký xe mới
-              </Button>
-            }
-          >
-            <Loading isLoading={loading}>
-              {vehicles.length === 0 ? (
-                <Empty
-                  description="Chưa có xe nào. Hãy đăng ký xe mới!"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              ) : (
-                <Row gutter={[24, 24]}>
-                  {vehicles.map((vehicle) => (
-                    <Col xs={24} sm={12} lg={8} xl={6} key={vehicle._id}>
-                      <VehicleCard
-                        vehicle={vehicle}
-                        onView={handleViewVehicle}
-                        onEdit={handleEditVehicle}
-                        onDelete={handleDeleteVehicle}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-              )}
-            </Loading>
-          </Card>
-        </TabPane>
-
-        <TabPane
-          tab={
-            <span>
-              <ToolOutlined /> Đăng ký bảo trì
-            </span>
-          }
-          key="maintenance"
-        >
-          <Card
-            className="maintenance-card"
-            title={
-              <Space>
-                <ToolOutlined />
-                <span>Lệnh đăng ký bảo trì</span>
-              </Space>
-            }
-            extra={
-              <Space>
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={fetchServiceRecords}
-                >
-                  Làm mới
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={() => setIsMaintenanceModalVisible(true)}
-                  disabled={vehicles.length === 0}
-                  size="large"
-                  className="add-maintenance-btn"
-                >
-                  Tạo lệnh đăng ký bảo trì
-                </Button>
-              </Space>
-            }
-          >
-            <Loading isLoading={loading}>
-              <Table
-                dataSource={maintenanceRegs}
-                columns={maintenanceColumns}
-                rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
-              />
-            </Loading>
-          </Card>
-        </TabPane>
-
-        <TabPane
-          tab={
-            <span>
-              <HistoryOutlined /> Lịch sử bảo trì{" "}
-              <Badge count={serviceRecords.filter(r => r.status === "anchored" || r.anchored).length} showZero style={{ backgroundColor: "#52c41a" }} />
-            </span>
-          }
-          key="history"
-        >
-          <Card 
-            className="history-card"
-            title={
-              <Space>
-                <HistoryOutlined />
-                <span>Lịch sử bảo trì</span>
-              </Space>
-            }
-            extra={
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={fetchServiceRecords}
+                <Loading isLoading={loading}>
+                  {vehicles.length === 0 ? (
+                    <Empty
+                      description="Chưa có xe nào. Hãy đăng ký xe mới!"
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    />
+                  ) : (
+                    <Row gutter={[24, 24]}>
+                      {vehicles.map((vehicle) => (
+                        <Col xs={24} sm={12} lg={8} xl={6} key={vehicle._id}>
+                          <VehicleCard
+                            vehicle={vehicle}
+                            onView={handleViewVehicle}
+                            onEdit={handleEditVehicle}
+                            onDelete={handleDeleteVehicle}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  )}
+                </Loading>
+              </Card>
+            ),
+          },
+          {
+            key: "maintenance",
+            label: (
+              <span>
+                <ToolOutlined /> Đăng ký bảo trì
+              </span>
+            ),
+            children: (
+              <Card
+                className="maintenance-card"
+                title={
+                  <Space>
+                    <ToolOutlined />
+                    <span>Lệnh đăng ký bảo trì</span>
+                  </Space>
+                }
+                extra={
+                  <Space>
+                    <Button
+                      icon={<ReloadOutlined />}
+                      onClick={fetchServiceRecords}
+                    >
+                      Làm mới
+                    </Button>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => setIsMaintenanceModalVisible(true)}
+                      disabled={vehicles.length === 0}
+                      size="large"
+                      className="add-maintenance-btn"
+                    >
+                      Tạo lệnh đăng ký bảo trì
+                    </Button>
+                  </Space>
+                }
               >
-                Làm mới
-              </Button>
-            }
-          >
-            <Loading isLoading={loading}>
-              <Table
-                dataSource={serviceRecords.filter(r => r.status !== "pending")}
-                columns={[
-                  {
-                    title: "Ngày",
-                    dataIndex: "createdAt",
-                    key: "createdAt",
-                    render: (date) => (
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{date ? new Date(date).toLocaleDateString("vi-VN") : ""}</div>
-                        <div style={{ fontSize: "11px", color: "#999" }}>
-                          {date ? new Date(date).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : ""}
-                        </div>
-                      </div>
-                    ),
-                  },
-                  {
-                    title: "Biển số",
-                    dataIndex: "vehicleKey",
-                    key: "vehicleKey",
-                  },
-                  {
-                    title: "Công việc",
-                    dataIndex: ["content", "job"],
-                    key: "job",
-                    render: (text) => (
-                      <Tooltip title={text}>
-                        <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: "Garage",
-                    dataIndex: ["content", "garage"],
-                    key: "garage",
-                    render: (text) => (
-                      <Tooltip title={text}>
-                        <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: "Odo (km)",
-                    dataIndex: ["content", "odo"],
-                    key: "odo",
-                    render: (text) => text ? text.toLocaleString() : "N/A",
-                  },
-                  {
-                    title: "Trạng thái",
-                    key: "status",
-                    render: (_, record) => {
-                      const statusInfo = {
-                        pending: { color: "orange", text: "Chờ duyệt", icon: <ClockCircleOutlined /> },
-                        approved: { color: "blue", text: "Đã duyệt", icon: <CheckCircleOutlined /> },
-                        anchored: { color: "green", text: "Đã xác thực", icon: <CheckCircleOutlined /> },
-                        rejected: { color: "red", text: "Đã từ chối", icon: <ClockCircleOutlined /> },
-                      };
-                      const info = statusInfo[record.status] || { color: "gray", text: "Không xác định", icon: null };
-                      return (
-                        <Tag color={info.color} icon={info.icon}>
-                          {info.text}
-                        </Tag>
-                      );
-                    },
-                  },
-                  {
-                    title: "Hành động",
-                    key: "action",
-                    render: (_, record) => (
-                      <Space>
-                        {record.txHash && (
-                          <Popover
-                            content={
-                              <div>
-                                <p><strong>Transaction Hash:</strong></p>
-                                <code style={{ fontSize: "12px", wordBreak: "break-all" }}>{record.txHash}</code>
-                                <Button
-                                  type="link"
-                                  size="small"
-                                  onClick={() => {
-                                    window.open(`https://sepolia.etherscan.io/tx/${record.txHash}`, '_blank');
+                <Loading isLoading={loading}>
+                  <Table
+                    dataSource={maintenanceRegs}
+                    columns={maintenanceColumns}
+                    rowKey="_id"
+                    pagination={{ pageSize: 10 }}
+                    size="small"
+                  />
+                </Loading>
+              </Card>
+            ),
+          },
+          {
+            key: "history",
+            label: (
+              <span>
+                <HistoryOutlined /> Lịch sử bảo trì{" "}
+                <Badge count={serviceRecords.filter(r => r.status === "anchored" || r.anchored).length} showZero style={{ backgroundColor: "#52c41a" }} />
+              </span>
+            ),
+            children: (
+              <Card 
+                className="history-card"
+                title={
+                  <Space>
+                    <HistoryOutlined />
+                    <span>Lịch sử bảo trì</span>
+                  </Space>
+                }
+                extra={
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={fetchServiceRecords}
+                  >
+                    Làm mới
+                  </Button>
+                }
+              >
+                <Loading isLoading={loading}>
+                  <Table
+                    dataSource={serviceRecords.filter(r => r.status !== "pending")}
+                    columns={[
+                      {
+                        title: "Ngày",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
+                        render: (date) => (
+                          <div>
+                            <div style={{ fontWeight: 600 }}>{date ? new Date(date).toLocaleDateString("vi-VN") : ""}</div>
+                            <div style={{ fontSize: "11px", color: "#999" }}>
+                              {date ? new Date(date).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : ""}
+                            </div>
+                          </div>
+                        ),
+                      },
+                      {
+                        title: "Biển số",
+                        dataIndex: "vehicleKey",
+                        key: "vehicleKey",
+                      },
+                      {
+                        title: "Công việc",
+                        dataIndex: ["content", "job"],
+                        key: "job",
+                        render: (text) => (
+                          <Tooltip title={text}>
+                            <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: "Garage",
+                        dataIndex: ["content", "garage"],
+                        key: "garage",
+                        render: (text) => (
+                          <Tooltip title={text}>
+                            <span style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{text || "N/A"}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: "Odo (km)",
+                        dataIndex: ["content", "odo"],
+                        key: "odo",
+                        render: (text) => text ? text.toLocaleString() : "N/A",
+                      },
+                      {
+                        title: "Trạng thái",
+                        key: "status",
+                        render: (_, record) => {
+                          const statusInfo = {
+                            pending: { color: "orange", text: "Chờ duyệt", icon: <ClockCircleOutlined /> },
+                            approved: { color: "blue", text: "Đã duyệt", icon: <CheckCircleOutlined /> },
+                            anchored: { color: "green", text: "Đã xác thực", icon: <CheckCircleOutlined /> },
+                            rejected: { color: "red", text: "Đã từ chối", icon: <ClockCircleOutlined /> },
+                          };
+                          const info = statusInfo[record.status] || { color: "gray", text: "Không xác định", icon: null };
+                          return (
+                            <Space direction="vertical" size="small">
+                              <Tag color={info.color} icon={info.icon}>
+                                {info.text}
+                              </Tag>
+                              {record.status === "approved" && (
+                                <Tag color={record.paymentHash || record.paymentStatus === "paid" ? "green" : "orange"}>
+                                  {record.paymentHash || record.paymentStatus === "paid" ? "✅ Đã thanh toán" : "⏳ Chờ thanh toán"}
+                                </Tag>
+                              )}
+                            </Space>
+                          );
+                        },
+                      },
+                      {
+                        title: "Hành động",
+                        key: "action",
+                        render: (_, record) => {
+                          // Nếu đã được approve nhưng chưa thanh toán
+                          const isApproved = record.status === "approved";
+                          const isPaid = record.paymentHash || record.paymentStatus === "paid";
+                          const needsPayment = isApproved && !isPaid;
+                          
+                          console.log("Record payment status:", {
+                            status: record.status,
+                            paymentHash: record.paymentHash,
+                            paymentStatus: record.paymentStatus,
+                            needsPayment: needsPayment
+                          });
+                          
+                          return (
+                            <Space>
+                              {/* Button thanh toán Sepolia ETH - hiển thị khi approved nhưng chưa thanh toán */}
+                              {needsPayment ? (
+                                <PaymentButton
+                                  amount={record.price || getPriceByMaintenanceType(record?.content?.maintenanceType || "routine")}
+                                  recipientAddress={record.recipientAddress || "0xbb2c9c2beaed565ac4db0d51c4eed1db35fda0d0"}
+                                  transactionId={record._id}
+                                  onPaymentSuccess={async (paymentData) => {
+                                    try {
+                                      message.success("Thanh toán thành công! Đang cập nhật...");
+                                      // Gọi API để cập nhật record với paymentHash
+                                      await RecordsService.updatePayment(record._id, {
+                                        transactionHash: paymentData.transactionHash,
+                                        blockNumber: paymentData.blockNumber,
+                                      });
+                                      message.success("Đã cập nhật thông tin thanh toán!");
+                                      fetchServiceRecords(); // Refresh list
+                                    } catch (error) {
+                                      console.error("Error updating payment:", error);
+                                      message.error("Lỗi khi cập nhật thông tin thanh toán: " + (error?.response?.data?.message || error.message));
+                                    }
                                   }}
+                                  buttonText="Thanh toán Sepolia ETH"
+                                  type="primary"
+                                />
+                              ) : null}
+                              
+                              {/* Hiển thị payment hash nếu đã thanh toán */}
+                              {record.paymentHash && (
+                                <Popover
+                                  content={
+                                    <div>
+                                      <p><strong>Payment Hash:</strong></p>
+                                      <code style={{ fontSize: "12px", wordBreak: "break-all" }}>{record.paymentHash}</code>
+                                      <Button
+                                        type="link"
+                                        size="small"
+                                        onClick={() => {
+                                          window.open(`https://sepolia.etherscan.io/tx/${record.paymentHash}`, '_blank');
+                                        }}
+                                      >
+                                        Xem trên Etherscan
+                                      </Button>
+                                    </div>
+                                  }
+                                  title="Payment Info"
                                 >
-                                  Xem trên Etherscan
-                                </Button>
-                              </div>
-                            }
-                            title="Blockchain Info"
-                          >
-                            <Button
-                              size="small"
-                              icon={<EyeOutlined />}
-                            >
-                              Xem
-                            </Button>
-                          </Popover>
-                        )}
-                      </Space>
-                    ),
-                  },
-                ]}
-                rowKey="_id"
-                pagination={{ pageSize: 10 }}
-                size="small"
-              />
-            </Loading>
-          </Card>
-        </TabPane>
-      </Tabs>
+                                  <Button
+                                    size="small"
+                                    type="default"
+                                  >
+                                    Đã thanh toán
+                                  </Button>
+                                </Popover>
+                              )}
+                              
+                              {/* Hiển thị blockchain tx hash nếu có */}
+                              {record.txHash && (
+                                <Popover
+                                  content={
+                                    <div>
+                                      <p><strong>Transaction Hash:</strong></p>
+                                      <code style={{ fontSize: "12px", wordBreak: "break-all" }}>{record.txHash}</code>
+                                      <Button
+                                        type="link"
+                                        size="small"
+                                        onClick={() => {
+                                          window.open(`https://sepolia.etherscan.io/tx/${record.txHash}`, '_blank');
+                                        }}
+                                      >
+                                        Xem trên Etherscan
+                                      </Button>
+                                    </div>
+                                  }
+                                  title="Blockchain Info"
+                                >
+                                  <Button
+                                    size="small"
+                                    icon={<EyeOutlined />}
+                                  >
+                                    Xem
+                                  </Button>
+                                </Popover>
+                              )}
+                            </Space>
+                          );
+                        },
+                      },
+                    ]}
+                    rowKey="_id"
+                    pagination={{ pageSize: 10 }}
+                    size="small"
+                  />
+                </Loading>
+              </Card>
+            ),
+          },
+        ]}
+      />
 
         <AdvertisementSection />
       </div>
@@ -751,6 +912,7 @@ const UserDashboard = () => {
         onCancel={() => {
           setIsMaintenanceModalVisible(false);
           maintenanceForm.resetFields();
+          setSelectedMaintenancePrice("0.001");
         }}
         footer={null}
         width={600}
@@ -781,12 +943,41 @@ const UserDashboard = () => {
             label="Loại bảo trì"
             rules={[{ required: true, message: "Vui lòng chọn loại bảo trì" }]}
           >
-            <Select placeholder="Chọn loại bảo trì" size="large">
+            <Select 
+              placeholder="Chọn loại bảo trì" 
+              size="large"
+              onChange={(value) => {
+                const price = getPriceByMaintenanceType(value);
+                setSelectedMaintenancePrice(price);
+              }}
+            >
               <Option value="routine">Bảo dưỡng định kỳ</Option>
               <Option value="repair">Sửa chữa</Option>
               <Option value="inspection">Kiểm tra</Option>
               <Option value="emergency">Bảo trì khẩn cấp</Option>
             </Select>
+          </Form.Item>
+          
+          {/* Hiển thị giá dự kiến */}
+          <Form.Item label="Giá dự kiến">
+            <div style={{ 
+              padding: "12px", 
+              background: "#f0f2f5", 
+              borderRadius: "8px",
+              border: "1px solid #d9d9d9"
+            }}>
+              <Space>
+                <Text style={{ fontSize: "18px", color: "#1890ff", fontWeight: "bold" }}>
+                  {selectedMaintenancePrice} Sepolia ETH
+                </Text>
+                <Text type="secondary" style={{ fontSize: "12px" }}>
+                  (~{PaymentService.ethToVnd(selectedMaintenancePrice)} VND - tham khảo)
+                </Text>
+              </Space>
+              <div style={{ marginTop: "8px", fontSize: "12px", color: "#999" }}>
+                * Bạn sẽ thanh toán sau khi admin duyệt yêu cầu
+              </div>
+            </div>
           </Form.Item>
           <Form.Item
             name="expectedDate"
@@ -839,8 +1030,12 @@ const UserDashboard = () => {
               block
               size="large"
               className="submit-btn"
+              style={{ 
+                backgroundColor: "#1890ff",
+                borderColor: "#1890ff"
+              }}
             >
-              Tạo lệnh đăng ký
+              Gửi yêu cầu bảo trì
             </Button>
           </Form.Item>
         </Form>

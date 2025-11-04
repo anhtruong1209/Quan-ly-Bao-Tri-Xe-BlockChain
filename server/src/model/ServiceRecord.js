@@ -18,6 +18,11 @@ const serviceRecordSchema = new mongoose.Schema(
     anchored: { type: Boolean, default: false }, // Đã lên blockchain chưa
     txHash: { type: String },
     blockNumber: { type: Number },
+    // Payment fields
+    price: { type: String }, // Giá thanh toán (Sepolia ETH) - ví dụ: "0.001"
+    recipientAddress: { type: String }, // Địa chỉ ví admin nhận tiền
+    paymentHash: { type: String }, // Hash của transaction thanh toán ETH
+    paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" }, // Trạng thái thanh toán
   },
   { timestamps: true }
 );
