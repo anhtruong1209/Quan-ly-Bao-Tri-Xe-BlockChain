@@ -239,7 +239,7 @@ function Footer() {
                   fontSize: "15px",
                   fontFamily: "'Inter', 'Poppins', sans-serif",
                   fontWeight: "500"
-                }}>Quản lý bất động sản</Text>
+                }}>Quản lý bảo trì xe</Text>
               </div>
               <div className="footer_link_item">
                 <RiFileTextLine style={{ marginRight: 14, fontSize: "20px", color: "#fff" }} />
@@ -281,7 +281,7 @@ function Footer() {
                 fontFamily: "'Inter', 'Poppins', sans-serif",
                 fontWeight: "400"
               }}>
-                © 2025 Trường Đại Học Hàng Hải. Hệ thống quản lý giao dịch bất động sản Blockchain.
+                © 2025 Trường Đại Học Hàng Hải. Hệ thống quản lý giao dịch bảo trì xe Blockchain.
               </Text>
             </Col>
           </Row>

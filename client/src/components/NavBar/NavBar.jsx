@@ -7,12 +7,7 @@ import { Space } from "antd";
 import { HiMenuAlt3, HiMenuAlt1 } from "react-icons/hi";
 import InputComponent from "../InputComponent/InputComponent";
 import {
-  PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  HistoryOutlined,
   SearchOutlined,
-  CarOutlined,
 } from "@ant-design/icons";
 import { RiBuilding2Line } from "react-icons/ri";
 import { Badge, Button, Popover } from "antd";
@@ -273,15 +268,26 @@ const Navbar = () => {
             >
               {getNavLinks(user?.isAdmin).map((item, index) => (
                 <li key={index} className="py-4">
-                  <NavLink
-                    to={item.path}
-                    className={(a) =>
-                      a.isActive ? "nav_item nav_active" : "nav_item"
-                    }
-                    key={index}
-                  >
-                    {item.display}
-                  </NavLink>
+                  {item.external ? (
+                    <a
+                      href={item.path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="nav_item"
+                    >
+                      {item.display}
+                    </a>
+                  ) : (
+                    <NavLink
+                      to={item.path}
+                      className={(a) =>
+                        a.isActive ? "nav_item nav_active" : "nav_item"
+                      }
+                      key={index}
+                    >
+                      {item.display}
+                    </NavLink>
+                  )}
                 </li>
               ))}
               {/* <div className="navbar_search">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Card, Anchor, Affix } from "antd";
+import { Card, Anchor, Affix, Select, Space } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import "./ProjectDocumentation.css";
 
@@ -113,11 +113,13 @@ const ProjectDocumentation = () => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [headings, setHeadings] = useState([]);
+  const [lang, setLang] = useState(() => localStorage.getItem("doc_lang") || "vi");
 
   useEffect(() => {
-    // Try to fetch from public folder first
-    console.log("Fetching PROJECT_DOCUMENTATION.md...");
-    fetch("/PROJECT_DOCUMENTATION.md")
+    setLoading(true);
+    const file = lang === "en" ? "/PROJECT_DOCUMENTATION.en.md" : "/PROJECT_DOCUMENTATION.md";
+    console.log("Fetching documentation:", file);
+    fetch(file)
       .then((res) => {
         console.log("Response status:", res.status, res.statusText);
         if (!res.ok) throw new Error(`File not found: ${res.status} ${res.statusText}`);
@@ -134,13 +136,24 @@ const ProjectDocumentation = () => {
       })
       .catch((err) => {
         console.error("Error loading documentation:", err);
-        // Fallback: Show error message with more details
-        const errorContent = `# ❌ Không thể tải tài liệu\n\n**Lỗi:** ${err.message}\n\nVui lòng đảm bảo file \`PROJECT_DOCUMENTATION.md\` được đặt trong thư mục \`client/public/\`.\n\nKiểm tra:\n1. File tồn tại tại: \`client/public/PROJECT_DOCUMENTATION.md\`\n2. Server đang chạy (port 5173)\n3. Refresh lại trang`;
-        setContent(errorContent);
-        setHeadings([]);
-        setLoading(false);
+        if (lang === "en") {
+          // If EN not found, fallback to VI with banner note
+          fetch("/PROJECT_DOCUMENTATION.md")
+            .then((r) => r.text())
+            .then((vi) => {
+              setContent(`# 🇬🇧 English version coming soon\n\n> The English documentation will be available shortly. Displaying Vietnamese version below.\n\n---\n\n${vi}`);
+              const extracted = extractHeadings(vi);
+              setHeadings(extracted);
+              setLoading(false);
+            });
+        } else {
+          const errorContent = `# ❌ Không thể tải tài liệu\n\n**Lỗi:** ${err.message}\n\nVui lòng đảm bảo file \`PROJECT_DOCUMENTATION.md\` được đặt trong thư mục \`client/public/\`.\n\nKiểm tra:\n1. File tồn tại tại: \`client/public/PROJECT_DOCUMENTATION.md\`\n2. Server đang chạy (port 5173)\n3. Refresh lại trang`;
+          setContent(errorContent);
+          setHeadings([]);
+          setLoading(false);
+        }
       });
-  }, []);
+  }, [lang]);
 
 
   return (
@@ -151,9 +164,24 @@ const ProjectDocumentation = () => {
           <Affix offsetTop={80}>
             <Card
               title={
-                <span>
-                  <FileTextOutlined /> Mục lục
-                </span>
+                <Space style={{ width: "100%", justifyContent: "space-between" }}>
+                  <span>
+                    <FileTextOutlined /> Mục lục
+                  </span>
+                  <Select
+                    size="small"
+                    value={lang}
+                    onChange={(v) => {
+                      setLang(v);
+                      localStorage.setItem("doc_lang", v);
+                    }}
+                    options={[
+                      { label: "Tiếng Việt", value: "vi" },
+                      { label: "English", value: "en" },
+                    ]}
+                    style={{ minWidth: 120 }}
+                  />
+                </Space>
               }
               className="sidebar-menu"
             >

@@ -1,6 +1,6 @@
-# 📚 Tài liệu Hệ thống Quản lý Bảo trì Xe - VehicleWarranty System
+Tài liệu Hệ thống Quản lý Bảo trì Xe - VehicleWarranty System
 
-## 📑 Mục lục
+##  Mục lục
 
 1. [Tổng quan dự án](#1-tổng-quan-dự-án)
 2. [Kiến trúc hệ thống](#2-kiến-trúc-hệ-thống)
@@ -11,6 +11,9 @@
 7. [Luồng hoạt động chính](#7-luồng-hoạt-động-chính)
 8. [Database Schema](#8-database-schema)
 9. [Deployment](#9-deployment)
+10. [Accessibility & i18n](#10-accessibility--i18n)
+11. [Incident Runbook](#11-incident-runbook)
+12. [SLO/SLI & Monitoring](#12-slosli--monitoring)
 
 ---
 
@@ -805,6 +808,87 @@ const EMAIL_PASSWORD = "your-app-password";
 
 ---
 
+## 10. Accessibility & i18n
+
+### 10.1. Accessibility checklist
+- Contrast tối thiểu 4.5:1 đối với text thường, 3:1 với heading/lớn.
+- Trạng thái focus rõ ràng (outline/box-shadow) cho: button, link, input, menu.
+- Keyboard navigation: Tab order logic; Escape đóng modal; Enter submit form; Space kích hoạt button.
+- ARIA: `aria-label` cho icon-only button, `role` hợp lý (dialog, navigation), `aria-expanded` cho menu.
+- Form: label-for liên kết, error helper text, mô tả bắt buộc.
+- Bảng: `scope="col"` cho header, caption mô tả ngắn, cell không phụ thuộc màu sắc để truyền đạt trạng thái.
+
+### 10.2. Thực thi nhanh trong dự án
+- Thêm outline focus mặc định của trình duyệt và tăng độ tương phản cho chủ đạo xanh (#1890ff → đảm bảo WCAG AA).
+- Bổ sung `aria-label` cho các nút icon: Search, Payment Hash, Xem TX, User menu.
+- Bật điều hướng bằng bàn phím trên modal AntD (keyboard, maskClosable).
+- Thêm `skip to content` link ở đầu trang để bỏ qua navbar.
+
+### 10.3. i18n
+- Áp dụng `react-intl` hoặc `react-i18next`.
+- Cấu trúc `client/src/i18n/{vi,en}/translation.json`.
+- Tách text cứng trong UI sang keys; mặc định `vi`, có thể chuyển nhanh sang `en` trong Navbar.
+
+---
+
+## 11. Incident Runbook
+
+> Mục tiêu: Khi sản phẩm lỗi (500/timeout, ví không kết nối, TX thất bại), có quy trình chuẩn để xử lý nhanh, ít gián đoạn.
+
+### 11.1. Dấu hiệu (Symptoms)
+- Frontend: 404 khi reload route SPA; lỗi thanh toán (MetaMask không hiện, balance = 0); UI không cập nhật trạng thái.
+- Backend: 5xx tăng, `Cannot find module`, MongoDB connection timeout, route 404 do chưa deploy/restart.
+- Blockchain: TX pending quá 5 phút; chain ID không đúng; RPC trả lỗi rate limit.
+
+### 11.2. Chẩn đoán nhanh (Triage)
+1) Kiểm tra trạng thái Vercel deployments FE/BE, log gần nhất.
+2) Xác nhận biến môi trường: API URL, Mongo URI, JWT secret, RPC URL.
+3) Kiểm tra MetaMask: Chain = Sepolia (11155111), account đã kết nối, có balance.
+4) Backend health: gọi `GET /api/health` (nên bổ sung) hoặc một route đơn giản.
+5) DB: vào Mongo Atlas -> Metrics -> xem connection/operation errors.
+
+### 11.3. Quy trình xử lý theo sự cố
+- 404 SPA: kiểm tra `vercel.json` rule fallback `/(.*) -> /index.html` và client build `client/dist`.
+- `Cannot find module 'express'`: đảm bảo deps đặt ở `package.json` root cho serverless.
+- Mongo timeout: bật SRV string, thêm retryWrites=true, giảm connection timeout; redeploy.
+- MetaMask balance 0 / sai network: gọi `wallet_switchEthereumChain` hoặc `wallet_addEthereumChain`; reload balance sau 1-2s.
+- TX pending/lỗi: tra cứu trên `https://sepolia.etherscan.io`, nếu fail -> hiển thị lỗi, cho phép gửi lại.
+- API 404 khi PUT payment: chắc chắn backend đã restart sau khi thêm route.
+
+### 11.4. Hậu kiểm (Post‑mortem)
+- Lưu timeline, nguyên nhân gốc (RCA), hành động khắc phục, và hạng mục ngăn ngừa tái diễn.
+
+---
+
+## 12. SLO/SLI & Monitoring
+
+### 12.1. Định nghĩa mục tiêu
+- SLO FE: TTFB P95 < 500ms; lỗi JS < 0.5%; Core Web Vitals đạt 75% người dùng thực.
+- SLO API: Tỷ lệ 2xx ≥ 99%; P95 latency < 300ms; uptime ≥ 99.5%/tháng.
+- SLO Blockchain: Tỷ lệ TX thành công ≥ 98%; thời gian xác nhận P95 < 120s.
+
+### 12.2. Chỉ số (SLI) cần thu thập
+- FE: lỗi JS, route change timing, Web Vitals (CLS/LCP/INP).
+- API: latency, error rate theo route, throughput, cold start.
+- Payment: số TX pending/fail, thời gian confirm, gas used, chain reorg.
+
+### 12.3. Công cụ khuyến nghị
+- FE: Sentry (error + performance), Vercel Analytics.
+- BE: Sentry/Datadog, Log Drains Vercel -> Logtail/ELK.
+- Chain: Alchemy/Infura webhook, Blocknative (mempool events).
+
+### 12.4. Cảnh báo (Alerting)
+- 5xx rate > 2% trong 5 phút.
+- TX fail > 5 trong 10 phút.
+- Latency P95 API > 1s trong 10 phút.
+
+### 12.5. Thực thi
+- Thêm SDK Sentry vào FE/BE với DSN env.
+- Tạo dashboards: API latency, error by route; Payment success rate; Pending TX.
+- Đặt alert policy theo ngưỡng trên và kênh nhận (Email/Slack).
+
+---
+
 ## 10. Lưu ý quan trọng
 
 ### 10.1. Security
@@ -892,5 +976,5 @@ Hệ thống VehicleWarranty là một ứng dụng quản lý bảo trì xe tí
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2024
+**Last Updated**: 2025
 
