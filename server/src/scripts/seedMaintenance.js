@@ -4,7 +4,7 @@ const ServiceRecord = require("../model/ServiceRecord");
 const crypto = require("crypto");
 
 // Hardcode MongoDB connection
-const MONGO_DB = "mongodb+srv://admin:Admin%40123@warrantly-verhical.hsdx3um.mongodb.net/?appName=warrantly-verhical";
+const MONGO_DB = "mongodb+srv://admin:admin@warrantly-verhical.hsdx3um.mongodb.net/?appName=warrantly-verhical";
 
 async function connect() {
   await mongoose.connect(MONGO_DB);

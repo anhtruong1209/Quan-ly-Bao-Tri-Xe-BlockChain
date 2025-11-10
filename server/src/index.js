@@ -12,7 +12,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Hardcode MongoDB connection string
-const MONGO_DB = "mongodb+srv://admin:Admin%40123@warrantly-verhical.hsdx3um.mongodb.net/?appName=warrantly-verhical";
+const MONGO_DB = "mongodb+srv://admin:admin@warrantly-verhical.hsdx3um.mongodb.net/?appName=warrantly-verhical";
 
 app.use(cors());
 app.use(bodyParse.json());
